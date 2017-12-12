@@ -571,8 +571,19 @@
       ['r', 'read analog %n', 'analogRead', 0],
       ['-'],
       ['r', 'map %n from %n %n to %n %n', 'mapValues', 50, 0, 100, -240, 240]
-    ]
-  };
+    ]};
+
+  var menus = {
+    en: {
+      buttons: ['button A', 'button B', 'button C', 'button D'],
+      btnStates: ['pressed', 'released'],
+      hwIn: ['rotation knob', 'light sensor', 'temperature sensor'],
+      hwOut: ['led A', 'led B', 'led C', 'led D', 'button A', 'button B', 'button C', 'button D', 'servo A', 'servo B', 'servo C', 'servo D'],
+      leds: ['led A', 'led B', 'led C', 'led D'],
+      outputs: ['on', 'off'],
+      ops: ['>', '=', '<'],
+      servos: ['servo A', 'servo B', 'servo C', 'servo D']
+    }};
 
   var descriptor = {
     blocks: blocks[lang],
