@@ -417,7 +417,7 @@
     setTimeout(function() {
       notifyConnection = false;
     }, time);
-    rotateServo(5, 90); //stop
+    rotateServo(5, 90);
     rotateServo(6, 90);
   };
 
