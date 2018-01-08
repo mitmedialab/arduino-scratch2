@@ -411,21 +411,29 @@
     hw.val = deg;
   };
 
-  ext.moveForward = function(servo, steps) {
-    var hw = hwList.search(servo);
-    if (!hw) return;
-    var deg = steps * 180
-    rotateServo(hw.pin, deg);
-    hw.val = deg;
+  ext.moveForward = function(time) {
+    rotateServo(5, 180);
+    rotateServo(6, 180);
+    setTimeout(function() {
+      notifyConnection = false;
+    }, time);
+    rotateServo(5, 90); #stop
+    rotateServo(6, 90);
   };
 
-  ext.turn = function(servo, steps, direction) {
-    var hw = hwList.search(servo);
-    if (!hw) return;
-    var deg = steps * 180
-    if (direction = 'left') de
-    rotateServo(hw.pin, deg);
-    hw.val = deg;
+  ext.turn = function(direction, time) {
+    if (direction == 'left'){
+      rotateServo(5, 180);
+      rotateServo(6, 0);
+    } else {
+    rotateServo(5, 0);
+    rotateServo(6, 180);
+    }
+    setTimeout(function() {
+      notifyConnection = false;
+    }, time);
+    rotateServo(5, 90); #stop
+    rotateServo(6, 90);
   };
 
   ext.setLED = function(led, val) {
@@ -571,8 +579,8 @@
       ['-'],
       [' ', 'rotate %m.servos to %n degrees', 'rotateServo', 'servo A', 180],
       [' ', 'rotate %m.servos by %n degrees', 'changeServo', 'servo A', 20],
-      [' ', 'move forward %n steps', 'moveForward', 'servo A', 180],
-      [' ', 'turn %m.directions %n steps', 'turn', 'servo A', 180],
+      [' ', 'move forward for %n seconds', 'moveForward', 5],
+      [' ', 'turn %m.directions for %n seconds', 'turn', 'left', 5],
       ['-'],
       ['h', 'when %m.buttons is %m.btnStates', 'whenButton', 'button A', 'pressed'],
       ['b', '%m.buttons pressed?', 'isButtonPressed', 'button A'],
