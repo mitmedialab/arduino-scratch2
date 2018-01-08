@@ -421,6 +421,16 @@
     rotateServo(6, 90);
   };
 
+  ext.moveBackward = function(time) {
+    rotateServo(5, 0);
+    rotateServo(6, 0);
+    setTimeout(function() {
+      notifyConnection = false;
+    }, time);
+    rotateServo(5, 90); #stop
+    rotateServo(6, 90);
+  };
+
   ext.turn = function(direction, time) {
     if (direction == 'left'){
       rotateServo(5, 180);
@@ -580,6 +590,7 @@
       [' ', 'rotate %m.servos to %n degrees', 'rotateServo', 'servo A', 180],
       [' ', 'rotate %m.servos by %n degrees', 'changeServo', 'servo A', 20],
       [' ', 'move forward for %n seconds', 'moveForward', 5],
+      [' ', 'move backward for %n seconds', 'moveBackward', 5],
       [' ', 'turn %m.directions for %n seconds', 'turn', 'left', 5],
       ['-'],
       ['h', 'when %m.buttons is %m.btnStates', 'whenButton', 'button A', 'pressed'],
