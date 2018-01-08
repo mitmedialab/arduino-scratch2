@@ -411,9 +411,12 @@
     hw.val = deg;
   };
 
+  var speed;
+
   ext.moveForward = function(time) {
-    rotateServo(5, 180);
-    rotateServo(6, 180);
+    if (speed == null) speed = 1;
+    rotateServo(5, Math.round(90*(1+speed)));
+    rotateServo(6, Math.round(90*(1+speed)));
     setTimeout(function() {
       notifyConnection = false;
     }, time);
@@ -422,8 +425,9 @@
   };
 
   ext.moveBackward = function(time) {
-    rotateServo(5, 0);
-    rotateServo(6, 0);
+    if (speed == null) speed = 1;
+    rotateServo(5, Math.round(90*(1-speed)));
+    rotateServo(6, Math.round(90*(1-speed)));
     setTimeout(function() {
       notifyConnection = false;
     }, time);
@@ -433,17 +437,21 @@
 
   ext.turn = function(direction, time) {
     if (direction == 'left'){
-      rotateServo(5, 180);
-      rotateServo(6, 0);
+      rotateServo(5, Math.round(90*(1+speed)));
+      rotateServo(6, Math.round(90*(1-speed)));
     } else {
-    rotateServo(5, 0);
-    rotateServo(6, 180);
+    rotateServo(5, Math.round(90*(1-speed)));
+    rotateServo(6, Math.round(90*(1+speed)));
     }
     setTimeout(function() {
       notifyConnection = false;
     }, time);
     rotateServo(5, 90);
     rotateServo(6, 90);
+  };
+
+  ext.setSpeed = function(percent) {
+  var speed = percent/100
   };
 
   ext.setLED = function(led, val) {
@@ -591,6 +599,7 @@
       [' ', 'rotate %m.servos by %n degrees', 'changeServo', 'servo A', 20],
       [' ', 'move forward for %n seconds', 'moveForward', 5],
       [' ', 'move backward for %n seconds', 'moveBackward', 5],
+      [' ', 'set speed to %n%', 'setSpeed', 100],
       [' ', 'turn %m.directions for %n seconds', 'turn', 'left', 5],
       ['-'],
       ['h', 'when %m.buttons is %m.btnStates', 'whenButton', 'button A', 'pressed'],
