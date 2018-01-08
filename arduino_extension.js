@@ -411,6 +411,23 @@
     hw.val = deg;
   };
 
+  ext.moveForward = function(servo, steps) {
+    var hw = hwList.search(servo);
+    if (!hw) return;
+    var deg = steps * 180
+    rotateServo(hw.pin, deg);
+    hw.val = deg;
+  };
+
+  ext.turn = function(servo, steps, direction) {
+    var hw = hwList.search(servo);
+    if (!hw) return;
+    var deg = steps * 180
+    if (direction = 'left') de
+    rotateServo(hw.pin, deg);
+    hw.val = deg;
+  };
+
   ext.setLED = function(led, val) {
     var hw = hwList.search(led);
     if (!hw) return;
@@ -554,6 +571,8 @@
       ['-'],
       [' ', 'rotate %m.servos to %n degrees', 'rotateServo', 'servo A', 180],
       [' ', 'rotate %m.servos by %n degrees', 'changeServo', 'servo A', 20],
+      [' ', 'move forward %n steps', 'moveForward', 'servo A', 180],
+      [' ', 'turn %m.directions %n steps', 'turn', 'servo A', 180],
       ['-'],
       ['h', 'when %m.buttons is %m.btnStates', 'whenButton', 'button A', 'pressed'],
       ['b', '%m.buttons pressed?', 'isButtonPressed', 'button A'],
@@ -582,6 +601,7 @@
       leds: ['led A', 'led B', 'led C', 'led D'],
       outputs: ['on', 'off'],
       ops: ['>', '=', '<'],
+      directions: ['left', 'right'],
       servos: ['servo A', 'servo B', 'servo C', 'servo D']
     }};
 
