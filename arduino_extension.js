@@ -438,10 +438,9 @@
     rotateServo(leftservo, Math.round(90*(1-speed)));
     rotateServo(rightservo, Math.round(90*(1-speed)));
     setTimeout(function() {
-      notifyConnection = false;
-    }, time);
-    rotateServo(leftservo, 90);
-    rotateServo(rightservo, 85);
+      rotateServo(leftservo, 90);
+      rotateServo(rightservo, 85);
+    }, time*1000);
   };
 
   ext.turn = function(direction, time) {
@@ -453,10 +452,9 @@
     rotateServo(rightservo, Math.round(90*(1+speed)));
     }
     setTimeout(function() {
-      notifyConnection = false;
-    }, time);
-    rotateServo(leftservo, 90);
-    rotateServo(rightservo, 85);
+      rotateServo(leftservo, 90);
+      rotateServo(rightservo, 85);
+    }, time*1000);
   };
 
   ext.setSpeed = function(percent) {
