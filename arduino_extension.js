@@ -434,9 +434,8 @@
   };
 
   ext.moveBackward = function(time) {
-    if (speed == null) speed = 1;
-    rotateServo(leftservo, Math.round(90*(1-speed)));
-    rotateServo(rightservo, Math.round(90*(1-speed)));
+    rotateServo(leftservo, Math.round(90*(1-speed)+1));
+    rotateServo(rightservo, Math.round(90*(1-speed)+1));
     setTimeout(function() {
       rotateServo(leftservo, 90);
       rotateServo(rightservo, 85);
