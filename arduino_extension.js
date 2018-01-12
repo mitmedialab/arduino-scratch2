@@ -80,6 +80,16 @@
   var pingCount = 0;
   var pinger = null;
 
+  var leftservo = 5,
+    rightservo = 6,
+    redpin = 9,
+    bluepin = 10,
+    greenpin = 11,
+    redval = 0,
+    blueval = 0,
+    greenval = 0;
+
+
   var hwList = new HWList();
 
   function HWList() {
@@ -415,43 +425,45 @@
 
   ext.moveForward = function(time) {
     if (speed == null) speed = 1;
-    rotateServo(5, Math.round(90*(1+speed)));
-    rotateServo(6, Math.round(90*(1+speed)));
+    rotateServo(leftservo, Math.round(90*(1+speed)));
+    rotateServo(rightservo, Math.round(90*(1+speed)));
     setTimeout(function() {
       notifyConnection = false;
     }, time);
-    rotateServo(5, 90);
-    rotateServo(6, 90);
+    rotateServo(leftservo, 90);
+    rotateServo(rightservo, 90);
   };
 
   ext.moveBackward = function(time) {
     if (speed == null) speed = 1;
-    rotateServo(5, Math.round(90*(1-speed)));
-    rotateServo(6, Math.round(90*(1-speed)));
+    rotateServo(leftservo, Math.round(90*(1-speed)));
+    rotateServo(rightservo, Math.round(90*(1-speed)));
     setTimeout(function() {
       notifyConnection = false;
     }, time);
-    rotateServo(5, 90);
-    rotateServo(6, 90);
+    rotateServo(leftservo, 90);
+    rotateServo(leftservo, 90);
   };
 
   ext.turn = function(direction, time) {
-    if (direction == 'left'){
-      rotateServo(5, Math.round(90*(1+speed)));
-      rotateServo(6, Math.round(90*(1-speed)));
+    if (direction == 'right'){
+      rotateServo(leftservo, Math.round(90*(1+speed)));
+      rotateServo(rightservo, Math.round(90*(1-speed)));
     } else {
-    rotateServo(5, Math.round(90*(1-speed)));
-    rotateServo(6, Math.round(90*(1+speed)));
+    rotateServo(leftservo, Math.round(90*(1-speed)));
+    rotateServo(rightservo, Math.round(90*(1+speed)));
     }
     setTimeout(function() {
       notifyConnection = false;
     }, time);
-    rotateServo(5, 90);
-    rotateServo(6, 90);
+    rotateServo(leftservo, 90);
+    rotateServo(rightservo, 90);
   };
 
   ext.setSpeed = function(percent) {
-  var speed = percent/100
+  if (percent > 100) percent = 100;
+  if (percent < 0) percent = 0;
+  speed = percent/100
   };
 
   ext.setLED = function(led, val) {
@@ -459,6 +471,55 @@
     if (!hw) return;
     analogWrite(hw.pin, val);
     hw.val = val;
+  };
+
+  ext.setColor = function(color) {
+    if (color == 'red') {
+      redval = 255;
+      blueval = 0;
+      greenval = 0;
+    };
+    else if (color == 'orange') {
+      redval = 250;
+      blueval = 0;
+      greenval = 40;
+    };
+    else if (color == 'yellow') {
+      redval = 255;
+      blueval = 0;
+      greenval = 255;
+    };
+    else if (color == 'green') {
+      redval = 0;
+      blueval = 0;
+      greenval = 255;
+    };
+    else if (color == 'blue') {
+      redval = 0;
+      blueval = 255;
+      greenval = 0;
+    };
+    else if (color == 'purple') {
+      redval = 80;
+      blueval = 80;
+      greenval = 0;
+    };
+    else if (color == 'pink') {
+      redval = 255;
+      blueval = 100;
+      greenval = 0;
+    };
+    else if (color == 'white') {
+      redval = 255;
+      blueval = 255;
+      greenval = 255;
+    };
+
+    /*if (led on) {
+    analogWrite(redpin, redval);
+    analogWrite(bluepin, blueval);
+    analogWrite(greenpin, greenval);
+    };*/
   };
 
   ext.changeLED = function(led, val) {
@@ -594,6 +655,7 @@
       [' ', 'set %m.leds %m.outputs', 'digitalLED', 'led A', 'on'],
       [' ', 'set %m.leds brightness to %n%', 'setLED', 'led A', 100],
       [' ', 'change %m.leds brightness by %n%', 'changeLED', 'led A', 20],
+      [' ', 'set light color to %m.colors', 'setColor', 'white']
       ['-'],
       [' ', 'rotate %m.servos to %n degrees', 'rotateServo', 'servo A', 180],
       [' ', 'rotate %m.servos by %n degrees', 'changeServo', 'servo A', 20],
@@ -630,7 +692,8 @@
       outputs: ['on', 'off'],
       ops: ['>', '=', '<'],
       directions: ['left', 'right'],
-      servos: ['servo A', 'servo B', 'servo C', 'servo D']
+      servos: ['servo A', 'servo B', 'servo C', 'servo D'],
+      colors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink', 'white']
     }};
 
   var descriptor = {
