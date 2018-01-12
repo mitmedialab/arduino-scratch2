@@ -85,9 +85,9 @@
     redpin = 9,
     bluepin = 10,
     greenpin = 11,
-    redval = 0,
-    blueval = 0,
-    greenval = 0;
+    redval = 255,
+    blueval = 255,
+    greenval = 255;
 
 
   var hwList = new HWList();
@@ -449,7 +449,7 @@
     if (direction == 'right'){
       rotateServo(leftservo, Math.round(90*(1+speed)));
       rotateServo(rightservo, Math.round(90*(1-speed)));
-    } else {
+    } else if (direction == 'left') {
     rotateServo(leftservo, Math.round(90*(1-speed)));
     rotateServo(rightservo, Math.round(90*(1+speed)));
     }
@@ -478,48 +478,62 @@
       redval = 255;
       blueval = 0;
       greenval = 0;
-    };
+    }
     else if (color == 'orange') {
       redval = 250;
       blueval = 0;
       greenval = 40;
-    };
+    }
     else if (color == 'yellow') {
       redval = 255;
       blueval = 0;
       greenval = 255;
-    };
+    }
     else if (color == 'green') {
       redval = 0;
       blueval = 0;
       greenval = 255;
-    };
+    }
     else if (color == 'blue') {
       redval = 0;
       blueval = 255;
       greenval = 0;
-    };
+    }
     else if (color == 'purple') {
       redval = 80;
       blueval = 80;
       greenval = 0;
-    };
+    }
     else if (color == 'pink') {
       redval = 255;
       blueval = 100;
       greenval = 0;
-    };
+    }
     else if (color == 'white') {
       redval = 255;
       blueval = 255;
       greenval = 255;
+    }
+    var redon = analogRead(redpin);
+    var blueon = analogRead(bluepin);
+    var greenon = analogRead(greenpin);
+    if (redon != 0 || blueon != 0 || greenon != 0) {
+      analogWrite(redpin, redval);
+      analogWrite(bluepin, blueval);
+      analogWrite(greenpin, greenval);
     };
+  };
 
-    /*if (led on) {
-    analogWrite(redpin, redval);
-    analogWrite(bluepin, blueval);
-    analogWrite(greenpin, greenval);
-    };*/
+  ext.setLEDstrip = function(val) {
+    if (val == 'on') {
+      analogWrite(redpin, redval);
+      analogWrite(bluepin, blueval);
+      analogWrite(greenpin, greenval);
+    } else if (val == 'off') {
+      analogWrite(redpin, 0);
+      analogWrite(bluepin, 0);
+      analogWrite(greenpin, 0);
+    }
   };
 
   ext.changeLED = function(led, val) {
@@ -655,7 +669,8 @@
       [' ', 'set %m.leds %m.outputs', 'digitalLED', 'led A', 'on'],
       [' ', 'set %m.leds brightness to %n%', 'setLED', 'led A', 100],
       [' ', 'change %m.leds brightness by %n%', 'changeLED', 'led A', 20],
-      [' ', 'set light color to %m.colors', 'setColor', 'white']
+      [' ', 'set light strip %m.outputs', 'setLEDstrip', 'on'],
+      [' ', 'set light color to %m.colors', 'setColor', 'white'],
       ['-'],
       [' ', 'rotate %m.servos to %n degrees', 'rotateServo', 'servo A', 180],
       [' ', 'rotate %m.servos by %n degrees', 'changeServo', 'servo A', 20],
