@@ -527,9 +527,12 @@
 
   ext.setLEDstrip = function(val) {
     if (val == 'on') {
-      analogWrite(redpin, redval);
+      analogWrite(redpin, 255);
+      analogWrite(bluepin, 255);
+      analogWrite(greenpin, 255);
+      /*analogWrite(redpin, redval);
       analogWrite(bluepin, blueval);
-      analogWrite(greenpin, greenval);
+      analogWrite(greenpin, greenval);*/
     } else if (val == 'off') {
       analogWrite(redpin, 0);
       analogWrite(bluepin, 0);
