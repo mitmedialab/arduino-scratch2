@@ -433,16 +433,16 @@
   var speed = 1;
 
   ext.moveForward = function(time) {
-    rotateServo(leftservo, Math.round(90*(1+speed)));
-    rotateServo(rightservo, Math.round(90*(1+speed)));
+    rotateServo(leftservo, Math.round(90+ speed*30));
+    rotateServo(rightservo, Math.round(90+ speed*30));
     sleep(time*1000);
     rotateServo(leftservo, 90);
     rotateServo(rightservo, 85);
   };
 
   ext.moveBackward = function(time) {
-    rotateServo(leftservo, Math.round(90*(1-speed)));
-    rotateServo(rightservo, Math.round(90*(1-speed)));
+    rotateServo(leftservo, Math.round(90 - speed*40));
+    rotateServo(rightservo, Math.round(90 - speed*40));
     sleep(time*1000);
     rotateServo(leftservo, 90);
     rotateServo(rightservo, 85);
@@ -450,11 +450,11 @@
 
   ext.turn = function(direction, time) {
     if (direction == 'right'){
-      rotateServo(leftservo, Math.round(90*(1+speed)));
-      rotateServo(rightservo, Math.round(90*(1-speed))); //slower?
+      rotateServo(leftservo, Math.round(90+ speed*30));
+      rotateServo(rightservo, Math.round(90 - speed*40)); //slower?
     } else if (direction == 'left') {
-      rotateServo(leftservo, Math.round(90*(1-speed))); //slower?
-      rotateServo(rightservo, Math.round(90*(1+speed)));
+      rotateServo(leftservo, Math.round(90 - speed*40)); //slower?
+      rotateServo(rightservo, Math.round(90+ speed*30));
     };
     sleep(time*1000);
     rotateServo(leftservo, 90);
