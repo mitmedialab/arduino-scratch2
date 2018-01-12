@@ -438,20 +438,14 @@
     sleep(time*1000);
     rotateServo(leftservo, 90);
     rotateServo(rightservo, 85);
-    /*setTimeout(function() {
-      rotateServo(leftservo, 90);
-      rotateServo(rightservo, 85);
-    }, time*1000);*/
-
   };
 
   ext.moveBackward = function(time) {
     rotateServo(leftservo, Math.round(90*(1-speed)+1));
     rotateServo(rightservo, Math.round(90*(1-speed)+1));
-    setTimeout(function() {
-      rotateServo(leftservo, 90);
-      rotateServo(rightservo, 85);
-    }, time*1000);
+    sleep(time*1000);
+    rotateServo(leftservo, 90);
+    rotateServo(rightservo, 85);
   };
 
   ext.turn = function(direction, time) {
@@ -462,10 +456,9 @@
     rotateServo(leftservo, Math.round(90*(1-speed)));
     rotateServo(rightservo, Math.round(90*(1+speed)));
     }
-    setTimeout(function() {
-      rotateServo(leftservo, 90);
-      rotateServo(rightservo, 85);
-    }, time*1000);
+    sleep(time*1000);
+    rotateServo(leftservo, 90);
+    rotateServo(rightservo, 85);
   };
 
   ext.setSpeed = function(percent) {
