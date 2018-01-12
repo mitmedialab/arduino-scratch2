@@ -421,17 +421,16 @@
     hw.val = deg;
   };
 
-  var speed;
+  var speed = 1;
 
   ext.moveForward = function(time) {
-    if (speed == null) speed = 1;
     rotateServo(leftservo, Math.round(90*(1+speed)));
     rotateServo(rightservo, Math.round(90*(1+speed)));
     setTimeout(function() {
-      notifyConnection = false;
-    }, time);
-    rotateServo(leftservo, 90);
-    rotateServo(rightservo, 90);
+      rotateServo(leftservo, 90);
+      rotateServo(rightservo, 85);
+    }, time*1000);
+
   };
 
   ext.moveBackward = function(time) {
@@ -442,7 +441,7 @@
       notifyConnection = false;
     }, time);
     rotateServo(leftservo, 90);
-    rotateServo(leftservo, 90);
+    rotateServo(rightservo, 85);
   };
 
   ext.turn = function(direction, time) {
@@ -457,7 +456,7 @@
       notifyConnection = false;
     }, time);
     rotateServo(leftservo, 90);
-    rotateServo(rightservo, 90);
+    rotateServo(rightservo, 85);
   };
 
   ext.setSpeed = function(percent) {
@@ -521,7 +520,7 @@
       analogWrite(redpin, redval);
       analogWrite(bluepin, blueval);
       analogWrite(greenpin, greenval);
-    };
+    }
   };
 
   ext.setLEDstrip = function(val) {
@@ -669,7 +668,7 @@
       [' ', 'set %m.leds %m.outputs', 'digitalLED', 'led A', 'on'],
       [' ', 'set %m.leds brightness to %n%', 'setLED', 'led A', 100],
       [' ', 'change %m.leds brightness by %n%', 'changeLED', 'led A', 20],
-      [' ', 'set light strip %m.outputs', 'setLEDstrip', 'on'],
+      [' ', 'turn light strip %m.outputs', 'setLEDstrip', 'on'],
       [' ', 'set light color to %m.colors', 'setColor', 'white'],
       ['-'],
       [' ', 'rotate %m.servos to %n degrees', 'rotateServo', 'servo A', 180],
