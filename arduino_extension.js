@@ -527,6 +527,9 @@
 
   ext.setLEDstrip = function(val) {
     if (val == 'on') {
+      pinMode(redpin, output);
+      pinMode(bluepin, output);
+      pinMode(greenpin, output);
       analogWrite(redpin, 255);
       analogWrite(bluepin, 255);
       analogWrite(greenpin, 255);
