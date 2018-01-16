@@ -80,11 +80,11 @@
   var pingCount = 0;
   var pinger = null;
 
-  var leftservo = 5,
-    rightservo = 6,
-    redpin = 9,
-    bluepin = 10,
-    greenpin = 11,
+  var leftservo = 10,
+    rightservo = 11,
+    redpin = 5,
+    bluepin = 3,
+    greenpin = 6,
     redval = 255,
     blueval = 255,
     greenval = 255;
