@@ -86,6 +86,8 @@
     colorpin = 6,
     color = 'white';
 
+  var colorMap = {'white':1, 'red':2, 'orange':3, 'yellow':4, 'green':5, 'blue':6, 'purple':7};
+
 
   var hwList = new HWList();
 
@@ -358,9 +360,12 @@
     }
   }
 
-  function changeLedStripColor(r,g,b) {
-  // hard code the pin
-  ledStripWriteCallback(colorpin, r, g, b);
+  function changeLedStripColor(num) {
+    var msg = new Uint8Array([
+        LED_MESSAGE | (6 & 0x0F),
+        num & 0x7F,
+        num >> 7]);
+    device.send(msg.buffer);
 }
 
   ext.whenConnected = function() {
@@ -507,7 +512,6 @@
   };
 
   ext.setColor = function(color) {
-    var colorMap = {'white':1, 'red':2, 'orange':3, 'yellow':4, 'green':5, 'blue':6, 'purple':7};
     /*redval = colorMap[color][0];
     greenval = colorMap[color][1];
     blueval = colorMap[color][2];*/
