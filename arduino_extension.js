@@ -439,17 +439,19 @@
   ext.moveForward = function(time) {
     rotateServo(rightservo, Math.round(90 - speed*35));
     rotateServo(leftservo, Math.round(90+ speed*25));
-    sleep(time*1000);
-    rotateServo(rightservo, 90);
-    rotateServo(leftservo, 85);
+    setTimeout(function(){
+      rotateServo(rightservo, 90);
+      rotateServo(leftservo, 85);
+    }, time*1000);
   };
 
   ext.moveBackward = function(time) {
     rotateServo(rightservo, Math.round(90+ speed*25));
     rotateServo(leftservo, Math.round(90 - speed*35));
-    sleep(time*1000);
-    rotateServo(rightservo, 90);
-    rotateServo(leftservo, 85);
+    setTimeout(function(){
+      rotateServo(rightservo, 90);
+      rotateServo(leftservo, 85);
+    }, time*1000);
   };
 
   ext.turn = function(direction, time) {
