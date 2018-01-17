@@ -27,7 +27,8 @@
     ANALOG_MAPPING_QUERY = 0x69,
     ANALOG_MAPPING_RESPONSE = 0x6A,
     CAPABILITY_QUERY = 0x6B,
-    CAPABILITY_RESPONSE = 0x6C;
+    CAPABILITY_RESPONSE = 0x6C,
+    LED_MESSAGE = 0x6D;
 
   var INPUT = 0x00,
     OUTPUT = 0x01,
@@ -83,9 +84,9 @@
   var leftservo = 11,
     rightservo = 10,
     colorpin = 3,
-    redval = 255,
-    blueval = 255,
-    greenval = 255;
+    redval = 127,
+    blueval = 127,
+    greenval = 127;
 
 
   var hwList = new HWList();
@@ -359,10 +360,9 @@
     }
   }
 
-  function changeLedStripColor(color) {
+  function changeLedStripColor(r,g,b) {
   // hard code the pin
-  var colorMap = {'white':[255,255,255], 'red':[255,0,0], 'orange':[250,40,0], 'yellow':[255,255,0], 'green':[0,255,0], 'blue':[0,0,255], 'purple':[80,0,80], 'pink':[255,0,100]};
-  ledStripWriteCallback(colorpin, colorMap[color][0], colorMap[color][1], colorMap[color][2]);
+  ledStripWriteCallback(colorpin, r, g, b);
 }
 
   ext.whenConnected = function() {
@@ -509,8 +509,11 @@
   };
 
   ext.setColor = function(color) {
-    changeLedStripColor(color)
-
+    var colorMap = {'white':1, 'red':2, 'orange':3, 'yellow':4, 'green':5, 'blue':6, 'purple':7};
+    /*redval = colorMap[color][0];
+    greenval = colorMap[color][1];
+    blueval = colorMap[color][2];*/
+    changeLedStripColor(colorMap[color]);
     /*var redon = analogRead(redpin);
     var blueon = analogRead(bluepin);
     var greenon = analogRead(greenpin);
@@ -523,22 +526,24 @@
 
   ext.setLEDstrip = function(val) {
     if (val == 'on') {
-      pinMode(redpin, OUTPUT);
+      changeLedStripColor(redval, greenval, blueval);
+      /*pinMode(redpin, OUTPUT);
       pinMode(bluepin, OUTPUT);
       pinMode(greenpin, OUTPUT);
       analogWrite(redpin, 255);
       analogWrite(bluepin, 255);
       analogWrite(greenpin, 255);
-      /*analogWrite(redpin, redval);
+      analogWrite(redpin, redval);
       analogWrite(bluepin, blueval);
       analogWrite(greenpin, greenval);*/
     } else if (val == 'off') {
-      pinMode(redpin, OUTPUT);
+      changeLedStripColor(0, 0, 0);
+      /*pinMode(redpin, OUTPUT);
       pinMode(bluepin, OUTPUT);
       pinMode(greenpin, OUTPUT);
       analogWrite(redpin, 0);
       analogWrite(bluepin, 0);
-      analogWrite(greenpin, 0);
+      analogWrite(greenpin, 0);*/
     }
   };
 
