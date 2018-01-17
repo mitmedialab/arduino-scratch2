@@ -83,10 +83,8 @@
 
   var leftservo = 11,
     rightservo = 10,
-    colorpin = 3,
-    redval = 127,
-    blueval = 127,
-    greenval = 127;
+    colorpin = 6,
+    color = 'white';
 
 
   var hwList = new HWList();
@@ -526,7 +524,7 @@
 
   ext.setLEDstrip = function(val) {
     if (val == 'on') {
-      changeLedStripColor(redval, greenval, blueval);
+      changeLedStripColor(colorMap[color]);
       /*pinMode(redpin, OUTPUT);
       pinMode(bluepin, OUTPUT);
       pinMode(greenpin, OUTPUT);
@@ -537,7 +535,7 @@
       analogWrite(bluepin, blueval);
       analogWrite(greenpin, greenval);*/
     } else if (val == 'off') {
-      changeLedStripColor(0, 0, 0);
+      changeLedStripColor(8);
       /*pinMode(redpin, OUTPUT);
       pinMode(bluepin, OUTPUT);
       pinMode(greenpin, OUTPUT);
