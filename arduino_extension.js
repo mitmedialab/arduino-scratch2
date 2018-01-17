@@ -80,11 +80,9 @@
   var pingCount = 0;
   var pinger = null;
 
-  var leftservo = 10,
-    rightservo = 11,
-    redpin = 5,
-    bluepin = 3,
-    greenpin = 6,
+  var leftservo = 11,
+    rightservo = 10,
+    colorpin = 3,
     redval = 255,
     blueval = 255,
     greenval = 255;
@@ -361,6 +359,12 @@
     }
   }
 
+  function changeLedStripColor(color) {
+  // hard code the pin
+  var colorMap = {'white':[255,255,255], 'red':[255,0,0], 'orange':[250,40,0], 'yellow':[255,255,0], 'green':[0,255,0], 'blue':[0,0,255], 'purple':[80,0,80], 'pink':[255,0,100]};
+  ledStripWriteCallback(colorpin, colorMap[color][0], colorMap[color][1], colorMap[color][2]);
+}
+
   ext.whenConnected = function() {
     if (notifyConnection) return true;
     return false;
@@ -433,32 +437,32 @@
   var speed = 1;
 
   ext.moveForward = function(time) {
-    rotateServo(leftservo, Math.round(90+ speed*25));
     rotateServo(rightservo, Math.round(90+ speed*25));
+    rotateServo(leftservo, Math.round(90 - speed*35));
     sleep(time*1000);
-    rotateServo(leftservo, 90);
-    rotateServo(rightservo, 85);
+    rotateServo(rightservo, 90);
+    rotateServo(leftservo, 85);
   };
 
   ext.moveBackward = function(time) {
-    rotateServo(leftservo, Math.round(90 - speed*35));
     rotateServo(rightservo, Math.round(90 - speed*35));
+    rotateServo(leftservo, Math.round(90+ speed*25));
     sleep(time*1000);
-    rotateServo(leftservo, 90);
-    rotateServo(rightservo, 85);
+    rotateServo(rightservo, 90);
+    rotateServo(leftservo, 85);
   };
 
   ext.turn = function(direction, time) {
     if (direction == 'right'){
-      rotateServo(leftservo, Math.round(90+ speed*25));
-      rotateServo(rightservo, Math.round(90 - speed*35)); //slower?
-    } else if (direction == 'left') {
-      rotateServo(leftservo, Math.round(90 - speed*35)); //slower?
       rotateServo(rightservo, Math.round(90+ speed*25));
+      rotateServo(leftservo, Math.round(90+ speed*25));
+    } else if (direction == 'left') {
+      rotateServo(rightservo, Math.round(90 - speed*35)); //slower?
+      rotateServo(leftservo, Math.round(90 - speed*35)); //slower?
     };
     sleep(time*1000);
-    rotateServo(leftservo, 90);
-    rotateServo(rightservo, 85);
+    rotateServo(rightservo, 90);
+    rotateServo(leftservo, 85);
   };
 
   ext.setSpeed = function(percent) {
@@ -475,54 +479,16 @@
   };
 
   ext.setColor = function(color) {
-    if (color == 'red') {
-      redval = 255;
-      blueval = 0;
-      greenval = 0;
-    }
-    else if (color == 'orange') {
-      redval = 250;
-      blueval = 0;
-      greenval = 40;
-    }
-    else if (color == 'yellow') {
-      redval = 255;
-      blueval = 0;
-      greenval = 255;
-    }
-    else if (color == 'green') {
-      redval = 0;
-      blueval = 0;
-      greenval = 255;
-    }
-    else if (color == 'blue') {
-      redval = 0;
-      blueval = 255;
-      greenval = 0;
-    }
-    else if (color == 'purple') {
-      redval = 80;
-      blueval = 80;
-      greenval = 0;
-    }
-    else if (color == 'pink') {
-      redval = 255;
-      blueval = 100;
-      greenval = 0;
-    }
-    else if (color == 'white') {
-      redval = 255;
-      blueval = 255;
-      greenval = 255;
-    }
-    var redon = analogRead(redpin);
+    changeLedStripColor(color)
+
+    /*var redon = analogRead(redpin);
     var blueon = analogRead(bluepin);
     var greenon = analogRead(greenpin);
     if (redon != 0 || blueon != 0 || greenon != 0) {
       analogWrite(redpin, redval);
       analogWrite(bluepin, blueval);
       analogWrite(greenpin, greenval);
-    }
+    }*/
   };
 
   ext.setLEDstrip = function(val) {
