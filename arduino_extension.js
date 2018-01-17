@@ -454,11 +454,37 @@
     }, time*1000);
   };
 
-  ext.turn = function(direction, time) {
+  ext.easyturn = function(direction) {
     if (direction == 'right'){
       rotateServo(rightservo, Math.round(90+ speed*25));
       rotateServo(leftservo, Math.round(90+ speed*25));
+      setTimeout(function(){
+        rotateServo(rightservo, 90);
+        rotateServo(leftservo, 85);
+      }, 3500);
     } else if (direction == 'left') {
+      rotateServo(rightservo, Math.round(90 - speed*35)); //slower?
+      rotateServo(leftservo, Math.round(90 - speed*35)); //slower?
+      setTimeout(function(){
+        rotateServo(rightservo, 90);
+        rotateServo(leftservo, 85);
+      }, 3500);
+    }
+    else if (direction == 'around') {
+      rotateServo(rightservo, Math.round(90 - speed*35)); //slower?
+      rotateServo(leftservo, Math.round(90 - speed*35)); //slower?
+      setTimeout(function(){
+        rotateServo(rightservo, 90);
+        rotateServo(leftservo, 85);
+      }, 9000);
+    };
+  };
+
+  ext.turn = function(direction, time) {
+    if (direction == 'clockwise'){
+      rotateServo(rightservo, Math.round(90+ speed*25));
+      rotateServo(leftservo, Math.round(90+ speed*25));
+    } else if (direction == 'counterclockwise') {
       rotateServo(rightservo, Math.round(90 - speed*35)); //slower?
       rotateServo(leftservo, Math.round(90 - speed*35)); //slower?
     };
@@ -656,8 +682,9 @@
       [' ', 'rotate %m.servos by %n degrees', 'changeServo', 'servo A', 20],
       [' ', 'move forward for %n seconds', 'moveForward', 5],
       [' ', 'move backward for %n seconds', 'moveBackward', 5],
+      [' ', 'turn %m.turning', 'easyturn', 'left'],
       [' ', 'set speed to %n%', 'setSpeed', 100],
-      [' ', 'turn %m.directions for %n seconds', 'turn', 'left', 5],
+      [' ', 'turn %m.directions for %n seconds', 'turn', 'clockwise', 5],
       ['-'],
       ['h', 'when %m.buttons is %m.btnStates', 'whenButton', 'button A', 'pressed'],
       ['b', '%m.buttons pressed?', 'isButtonPressed', 'button A'],
@@ -686,7 +713,8 @@
       leds: ['led A', 'led B', 'led C', 'led D'],
       outputs: ['on', 'off'],
       ops: ['>', '=', '<'],
-      directions: ['left', 'right'],
+      turning: ['left', 'right', 'around'],
+      directions: ['clockwise', 'counterclockwise'],
       servos: ['servo A', 'servo B', 'servo C', 'servo D'],
       colors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink', 'white']
     }};
