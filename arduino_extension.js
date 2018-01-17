@@ -460,9 +460,11 @@
       rotateServo(rightservo, Math.round(90 - speed*35)); //slower?
       rotateServo(leftservo, Math.round(90 - speed*35)); //slower?
     };
-    sleep(time*1000);
-    rotateServo(rightservo, 90);
-    rotateServo(leftservo, 85);
+    setTimeout(function(){
+      rotateServo(rightservo, 90);
+      rotateServo(leftservo, 85);
+    }, time*1000);
+
   };
 
   ext.setSpeed = function(percent) {
