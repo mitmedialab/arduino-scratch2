@@ -345,25 +345,24 @@
     }
     pinMode(pin, SERVO);
     var msg = new Uint8Array([
-        ANALOG_MESSAGE | (pin & 0x0F),
+        LED_MESSAGE | (pin & 0x0F),
         deg & 0x7F,
         deg >> 0x07]);
     device.send(msg.buffer);
   }
 
-  function changeLedStripColor(num) {
+  /*function changeLedStripColor(num) {
     var msg = new Uint8Array([
       LED_MESSAGE | (6),
       num,
       0
     ]);
-
-        /*new Uint8Array([
+        new Uint8Array([
         LED_MESSAGE | (6 & 0x0F),
         num & 0x7F,
-        num >> 7]);*/
+        num >> 7]);
     device.send(msg.buffer);
-}
+}*/
 
   ext.whenConnected = function() {
     if (notifyConnection) return true;
@@ -508,7 +507,8 @@
     hw.val = val;
   };
 
-  ext.setColor = function(color) {
+  ext.setColor = function(newcolor) {
+    color = newcolor
     changeLedStripColor(colorMap[color]);
     /*var redon = analogRead(redpin);
     var blueon = analogRead(bluepin);
@@ -523,23 +523,8 @@
   ext.setLEDstrip = function(val) {
     if (val == 'on') {
       changeLedStripColor(colorMap[color]);
-      /*pinMode(redpin, OUTPUT);
-      pinMode(bluepin, OUTPUT);
-      pinMode(greenpin, OUTPUT);
-      analogWrite(redpin, 255);
-      analogWrite(bluepin, 255);
-      analogWrite(greenpin, 255);
-      analogWrite(redpin, redval);
-      analogWrite(bluepin, blueval);
-      analogWrite(greenpin, greenval);*/
     } else if (val == 'off') {
       changeLedStripColor(8);
-      /*pinMode(redpin, OUTPUT);
-      pinMode(bluepin, OUTPUT);
-      pinMode(greenpin, OUTPUT);
-      analogWrite(redpin, 0);
-      analogWrite(bluepin, 0);
-      analogWrite(greenpin, 0);*/
     }
   };
 
@@ -717,7 +702,7 @@
       turning: ['left', 'right', 'around'],
       directions: ['clockwise', 'counterclockwise'],
       servos: ['servo A', 'servo B', 'servo C', 'servo D'],
-      colors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink', 'white']
+      colors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'white']
     }};
 
   var descriptor = {
