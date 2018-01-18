@@ -354,7 +354,8 @@
   function changeLedStripColor(num) {
     var msg = new Uint8Array([
       LED_MESSAGE | 6,
-      num
+      num & 0x7F,
+      num >> 7
     ]);
 
         /*new Uint8Array([
