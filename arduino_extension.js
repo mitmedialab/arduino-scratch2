@@ -81,13 +81,14 @@
   var pingCount = 0;
   var pinger = null;
 
-  var leftservo = 11,
-    rightservo = 10,
-    colorpin = 6,
-    color = 'white';
+  var leftservo = 5,
+    rightservo = 6,
+    redpin = 9,
+    greenpin = 10,
+    bluepin = 11;
 
-  var colorMap = {'white':1, 'red':2, 'orange':3, 'yellow':4, 'green':5, 'blue':6, 'purple':7};
-
+  var color = 'white'
+  var colorMap = {'white':[255,255,255], 'red':[255,0,0], 'orange':[250,40,0], 'yellow':[255,255,0], 'green':[0,255,0], 'blue':[0,0,255], 'purple':[80,0,80], 'pink':[255,0,100]};
 
   var hwList = new HWList();
 
@@ -345,24 +346,11 @@
     }
     pinMode(pin, SERVO);
     var msg = new Uint8Array([
-        LED_MESSAGE | (pin & 0x0F),
+        ANALOG_MESSAGE | (pin & 0x0F),
         deg & 0x7F,
         deg >> 0x07]);
     device.send(msg.buffer);
   }
-
-  /*function changeLedStripColor(num) {
-    var msg = new Uint8Array([
-      LED_MESSAGE | (6),
-      num,
-      0
-    ]);
-        new Uint8Array([
-        LED_MESSAGE | (6 & 0x0F),
-        num & 0x7F,
-        num >> 7]);
-    device.send(msg.buffer);
-}*/
 
   ext.whenConnected = function() {
     if (notifyConnection) return true;
@@ -508,23 +496,28 @@
   };
 
   ext.setColor = function(newcolor) {
-    color = newcolor
-    changeLedStripColor(colorMap[color]);
-    /*var redon = analogRead(redpin);
-    var blueon = analogRead(bluepin);
+    color = newcolor;
+    var rgb = colorMap[color];
+    var redon = analogRead(redpin);
     var greenon = analogRead(greenpin);
+    var blueon = analogRead(bluepin);
     if (redon != 0 || blueon != 0 || greenon != 0) {
-      analogWrite(redpin, redval);
-      analogWrite(bluepin, blueval);
-      analogWrite(greenpin, greenval);
-    }*/
+      analogWrite(redpin, rgb[0]);
+      analogWrite(greenpin, rgb[1]);
+      analogWrite(bluepin, rgb[2]);
+    }
   };
 
   ext.setLEDstrip = function(val) {
     if (val == 'on') {
-      changeLedStripColor(colorMap[color]);
+      var rgb = colorMap[color];
+      analogWrite(redpin, rgb[0]);
+      analogWrite(greenpin, rgb[1]);
+      analogWrite(bluepin, rgb[2]);
     } else if (val == 'off') {
-      changeLedStripColor(8);
+      analogWrite(redpin, 0);
+      analogWrite(greenpin, 0);
+      analogWrite(bluepin, 0);
     }
   };
 
@@ -702,7 +695,7 @@
       turning: ['left', 'right', 'around'],
       directions: ['clockwise', 'counterclockwise'],
       servos: ['servo A', 'servo B', 'servo C', 'servo D'],
-      colors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'white']
+      colors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'white', 'pink']
     }};
 
   var descriptor = {
