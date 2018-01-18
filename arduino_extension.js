@@ -351,20 +351,16 @@
     device.send(msg.buffer);
   }
 
-  function sleep(milliseconds) {
-    var start = new Date().getTime();
-    for (var i = 0; i < 1e7; i++) {
-      if ((new Date().getTime() - start) > milliseconds){
-        break;
-      }
-    }
-  }
-
   function changeLedStripColor(num) {
     var msg = new Uint8Array([
+      LED_MESSAGE | 6,
+      num
+    ]);
+
+        /*new Uint8Array([
         LED_MESSAGE | (6 & 0x0F),
         num & 0x7F,
-        num >> 7]);
+        num >> 7]);*/
     device.send(msg.buffer);
 }
 
@@ -512,9 +508,6 @@
   };
 
   ext.setColor = function(color) {
-    /*redval = colorMap[color][0];
-    greenval = colorMap[color][1];
-    blueval = colorMap[color][2];*/
     changeLedStripColor(colorMap[color]);
     /*var redon = analogRead(redpin);
     var blueon = analogRead(bluepin);
