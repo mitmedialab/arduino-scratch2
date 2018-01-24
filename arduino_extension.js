@@ -87,7 +87,7 @@
     greenpin = 10,
     bluepin = 11;
 
-  var color = 'white'
+  var rgb = [255, 255, 255];
   var colorMap = {'white':[255,255,255], 'red':[255,0,0], 'orange':[250,40,0], 'yellow':[255,255,0], 'green':[0,255,0], 'blue':[0,0,255], 'purple':[80,0,80], 'pink':[255,0,100]};
 
   var hwList = new HWList();
@@ -488,6 +488,21 @@
   speed = percent/100
   };
 
+  ext.isCarMoving = function(state) {
+    if (analogRead(leftservo) != 85 || analogRead(rightservo) != 90) {
+      if (state == 'moving')
+        return true;
+      else
+        return false;
+    }
+    else {
+      if (state == 'moving')
+        return false;
+      else
+        return true;
+    }
+  };
+
   ext.setLED = function(led, val) {
     var hw = hwList.search(led);
     if (!hw) return;
@@ -497,7 +512,10 @@
 
   ext.setColor = function(newcolor) {
     color = newcolor;
-    var rgb = colorMap[color];
+    if (color == 'random')
+      rgb = [Math.round(255*Math.random()), Math.round(255*Math.random()), Math.round(255*Math.random())];
+    else
+      rgb = colorMap[color];
     var redon = analogRead(redpin);
     var greenon = analogRead(greenpin);
     var blueon = analogRead(bluepin);
@@ -510,7 +528,6 @@
 
   ext.setLEDstrip = function(val) {
     if (val == 'on') {
-      var rgb = colorMap[color];
       analogWrite(redpin, rgb[0]);
       analogWrite(greenpin, rgb[1]);
       analogWrite(bluepin, rgb[2]);
@@ -540,6 +557,24 @@
     } else if (val == 'off') {
       digitalWrite(hw.pin, LOW);
       hw.val = 0;
+    }
+  };
+
+  ext.areLightsOn = function(state) {
+    var redon = analogRead(redpin);
+    var greenon = analogRead(greenpin);
+    var blueon = analogRead(bluepin);
+    if (redon != 0 || blueon != 0 || greenon != 0) {
+      if (state == 'on')
+        return true;
+      else
+        return false;
+    }
+    else {
+      if (state == 'on')
+        return false;
+      else
+        return true;
     }
   };
 
@@ -656,14 +691,16 @@
       [' ', 'change %m.leds brightness by %n%', 'changeLED', 'led A', 20],
       [' ', 'turn light strip %m.outputs', 'setLEDstrip', 'on'],
       [' ', 'set light color to %m.colors', 'setColor', 'white'],
+      ['b', 'lights %m.outputs ?', 'areLightsOn', 'on'],
       ['-'],
       [' ', 'rotate %m.servos to %n degrees', 'rotateServo', 'servo A', 180],
       [' ', 'rotate %m.servos by %n degrees', 'changeServo', 'servo A', 20],
       [' ', 'move forward for %n seconds', 'moveForward', 5],
       [' ', 'move backward for %n seconds', 'moveBackward', 5],
       [' ', 'turn %m.turning', 'easyturn', 'left'],
-      [' ', 'set speed to %n%', 'setSpeed', 100],
+      [' ', 'set speed to %n', 'setSpeed', 100],
       [' ', 'turn %m.directions for %n seconds', 'turn', 'clockwise', 5],
+      ['b', 'car %m.carStates ?', 'isCarMoving', 'moving'],
       ['-'],
       ['h', 'when %m.buttons is %m.btnStates', 'whenButton', 'button A', 'pressed'],
       ['b', '%m.buttons pressed?', 'isButtonPressed', 'button A'],
@@ -687,6 +724,7 @@
     en: {
       buttons: ['button A', 'button B', 'button C', 'button D'],
       btnStates: ['pressed', 'released'],
+      carStates: ['moving', 'stopped'],
       hwIn: ['rotation knob', 'light sensor', 'temperature sensor'],
       hwOut: ['led A', 'led B', 'led C', 'led D', 'button A', 'button B', 'button C', 'button D', 'servo A', 'servo B', 'servo C', 'servo D'],
       leds: ['led A', 'led B', 'led C', 'led D'],
@@ -695,7 +733,7 @@
       turning: ['left', 'right', 'around'],
       directions: ['clockwise', 'counterclockwise'],
       servos: ['servo A', 'servo B', 'servo C', 'servo D'],
-      colors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'white', 'pink']
+      colors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'white', 'pink', 'random']
     }};
 
   var descriptor = {
