@@ -489,7 +489,7 @@
   };
 
   ext.isCarMoving = function(state) {
-    if (analogRead(leftservo) != 85 || analogRead(rightservo) != 90) {
+    if (analogRead(leftservo) < 80 || analogRead(leftservo) > 90 || analogRead(rightservo) > 95 || analogRead(rightservo) < 85) {
       if (state == 'moving')
         return true;
       else
@@ -568,7 +568,7 @@
     var redon = analogRead(redpin);
     var greenon = analogRead(greenpin);
     var blueon = analogRead(bluepin);
-    if (redon != 0 || blueon != 0 || greenon != 0) {
+    if (redon != 255 || blueon != 255 || greenon != 255) {
       if (state == 'on')
         return true;
       else
