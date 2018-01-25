@@ -503,6 +503,10 @@
     }
   };
 
+  analogWrite(redpin, 255);
+  analogWrite(greenpin, 255);
+  analogWrite(bluepin, 255);
+  
   ext.setLED = function(led, val) {
     var hw = hwList.search(led);
     if (!hw) return;
