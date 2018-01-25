@@ -538,7 +538,7 @@
       do {
         rgb = [Math.round(255*Math.random()), Math.round(255*Math.random()), Math.round(255*Math.random())];
       }
-      while (rgb[0] > 100 && rgb[1] > 100 && rgb[2] > 100)
+      while (rgb[0] > 90 && rgb[1] > 90 && rgb[2] > 90)
     } else {
       rgb = colorMap[color];
     }
