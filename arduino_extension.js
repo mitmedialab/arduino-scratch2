@@ -87,7 +87,10 @@
     greenpin = 10,
     bluepin = 11;
 
-  var rgb = [0, 0, 0];
+  var rval = 255,
+    gval = 255,
+    bval = 255;
+  // var rgb = [0, 0, 0];
   var colorMap = {'white':[0,0,0], 'red':[0,255,255], 'orange':[0,95,255], 'yellow':[15,70,255], 'green':[255,0,255], 'blue':[255,255,0], 'purple':[60,255,60], 'pink':[60,255,90]};
 
   var hwList = new HWList();
@@ -489,11 +492,11 @@
   };
 
   ext.carLeftRead = function() {
-    return analogRead(leftservo)
+    return analogRead(leftservo);
   };
 
   ext.carRightRead = function() {
-    return analogRead(rightservo)
+    return analogRead(rightservo);
   };
 
   ext.isCarMoving = function(state) {
@@ -524,21 +527,31 @@
       rgb = [Math.round(255*Math.random()), Math.round(255*Math.random()), Math.round(255*Math.random())];
     else
       rgb = colorMap[color];
-    var redon = analogRead(redpin);
-    var greenon = analogRead(greenpin);
-    var blueon = analogRead(bluepin);
-    if (redon < 150 || blueon < 150 || greenon < 150) {
-      analogWrite(redpin, rgb[0]);
-      analogWrite(greenpin, rgb[1]);
-      analogWrite(bluepin, rgb[2]);
+    if (rval != 255 || bval != 255 || gval != 255) {
+      rval = rgb[0];
+      gval = rgb[1];
+      bval = rgb[2];
+      analogWrite(redpin, rval);
+      analogWrite(greenpin, gval);
+      analogWrite(bluepin, bval);
+    }
+    else{
+      rval = rgb[0];
+      gval = rgb[1];
+      bval = rgb[2];
     }
   };
 
   ext.setLEDstrip = function(val) {
     if (val == 'on') {
-      analogWrite(redpin, rgb[0]);
-      analogWrite(greenpin, rgb[1]);
-      analogWrite(bluepin, rgb[2]);
+      if (rval == 255 && gval == 255 && bval == 255){
+        rval = 0;
+        gval = 0;
+        bval = 0;
+      };
+      analogWrite(redpin, rval);
+      analogWrite(greenpin, rgval);
+      analogWrite(bluepin, bval);
     } else if (val == 'off') {
       analogWrite(redpin, 255);
       analogWrite(greenpin, 255);
@@ -547,15 +560,15 @@
   };
 
   ext.RedRead = function() {
-    return digitalRead(redpin)
+    return rval;
   };
 
   ext.GreenRead = function() {
-    return digitalRead(greenpin)
+    return gval;
   };
 
   ext.BlueRead = function() {
-    return digitalRead(bluepin)
+    return bval;
   };
 
   ext.changeLED = function(led, val) {
@@ -581,10 +594,7 @@
   };
 
   ext.areLightsOn = function(state) {
-    var redon = analogRead(redpin);
-    var greenon = analogRead(greenpin);
-    var blueon = analogRead(bluepin);
-    if (redon != 255 || blueon != 255 || greenon != 255) {
+    if (rval != 255 || bval != 255 || gval != 255) {
       if (state == 'on')
         return true;
       else
