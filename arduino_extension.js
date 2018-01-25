@@ -519,7 +519,7 @@
     var redon = analogRead(redpin);
     var greenon = analogRead(greenpin);
     var blueon = analogRead(bluepin);
-    if (redon > 10 || blueon > 10 || greenon > 10) {
+    if (redon < 255 || blueon < 255 || greenon < 255) {
       analogWrite(redpin, rgb[0]);
       analogWrite(greenpin, rgb[1]);
       analogWrite(bluepin, rgb[2]);
