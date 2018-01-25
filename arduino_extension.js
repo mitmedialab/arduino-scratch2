@@ -87,8 +87,8 @@
     greenpin = 10,
     bluepin = 11;
 
-  var rgb = [255, 255, 255];
-  var colorMap = {'white':[255,255,255], 'red':[255,0,0], 'orange':[250,40,0], 'yellow':[255,255,0], 'green':[0,255,0], 'blue':[0,0,255], 'purple':[80,0,80], 'pink':[255,0,100]};
+  var rgb = [0, 0, 0];
+  var colorMap = {'white':[0,0,0], 'red':[0,255,255], 'orange':[5,215,255], 'yellow':[0,0,255], 'green':[255,0,255], 'blue':[255,255,0], 'purple':[175,255,175], 'pink':[0,255,155]};
 
   var hwList = new HWList();
 
@@ -532,9 +532,9 @@
       analogWrite(greenpin, rgb[1]);
       analogWrite(bluepin, rgb[2]);
     } else if (val == 'off') {
-      analogWrite(redpin, 0);
-      analogWrite(greenpin, 0);
-      analogWrite(bluepin, 0);
+      analogWrite(redpin, 255);
+      analogWrite(greenpin, 255);
+      analogWrite(bluepin, 255);
     }
   };
 
