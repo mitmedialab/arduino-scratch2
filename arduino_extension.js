@@ -87,10 +87,8 @@
     greenpin = 10,
     bluepin = 11;
 
-  var rval = 255,
-    gval = 255,
-    bval = 255;
-  // var rgb = [0, 0, 0];
+  var lightson = false;
+  var rgb = [0, 0, 0];
   var colorMap = {'white':[0,0,0], 'red':[0,255,255], 'orange':[0,95,255], 'yellow':[15,70,255], 'green':[255,0,255], 'blue':[255,255,0], 'purple':[60,255,60], 'pink':[60,255,90]};
 
   var hwList = new HWList();
@@ -527,48 +525,37 @@
       rgb = [Math.round(255*Math.random()), Math.round(255*Math.random()), Math.round(255*Math.random())];
     else
       rgb = colorMap[color];
-    if (rval != 255 || bval != 255 || gval != 255) {
-      rval = rgb[0];
-      gval = rgb[1];
-      bval = rgb[2];
-      analogWrite(redpin, rval);
-      analogWrite(greenpin, gval);
-      analogWrite(bluepin, bval);
-    }
-    else{
-      rval = rgb[0];
-      gval = rgb[1];
-      bval = rgb[2];
+    if (lightson) {
+      analogWrite(redpin, rgb[0]);
+      analogWrite(greenpin, rgb[1]);
+      analogWrite(bluepin, rgb[2]);
     }
   };
 
   ext.setLEDstrip = function(val) {
     if (val == 'on') {
-      if (rval == 255 && gval == 255 && bval == 255){
-        rval = 0;
-        gval = 0;
-        bval = 0;
-      };
-      analogWrite(redpin, rval);
-      analogWrite(greenpin, rgval);
-      analogWrite(bluepin, bval);
+      analogWrite(redpin, rgb[0]);
+      analogWrite(greenpin, rgb[1]);
+      analogWrite(bluepin, rgb[2]);
+      lightson = true;
     } else if (val == 'off') {
       analogWrite(redpin, 255);
       analogWrite(greenpin, 255);
       analogWrite(bluepin, 255);
+      lightson = false;
     }
   };
 
   ext.RedRead = function() {
-    return rval;
+    return rgb[0];
   };
 
   ext.GreenRead = function() {
-    return gval;
+    return rgb[1];
   };
 
   ext.BlueRead = function() {
-    return bval;
+    return rgb[2];
   };
 
   ext.changeLED = function(led, val) {
@@ -594,7 +581,7 @@
   };
 
   ext.areLightsOn = function(state) {
-    if (rval != 255 || bval != 255 || gval != 255) {
+    if (lightson) {
       if (state == 'on')
         return true;
       else
