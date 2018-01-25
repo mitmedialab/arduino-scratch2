@@ -88,7 +88,7 @@
     bluepin = 11;
 
   var rgb = [0, 0, 0];
-  var colorMap = {'white':[0,0,0], 'red':[0,255,255], 'orange':[90,150,255], 'yellow':[0,80,255], 'green':[255,0,255], 'blue':[255,255,0], 'purple':[60,255,60], 'pink':[90,255,140]};
+  var colorMap = {'white':[0,0,0], 'red':[0,255,255], 'orange':[90,100,255], 'yellow':[10,80,255], 'green':[255,0,255], 'blue':[255,255,0], 'purple':[60,255,60], 'pink':[40,255,60]};
 
   var hwList = new HWList();
 
