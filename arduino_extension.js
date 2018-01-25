@@ -506,7 +506,7 @@
   analogWrite(redpin, 255);
   analogWrite(greenpin, 255);
   analogWrite(bluepin, 255);
-  
+
   ext.setLED = function(led, val) {
     var hw = hwList.search(led);
     if (!hw) return;
@@ -523,7 +523,7 @@
     var redon = analogRead(redpin);
     var greenon = analogRead(greenpin);
     var blueon = analogRead(bluepin);
-    if (redon != 255 || blueon != 255 || greenon != 255) {
+    if (redon < 150 || blueon < 150 || greenon < 150) {
       analogWrite(redpin, rgb[0]);
       analogWrite(greenpin, rgb[1]);
       analogWrite(bluepin, rgb[2]);
