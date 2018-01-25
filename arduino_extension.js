@@ -87,7 +87,9 @@
     greenpin = 10,
     bluepin = 11;
 
-  var lightson = false;
+  var lightson = false,
+    carmoving = false;
+
   var rgb = [0, 0, 0];
   var colorMap = {'white':[0,0,0], 'red':[0,255,255], 'orange':[0,95,255], 'yellow':[15,70,255], 'green':[255,0,255], 'blue':[255,255,0], 'purple':[60,255,60], 'pink':[60,255,90]};
 
@@ -425,30 +427,36 @@
   var speed = 1;
 
   ext.moveForward = function(time) {
+    carmoving = true;
     rotateServo(rightservo, Math.round(90 - speed*35));
     rotateServo(leftservo, Math.round(90+ speed*25));
     setTimeout(function(){
       rotateServo(rightservo, 90);
       rotateServo(leftservo, 85);
+      carmoving = false;
     }, time*1000);
   };
 
   ext.moveBackward = function(time) {
+    carmoving = true;
     rotateServo(rightservo, Math.round(90+ speed*25));
     rotateServo(leftservo, Math.round(90 - speed*35));
     setTimeout(function(){
       rotateServo(rightservo, 90);
       rotateServo(leftservo, 85);
+      carmoving = false;
     }, time*1000);
   };
 
   ext.easyturn = function(direction) {
+    carmoving = true;
     if (direction == 'right'){
       rotateServo(rightservo, Math.round(90+ speed*25));
       rotateServo(leftservo, Math.round(90+ speed*25));
       setTimeout(function(){
         rotateServo(rightservo, 90);
         rotateServo(leftservo, 85);
+        carmoving = false;
       }, 3500);
     } else if (direction == 'left') {
       rotateServo(rightservo, Math.round(90 - speed*35)); //slower?
@@ -456,6 +464,7 @@
       setTimeout(function(){
         rotateServo(rightservo, 90);
         rotateServo(leftservo, 85);
+        carmoving = false;
       }, 3500);
     }
     else if (direction == 'around') {
@@ -464,11 +473,13 @@
       setTimeout(function(){
         rotateServo(rightservo, 90);
         rotateServo(leftservo, 85);
+        carmoving = false;
       }, 9000);
     };
   };
 
   ext.turn = function(direction, time) {
+    carmoving = true;
     if (direction == 'clockwise'){
       rotateServo(rightservo, Math.round(90+ speed*25));
       rotateServo(leftservo, Math.round(90+ speed*25));
@@ -479,6 +490,7 @@
     setTimeout(function(){
       rotateServo(rightservo, 90);
       rotateServo(leftservo, 85);
+      carmoving = false;
     }, time*1000);
 
   };
@@ -489,16 +501,16 @@
   speed = percent/100
   };
 
-  ext.carLeftRead = function() {
-    return analogRead(leftservo);
-  };
-
-  ext.carRightRead = function() {
-    return analogRead(rightservo);
-  };
+  // ext.carLeftRead = function() {
+  //   return analogRead(leftservo);
+  // };
+  //
+  // ext.carRightRead = function() {
+  //   return analogRead(rightservo);
+  // };
 
   ext.isCarMoving = function(state) {
-    if (analogRead(leftservo) < 80 || analogRead(leftservo) > 90 || analogRead(rightservo) > 95 || analogRead(rightservo) < 85) {
+    if (carmoving) {
       if (state == 'moving')
         return true;
       else
@@ -521,10 +533,15 @@
 
   ext.setColor = function(newcolor) {
     color = newcolor;
-    if (color == 'random')
+    if (color == 'random'){
       rgb = [Math.round(255*Math.random()), Math.round(255*Math.random()), Math.round(255*Math.random())];
-    else
+      do {
+        rgb = [Math.round(255*Math.random()), Math.round(255*Math.random()), Math.round(255*Math.random())];
+      }
+      while (rgb[0] < 100 && rgb[1] < 100 && rgb[2] < 100)
+    } else {
       rgb = colorMap[color];
+    }
     if (lightson) {
       analogWrite(redpin, rgb[0]);
       analogWrite(greenpin, rgb[1]);
