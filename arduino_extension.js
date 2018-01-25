@@ -488,6 +488,10 @@
   speed = percent/100
   };
 
+  ext.carRead = function() {
+    return [analogRead(leftservo), analogRead(rightservo)]
+  };
+
   ext.isCarMoving = function(state) {
     if (analogRead(leftservo) < 80 || analogRead(leftservo) > 90 || analogRead(rightservo) > 95 || analogRead(rightservo) < 85) {
       if (state == 'moving')
@@ -705,6 +709,7 @@
       [' ', 'set speed to %n', 'setSpeed', 100],
       [' ', 'turn %m.directions for %n seconds', 'turn', 'clockwise', 5],
       ['b', 'car %m.carStates ?', 'isCarMoving', 'moving'],
+      ['r', 'car values', 'carRead'],
       ['-'],
       ['h', 'when %m.buttons is %m.btnStates', 'whenButton', 'button A', 'pressed'],
       ['b', '%m.buttons pressed?', 'isButtonPressed', 'button A'],
