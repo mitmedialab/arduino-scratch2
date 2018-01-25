@@ -547,15 +547,15 @@
   };
 
   ext.RedRead = function() {
-    return analogRead(redpin)
+    return digitalRead(redpin)
   };
 
   ext.GreenRead = function() {
-    return analogRead(greenpin)
+    return digitalRead(greenpin)
   };
 
   ext.BlueRead = function() {
-    return analogRead(bluepin)
+    return digitalRead(bluepin)
   };
 
   ext.changeLED = function(led, val) {
