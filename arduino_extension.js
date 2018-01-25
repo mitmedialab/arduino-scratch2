@@ -88,7 +88,7 @@
     bluepin = 11;
 
   var rgb = [0, 0, 0];
-  var colorMap = {'white':[0,0,0], 'red':[0,255,255], 'orange':[5,215,255], 'yellow':[0,0,255], 'green':[255,0,255], 'blue':[255,255,0], 'purple':[175,255,175], 'pink':[0,255,155]};
+  var colorMap = {'white':[0,0,0], 'red':[0,255,255], 'orange':[20,200,255], 'yellow':[0,20,255], 'green':[255,0,255], 'blue':[255,255,0], 'purple':[100,255,100], 'pink':[30,255,140]};
 
   var hwList = new HWList();
 
@@ -519,7 +519,7 @@
     var redon = analogRead(redpin);
     var greenon = analogRead(greenpin);
     var blueon = analogRead(bluepin);
-    if (redon != 0 || blueon != 0 || greenon != 0) {
+    if (redon > 10 || blueon > 10 || greenon > 10) {
       analogWrite(redpin, rgb[0]);
       analogWrite(greenpin, rgb[1]);
       analogWrite(bluepin, rgb[2]);
