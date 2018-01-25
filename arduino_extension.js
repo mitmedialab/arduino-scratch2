@@ -546,6 +546,18 @@
     }
   };
 
+  ext.RedRead = function() {
+    return analogRead(redpin)
+  };
+
+  ext.GreenRead = function() {
+    return analogRead(greenpin)
+  };
+
+  ext.BlueRead = function() {
+    return analogRead(bluepin)
+  };
+
   ext.changeLED = function(led, val) {
     var hw = hwList.search(led);
     if (!hw) return;
