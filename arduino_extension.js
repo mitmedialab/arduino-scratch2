@@ -488,8 +488,12 @@
   speed = percent/100
   };
 
-  ext.carRead = function() {
-    return [analogRead(leftservo), analogRead(rightservo)]
+  ext.carLeftRead = function() {
+    return analogRead(leftservo)
+  };
+
+  ext.carRightRead = function() {
+    return analogRead(rightservo)
   };
 
   ext.isCarMoving = function(state) {
@@ -506,10 +510,6 @@
         return true;
     }
   };
-
-  analogWrite(redpin, 255);
-  analogWrite(greenpin, 255);
-  analogWrite(bluepin, 255);
 
   ext.setLED = function(led, val) {
     var hw = hwList.search(led);
@@ -709,7 +709,8 @@
       [' ', 'set speed to %n', 'setSpeed', 100],
       [' ', 'turn %m.directions for %n seconds', 'turn', 'clockwise', 5],
       ['b', 'car %m.carStates ?', 'isCarMoving', 'moving'],
-      ['r', 'car values', 'carRead'],
+      ['r', 'car left value', 'carLeftRead'],
+      ['r', 'car right value', 'carRightRead'],
       ['-'],
       ['h', 'when %m.buttons is %m.btnStates', 'whenButton', 'button A', 'pressed'],
       ['b', '%m.buttons pressed?', 'isButtonPressed', 'button A'],
