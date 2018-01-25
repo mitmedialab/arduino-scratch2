@@ -87,7 +87,7 @@
     greenpin = 10,
     bluepin = 11;
 
-  var lightson = false,
+  var lightson = true,
     carmoving = false;
 
   var rgb = [0, 0, 0];
