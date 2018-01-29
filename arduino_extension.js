@@ -91,7 +91,7 @@
     carmoving = false;
 
   var rgb = [0, 0, 0];
-  var colorMap = {'white':[0,0,0], 'red':[0,255,255], 'orange':[0,95,255], 'yellow':[15,70,255], 'green':[255,0,255], 'blue':[255,255,0], 'purple':[60,255,60], 'pink':[60,255,90]};
+  var colorMap = {'white':[0,0,0], 'red':[0,255,255], 'orange':[0,100,255], 'yellow':[15,70,255], 'green':[255,0,255], 'blue':[255,255,0], 'purple':[60,255,60], 'pink':[60,255,90]};
 
   var hwList = new HWList();
 
@@ -500,14 +500,6 @@
   if (percent < 0) percent = 0;
   speed = percent/100
   };
-
-  // ext.carLeftRead = function() {
-  //   return analogRead(leftservo);
-  // };
-  //
-  // ext.carRightRead = function() {
-  //   return analogRead(rightservo);
-  // };
 
   ext.isCarMoving = function(state) {
     if (carmoving) {
