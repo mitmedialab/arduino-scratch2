@@ -457,11 +457,13 @@
     //   carmoving = false;
     //   console.log(carmoving);
     // }, time*1000);
-    wait(time);
-    console.log(carmoving);
-    rotateServo(rightservo, 90);
-    rotateServo(leftservo, 85);
-    carmoving = false;
+    var doIt = wait(time);
+    doIt.then(response => {
+      console.log(carmoving);
+      rotateServo(rightservo, 90);
+      rotateServo(leftservo, 85);
+      carmoving = false;
+    })
   };
 
   ext.moveBackward = function(time) {
