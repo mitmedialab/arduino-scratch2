@@ -27,8 +27,7 @@
         ANALOG_MAPPING_QUERY = 0x69,
         ANALOG_MAPPING_RESPONSE = 0x6A,
         CAPABILITY_QUERY = 0x6B,
-        CAPABILITY_RESPONSE = 0x6C,
-        LED_MESSAGE = 0x6D;
+        CAPABILITY_RESPONSE = 0x6C;
 
   var INPUT = 0x00,
         OUTPUT = 0x01,
@@ -356,7 +355,7 @@
   }
 
   function wait(args) {
-    const duration = Math.max(0, 1000 * args));
+    const duration = Math.max(0, 1000 * args);
     return new Promise(resolve => {
     setTimeout(() => {
     resolve();
