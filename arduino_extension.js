@@ -482,7 +482,6 @@
   };
 
   ext.moveBackward = function(time) {
-    carmoving = true;
     var doIt = freeMotor();
     doIt.then(response => {
       carmoving = true;
