@@ -427,6 +427,11 @@
   var speed = 1;
 
   ext.moveForward = function(time) {
+    while (carmoving == true) {
+      setTimeout(function(){
+        var wait = 1;
+      }, 1000);
+    }
     carmoving = true;
     rotateServo(rightservo, Math.round(90 - speed*35));
     rotateServo(leftservo, Math.round(90+ speed*25));
