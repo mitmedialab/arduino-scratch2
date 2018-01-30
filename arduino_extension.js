@@ -449,9 +449,9 @@
       rotateServo(leftservo, 85);
       carmoving = false;
     }, time*1000);
-    rotateServo(rightservo, 90);
-    rotateServo(leftservo, 85);
-    carmoving = false;
+    // rotateServo(rightservo, 90);
+    // rotateServo(leftservo, 85);
+    // carmoving = false;
     console.log(carmoving);
   };
 
@@ -466,9 +466,9 @@
       rotateServo(leftservo, 85);
       carmoving = false;
     }, time*1000);
-    rotateServo(rightservo, 90);
-    rotateServo(leftservo, 85);
-    carmoving = false;
+    // rotateServo(rightservo, 90);
+    // rotateServo(leftservo, 85);
+    // carmoving = false;
     console.log(carmoving);
   };
 
