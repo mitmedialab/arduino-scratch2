@@ -90,7 +90,7 @@
     carmoving = false;
 
   var rgb = [0, 0, 0];
-  var colorMap = {'white':[0,0,0], 'red':[0,255,255], 'orange':[0,100,255], 'yellow':[15,70,255], 'green':[255,0,255], 'blue':[255,255,0], 'purple':[60,255,60], 'pink':[60,255,90]};
+  var colorMap = {'white':[0,0,0], 'red':[0,255,255], 'orange':[0,90,255], 'yellow':[15,70,255], 'green':[255,0,255], 'blue':[255,255,0], 'purple':[60,255,60], 'pink':[60,255,90]};
 
   var hwList = new HWList();
 
