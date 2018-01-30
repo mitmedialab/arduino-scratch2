@@ -440,32 +440,36 @@
     //   }, 1000);
     // }
     carmoving = true;
+    console.log(carmoving);
     rotateServo(rightservo, Math.round(90 - speed*35));
     rotateServo(leftservo, Math.round(90+ speed*25));
-    await; sleep(time*1000);
-    // setTimeout(function(){
-    //   rotateServo(rightservo, 90);
-    //   rotateServo(leftservo, 85);
-    //   carmoving = false;
-    // }, time*1000);
+    // await; sleep(time*1000);
+    setTimeout(function(){
+      rotateServo(rightservo, 90);
+      rotateServo(leftservo, 85);
+      carmoving = false;
+    }, time*1000);
     rotateServo(rightservo, 90);
     rotateServo(leftservo, 85);
     carmoving = false;
+    console.log(carmoving);
   };
 
   ext.moveBackward = function(time) {
     carmoving = true;
+    console.log(carmoving);
     rotateServo(rightservo, Math.round(90+ speed*25));
     rotateServo(leftservo, Math.round(90 - speed*35));
-    await; sleep(time*1000);
-    // setTimeout(function(){
-    //   rotateServo(rightservo, 90);
-    //   rotateServo(leftservo, 85);
-    //   carmoving = false;
-    // }, time*1000);
+    // await; sleep(time*1000);
+    setTimeout(function(){
+      rotateServo(rightservo, 90);
+      rotateServo(leftservo, 85);
+      carmoving = false;
+    }, time*1000);
     rotateServo(rightservo, 90);
     rotateServo(leftservo, 85);
     carmoving = false;
+    console.log(carmoving);
   };
 
   ext.easyturn = function(direction) {
