@@ -355,8 +355,13 @@
     device.send(msg.buffer);
   }
 
-  function sleep(ms){
-    return new Promise(resolve => setTimeout(resolve, ms));
+  function wait (args) {
+  const duration = Math.max(0, 1000 * args));
+  return new Promise(resolve => {
+  setTimeout(() => {
+  resolve();
+  }, duration);
+  });
   }
 
   ext.whenConnected = function() {
@@ -443,9 +448,9 @@
     console.log(carmoving);
     rotateServo(rightservo, Math.round(90 - speed*35));
     rotateServo(leftservo, Math.round(90 + speed*25));
-    var currentTime = Date.now();
-    while (Date.now() - currentTime < time*1000) {
-    }
+    // var currentTime = Date.now();
+    // while (Date.now() - currentTime < time*1000) {
+    // }
     // await; sleep(time*1000);
     // setTimeout(function(){
     //   rotateServo(rightservo, 90);
@@ -453,6 +458,7 @@
     //   carmoving = false;
     //   console.log(carmoving);
     // }, time*1000);
+    wait(time);
     rotateServo(rightservo, 90);
     rotateServo(leftservo, 85);
     carmoving = false;
@@ -463,9 +469,9 @@
     console.log(carmoving);
     rotateServo(rightservo, Math.round(90+ speed*25));
     rotateServo(leftservo, Math.round(90 - speed*35));
-    var currentTime = Date.now();
-    while (Date.now() - currentTime < time*1000) {
-    }
+    // var currentTime = Date.now();
+    // while (Date.now() - currentTime < time*1000) {
+    // }
     // await; sleep(time*1000);
     // setTimeout(function(){
     //   rotateServo(rightservo, 90);
@@ -473,6 +479,7 @@
     //   carmoving = false;
     //   console.log(carmoving);
     // }, time*1000);
+    wait(time);
     rotateServo(rightservo, 90);
     rotateServo(leftservo, 85);
     carmoving = false;
