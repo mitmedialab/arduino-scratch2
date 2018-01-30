@@ -356,7 +356,7 @@
   }
 
   function sleep(ms){
-    return new Promise(resolve => settimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
     }
 
   ext.whenConnected = function() {
@@ -442,7 +442,7 @@
     carmoving = true;
     rotateServo(rightservo, Math.round(90 - speed*35));
     rotateServo(leftservo, Math.round(90+ speed*25));
-    await sleep(time*1000);
+    await; sleep(time*1000);
     // setTimeout(function(){
     //   rotateServo(rightservo, 90);
     //   rotateServo(leftservo, 85);
