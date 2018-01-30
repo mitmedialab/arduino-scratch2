@@ -13,40 +13,40 @@
  *along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function(ext) {
+(function (ext) {
 
   var PIN_MODE = 0xF4,
-    REPORT_DIGITAL = 0xD0,
-    REPORT_ANALOG = 0xC0,
-    DIGITAL_MESSAGE = 0x90,
-    START_SYSEX = 0xF0,
-    END_SYSEX = 0xF7,
-    QUERY_FIRMWARE = 0x79,
-    REPORT_VERSION = 0xF9,
-    ANALOG_MESSAGE = 0xE0,
-    ANALOG_MAPPING_QUERY = 0x69,
-    ANALOG_MAPPING_RESPONSE = 0x6A,
-    CAPABILITY_QUERY = 0x6B,
-    CAPABILITY_RESPONSE = 0x6C,
-    LED_MESSAGE = 0x6D;
+        REPORT_DIGITAL = 0xD0,
+        REPORT_ANALOG = 0xC0,
+        DIGITAL_MESSAGE = 0x90,
+        START_SYSEX = 0xF0,
+        END_SYSEX = 0xF7,
+        QUERY_FIRMWARE = 0x79,
+        REPORT_VERSION = 0xF9,
+        ANALOG_MESSAGE = 0xE0,
+        ANALOG_MAPPING_QUERY = 0x69,
+        ANALOG_MAPPING_RESPONSE = 0x6A,
+        CAPABILITY_QUERY = 0x6B,
+        CAPABILITY_RESPONSE = 0x6C,
+        LED_MESSAGE = 0x6D;
 
   var INPUT = 0x00,
-    OUTPUT = 0x01,
-    ANALOG = 0x02,
-    PWM = 0x03,
-    SERVO = 0x04,
-    SHIFT = 0x05,
-    I2C = 0x06,
-    ONEWIRE = 0x07,
-    STEPPER = 0x08,
-    ENCODER = 0x09,
-    SERIAL = 0x0A,
-    PULLUP = 0x0B,
-    IGNORE = 0x7F,
-    TOTAL_PIN_MODES = 13;
+        OUTPUT = 0x01,
+        ANALOG = 0x02,
+        PWM = 0x03,
+        SERVO = 0x04,
+        SHIFT = 0x05,
+        I2C = 0x06,
+        ONEWIRE = 0x07,
+        STEPPER = 0x08,
+        ENCODER = 0x09,
+        SERIAL = 0x0A,
+        PULLUP = 0x0B,
+        IGNORE = 0x7F,
+        TOTAL_PIN_MODES = 13;
 
   var LOW = 0,
-    HIGH = 1;
+        HIGH = 1;
 
   var MAX_DATA_BYTES = 4096;
   var MAX_PINS = 128;
@@ -355,13 +355,13 @@
     device.send(msg.buffer);
   }
 
-  function wait (args) {
-  const duration = Math.max(0, 1000 * args));
-  return new Promise(resolve => {
-  setTimeout(() => {
-  resolve();
-  }, duration);
-  });
+  function wait(args) {
+    const duration = Math.max(0, 1000 * args));
+    return new Promise(resolve => {
+    setTimeout(() => {
+    resolve();
+    }, duration);
+    });
   }
 
   ext.whenConnected = function() {
