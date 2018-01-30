@@ -442,7 +442,7 @@
     carmoving = true;
     rotateServo(rightservo, Math.round(90 - speed*35));
     rotateServo(leftservo, Math.round(90+ speed*25));
-    // await; sleep(time*1000);
+    await 20;
     // setTimeout(function(){
     //   rotateServo(rightservo, 90);
     //   rotateServo(leftservo, 85);
@@ -457,7 +457,7 @@
     carmoving = true;
     rotateServo(rightservo, Math.round(90+ speed*25));
     rotateServo(leftservo, Math.round(90 - speed*35));
-    // await sleep(time*1000);
+    await 20;
     // setTimeout(function(){
     //   rotateServo(rightservo, 90);
     //   rotateServo(leftservo, 85);
