@@ -364,7 +364,7 @@
   // }
 
   function freeMotor() {
-    return new Promise(resolve => {setInterval(function() {
+    return new Promise(resolve => {var interval = setInterval(function() {
       if (carmoving == false){
         clearInterval(interval);
       }
