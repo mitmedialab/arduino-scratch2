@@ -458,6 +458,7 @@
     //   console.log(carmoving);
     // }, time*1000);
     wait(time);
+    console.log(carmoving);
     rotateServo(rightservo, 90);
     rotateServo(leftservo, 85);
     carmoving = false;
@@ -479,6 +480,7 @@
     //   console.log(carmoving);
     // }, time*1000);
     wait(time);
+    console.log(carmoving);
     rotateServo(rightservo, 90);
     rotateServo(leftservo, 85);
     carmoving = false;
