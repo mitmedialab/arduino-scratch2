@@ -428,8 +428,11 @@
 
   ext.moveForward = function(time) {
     while (carmoving == true) {
-      setTimeout(function(){
-        var wait = 1;
+      timer = setInterval(function(){
+        var status = carmoving;
+        if (status == false) {
+          clearInterval(timer);
+        }
       }, 1000);
     }
     carmoving = true;
