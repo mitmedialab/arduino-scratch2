@@ -367,6 +367,7 @@
     return new Promise(resolve => {var interval = setInterval(function() {
       if (carmoving == false){
         clearInterval(interval);
+        resolve(carmoving);
       }
     }, 1000);
   });
