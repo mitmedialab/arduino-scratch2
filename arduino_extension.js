@@ -355,6 +355,10 @@
     device.send(msg.buffer);
   }
 
+  function sleep(ms){
+    return new Promise(resolve => settimeout(resolve, ms));
+    }
+
   ext.whenConnected = function() {
     if (notifyConnection) return true;
     return false;
@@ -427,33 +431,41 @@
   var speed = 1;
 
   ext.moveForward = function(time) {
-    while (carmoving == true) {
-      timer = setInterval(function(){
-        var status = carmoving;
-        if (status == false) {
-          clearInterval(timer);
-        }
-      }, 1000);
-    }
+    // while (carmoving == true) {
+    //   timer = setInterval(function(){
+    //     var status = carmoving;
+    //     if (status == false) {
+    //       clearInterval(timer);
+    //     }
+    //   }, 1000);
+    // }
     carmoving = true;
     rotateServo(rightservo, Math.round(90 - speed*35));
     rotateServo(leftservo, Math.round(90+ speed*25));
-    setTimeout(function(){
-      rotateServo(rightservo, 90);
-      rotateServo(leftservo, 85);
-      carmoving = false;
-    }, time*1000);
+    await sleep(time*1000);
+    // setTimeout(function(){
+    //   rotateServo(rightservo, 90);
+    //   rotateServo(leftservo, 85);
+    //   carmoving = false;
+    // }, time*1000);
+    rotateServo(rightservo, 90);
+    rotateServo(leftservo, 85);
+    carmoving = false;
   };
 
   ext.moveBackward = function(time) {
     carmoving = true;
     rotateServo(rightservo, Math.round(90+ speed*25));
     rotateServo(leftservo, Math.round(90 - speed*35));
-    setTimeout(function(){
-      rotateServo(rightservo, 90);
-      rotateServo(leftservo, 85);
-      carmoving = false;
-    }, time*1000);
+    await sleep(time*1000);
+    // setTimeout(function(){
+    //   rotateServo(rightservo, 90);
+    //   rotateServo(leftservo, 85);
+    //   carmoving = false;
+    // }, time*1000);
+    rotateServo(rightservo, 90);
+    rotateServo(leftservo, 85);
+    carmoving = false;
   };
 
   ext.easyturn = function(direction) {
