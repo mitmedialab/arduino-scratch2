@@ -364,11 +364,12 @@
   // }
 
   function freeMotor() {
-    var interval = setInterval(function() {
+    return new Promise(resolve => {setInterval(function() {
       if (carmoving == false){
         clearInterval(interval);
       }
     }, 1000);
+  });
   }
 
   ext.whenConnected = function() {
@@ -816,7 +817,7 @@
       turning: ['left', 'right', 'around'],
       directions: ['clockwise', 'counterclockwise'],
       servos: ['servo A', 'servo B', 'servo C', 'servo D'],
-      colors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'white', 'pink', 'random']
+      colors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink', 'white', 'random']
     }};
 
   var descriptor = {
