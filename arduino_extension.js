@@ -448,11 +448,11 @@
       rotateServo(rightservo, 90);
       rotateServo(leftservo, 85);
       carmoving = false;
+      console.log(carmoving);
     }, time*1000);
     // rotateServo(rightservo, 90);
     // rotateServo(leftservo, 85);
     // carmoving = false;
-    console.log(carmoving);
   };
 
   ext.moveBackward = function(time) {
@@ -465,11 +465,11 @@
       rotateServo(rightservo, 90);
       rotateServo(leftservo, 85);
       carmoving = false;
+      console.log(carmoving);
     }, time*1000);
     // rotateServo(rightservo, 90);
     // rotateServo(leftservo, 85);
     // carmoving = false;
-    console.log(carmoving);
   };
 
   ext.easyturn = function(direction) {
