@@ -354,15 +354,6 @@
     device.send(msg.buffer);
   }
 
-  // function wait(args) {
-  //   const duration = Math.max(0, 1000 * args);
-  //   return new Promise(resolve => {
-  //   setTimeout(() => {
-  //   resolve();
-  //   }, duration);
-  //   });
-  // }
-
   function freeMotor() {
     return new Promise(resolve => {var interval = setInterval(function() {
       if (carmoving == false){
@@ -445,14 +436,6 @@
   var speed = 1;
 
   ext.moveForward = function(time) {
-    // while (carmoving == true) {
-    //   timer = setInterval(function(){
-    //     var status = carmoving;
-    //     if (status == false) {
-    //       clearInterval(timer);
-    //     }
-    //   }, 1000);
-    // }
     var doIt = freeMotor();
     doIt.then(response => {
       carmoving = true;
@@ -466,19 +449,6 @@
         console.log(carmoving);
       }, time*1000);
     })
-
-    // var currentTime = Date.now();
-    // while (Date.now() - currentTime < time*1000) {
-    // }
-    // await; sleep(time*1000);
-
-    // var doIt = wait(time);
-    // doIt.then(response => {
-    //   console.log(carmoving);
-    //   rotateServo(rightservo, 90);
-    //   rotateServo(leftservo, 85);
-    //   carmoving = false;
-    // })
   };
 
   ext.moveBackward = function(time) {
@@ -495,22 +465,6 @@
         console.log(carmoving);
       }, time*1000);
     })
-
-    // var currentTime = Date.now();
-    // while (Date.now() - currentTime < time*1000) {
-    // }
-    // await; sleep(time*1000);
-    // setTimeout(function(){
-    //   rotateServo(rightservo, 90);
-    //   rotateServo(leftservo, 85);
-    //   carmoving = false;
-    //   console.log(carmoving);
-    // }, time*1000);
-    // wait(time);
-    // console.log(carmoving);
-    // rotateServo(rightservo, 90);
-    // rotateServo(leftservo, 85);
-    // carmoving = false;
   };
 
   ext.easyturn = function(direction) {
