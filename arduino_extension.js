@@ -444,7 +444,7 @@
       rotateServo(leftservo, Math.round(90 + speed*25));
       setTimeout(function(){
         rotateServo(rightservo, 90);
-        rotateServo(leftservo, 85);
+        rotateServo(leftservo, 90);
         carmoving = false;
         console.log(carmoving);
       }, time*1000);
@@ -460,7 +460,7 @@
       rotateServo(leftservo, Math.round(90 - speed*35));
       setTimeout(function(){
         rotateServo(rightservo, 90);
-        rotateServo(leftservo, 85);
+        rotateServo(leftservo, 90);
         carmoving = false;
         console.log(carmoving);
       }, time*1000);
@@ -474,7 +474,7 @@
       rotateServo(leftservo, Math.round(90+ speed*25));
       setTimeout(function(){
         rotateServo(rightservo, 90);
-        rotateServo(leftservo, 85);
+        rotateServo(leftservo, 90);
         carmoving = false;
       }, 3500);
     } else if (direction == 'left') {
@@ -482,7 +482,7 @@
       rotateServo(leftservo, Math.round(90 - speed*35)); //slower?
       setTimeout(function(){
         rotateServo(rightservo, 90);
-        rotateServo(leftservo, 85);
+        rotateServo(leftservo, 90);
         carmoving = false;
       }, 3500);
     }
@@ -491,7 +491,7 @@
       rotateServo(leftservo, Math.round(90 - speed*35)); //slower?
       setTimeout(function(){
         rotateServo(rightservo, 90);
-        rotateServo(leftservo, 85);
+        rotateServo(leftservo, 90);
         carmoving = false;
       }, 9000);
     };
@@ -508,7 +508,7 @@
     };
     setTimeout(function(){
       rotateServo(rightservo, 90);
-      rotateServo(leftservo, 85);
+      rotateServo(leftservo, 90);
       carmoving = false;
     }, time*1000);
 
