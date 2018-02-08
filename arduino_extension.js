@@ -493,7 +493,7 @@
         rotateServo(rightservo, 90);
         rotateServo(leftservo, 90);
         carmoving = false;
-      }, 4450);
+      }, 4350);
     };
   };
 
