@@ -476,7 +476,7 @@
         rotateServo(rightservo, 90);
         rotateServo(leftservo, 90);
         carmoving = false;
-      }, 3500);
+      }, 2000);
     } else if (direction == 'left') {
       rotateServo(rightservo, Math.round(90 - speed*35)); //slower?
       rotateServo(leftservo, Math.round(90 - speed*35)); //slower?
@@ -484,7 +484,7 @@
         rotateServo(rightservo, 90);
         rotateServo(leftservo, 90);
         carmoving = false;
-      }, 3500);
+      }, 2000);
     }
     else if (direction == 'around') {
       rotateServo(rightservo, Math.round(90 - speed*35)); //slower?
@@ -493,7 +493,7 @@
         rotateServo(rightservo, 90);
         rotateServo(leftservo, 90);
         carmoving = false;
-      }, 9000);
+      }, 5000);
     };
   };
 
