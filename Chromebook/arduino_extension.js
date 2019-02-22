@@ -603,9 +603,9 @@ chrome.serial = {
 
 
 /* END FROM SNAP */
-console.log("Can we see Arduino?");
-console.log(Arduino);
-Arduino.prototype.attempt
+	console.log("Can we see Arduino?");
+	console.log(Arduino);
+	Arduino.prototype.attemptConnection();
 
 
   var hwList = new HWList();
