@@ -146,46 +146,10 @@ Arduino.prototype.disconnect = function (silent, force) {
         this.closeHandler(silent);
     } else {
         if (!silent) {
-            ide.inform(this.owner.name, localize('Board is not connected'))
+            console.log('Board is not connected');
         }
     } 
 };
-
-// This should belong to the IDE
-Arduino.prototype.showMessage = function (msg) {
-    if (!this.message) { this.message = new DialogBoxMorph() };
-
-    var txt = new TextMorph(
-            msg,
-            this.fontSize,
-            this.fontStyle,
-            true,
-            false,
-            'center',
-            null,
-            null,
-            MorphicPreferences.isFlat ? null : new Point(1, 1),
-            new Color(255, 255, 255)
-            );
-
-    if (!this.message.key) { this.message.key = 'message' + this.owner.name + msg };
-
-    this.message.labelString = this.owner.name;
-    this.message.createLabel();
-    if (msg) { this.message.addBody(txt) };
-    this.message.drawNew();
-    this.message.fixLayout();
-    this.message.popUp(world);
-    this.message.show();
-};
-
-Arduino.prototype.hideMessage = function () {
-    if (this.message) {
-        this.message.cancel();
-        this.message = null;
-    }
-};
-
 
 Arduino.prototype.closeHandler = function (silent) {
 
@@ -208,14 +172,11 @@ Arduino.prototype.closeHandler = function (silent) {
     this.justConnected = false;
 
     if (this.gotUnplugged & !silent) {
-        ide.inform(
-                this.owner.name,
-                localize('Board was disconnected from port\n') 
-                + portName 
-                + '\n\nIt seems that someone pulled the cable!');
+		console.log('Board was disconnected from port' + portName 
+                + 'It seems that someone pulled the cable!');
         this.gotUnplugged = false;
     } else if (!silent) {
-        ide.inform(this.owner.name, localize('Board was disconnected from port\n') + portName);
+        console.log('Board was disconnected from port' + portName);
     }
 };
 
@@ -225,11 +186,9 @@ Arduino.prototype.disconnectHandler = function () {
 };
 
 Arduino.prototype.errorHandler = function (err) {
-    ide.inform(
-            this.owner.name,
-            localize('An error was detected on the board\n\n')
-            + err,
-            this.disconnect(true));
+    console.log('An error was detected on the board '
+            + err);
+            this.disconnect(true);
 };
 
 Arduino.prototype.networkDialog = function () {
@@ -241,7 +200,6 @@ Arduino.prototype.networkDialog = function () {
             ).prompt(
                 'Enter hostname or ip address:', // title
                 this.hostname, // default
-                this.owner.world() // world
                 );
 };
 
@@ -468,12 +426,12 @@ Arduino.prototype.attemptConnection = function () {
     if (!this.connecting) {
         if (this.board === undefined) {
             // Get list of ports (Arduino compatible)
-            var ports = world.Arduino.getSerialPorts(function (ports) {
+            var ports = Arduino.getSerialPorts(function (ports) {
             	// RANDI just connect to the first one
                 this.connect(Object.keys(ports)[0]);
             });
         } else {
-            ide.inform(myself.name, localize('There is already a board connected to this sprite'));
+        console.log('Already a board connected to this sprite');
         }
     }
 
@@ -497,7 +455,7 @@ Arduino.prototype.connect = function (port) {
 
     // Hyper convoluted due to the async nature of Firmata
     // Brace yourselves, you're about to dive into the Amazing Callback Vortex
-    new world.Arduino.firmata.Board(port, function (boardId) { 
+    new Arduino.firmata.Board(port, function (boardId) { 
         var board,
         retries = 0,
         boardReadyInterval = setInterval(
@@ -511,7 +469,7 @@ Arduino.prototype.connect = function (port) {
 
                             myself.keepAliveIntervalID = setInterval(function() { myself.keepAlive() }, 5000);
 
-                            world.Arduino.lockPort(port);
+                            Arduino.lockPort(port);
                             myself.port = myself.board.sp.path;
                             myself.connecting = false;
                             myself.justConnected = true;
