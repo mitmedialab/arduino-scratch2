@@ -95,6 +95,8 @@
   var hwList = new HWList();
 
   function HWList() {
+  console.log("Running HWList");
+  console.log(this);
     this.devices = [];
 
     this.add = function(dev, pin) {
