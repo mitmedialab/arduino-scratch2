@@ -428,7 +428,7 @@ Arduino.prototype.attemptConnection = function () {
             // Get list of ports (Arduino compatible)
             var ports = Arduino.getSerialPorts(function (ports) {
             	// RANDI just connect to the first one
-                this.connect(Object.keys(ports)[0]);
+                myself.connect(Object.keys(ports)[0]);
             });
         } else {
         console.log('Already a board connected to this sprite');
