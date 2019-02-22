@@ -813,9 +813,11 @@ chrome.serial = {
 
 
 
-/* FROM SNAP */
-
-
+/* END FROM SNAP */
+console.log("Can we see Arduino?");
+console.log(Arduino);
+console.log("Have we selected a board?")
+console.log(board);
 
   var hwList = new HWList();
 
