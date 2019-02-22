@@ -13,39 +13,39 @@
  *along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function(ext) {
+(function (ext) {
 
   var PIN_MODE = 0xF4,
-    REPORT_DIGITAL = 0xD0,
-    REPORT_ANALOG = 0xC0,
-    DIGITAL_MESSAGE = 0x90,
-    START_SYSEX = 0xF0,
-    END_SYSEX = 0xF7,
-    QUERY_FIRMWARE = 0x79,
-    REPORT_VERSION = 0xF9,
-    ANALOG_MESSAGE = 0xE0,
-    ANALOG_MAPPING_QUERY = 0x69,
-    ANALOG_MAPPING_RESPONSE = 0x6A,
-    CAPABILITY_QUERY = 0x6B,
-    CAPABILITY_RESPONSE = 0x6C;
+        REPORT_DIGITAL = 0xD0,
+        REPORT_ANALOG = 0xC0,
+        DIGITAL_MESSAGE = 0x90,
+        START_SYSEX = 0xF0,
+        END_SYSEX = 0xF7,
+        QUERY_FIRMWARE = 0x79,
+        REPORT_VERSION = 0xF9,
+        ANALOG_MESSAGE = 0xE0,
+        ANALOG_MAPPING_QUERY = 0x69,
+        ANALOG_MAPPING_RESPONSE = 0x6A,
+        CAPABILITY_QUERY = 0x6B,
+        CAPABILITY_RESPONSE = 0x6C;
 
   var INPUT = 0x00,
-    OUTPUT = 0x01,
-    ANALOG = 0x02,
-    PWM = 0x03,
-    SERVO = 0x04,
-    SHIFT = 0x05,
-    I2C = 0x06,
-    ONEWIRE = 0x07,
-    STEPPER = 0x08,
-    ENCODER = 0x09,
-    SERIAL = 0x0A,
-    PULLUP = 0x0B,
-    IGNORE = 0x7F,
-    TOTAL_PIN_MODES = 13;
+        OUTPUT = 0x01,
+        ANALOG = 0x02,
+        PWM = 0x03,
+        SERVO = 0x04,
+        SHIFT = 0x05,
+        I2C = 0x06,
+        ONEWIRE = 0x07,
+        STEPPER = 0x08,
+        ENCODER = 0x09,
+        SERIAL = 0x0A,
+        PULLUP = 0x0B,
+        IGNORE = 0x7F,
+        TOTAL_PIN_MODES = 13;
 
   var LOW = 0,
-    HIGH = 1;
+        HIGH = 1;
 
   var MAX_DATA_BYTES = 4096;
   var MAX_PINS = 128;
@@ -79,6 +79,18 @@
   var pinging = false;
   var pingCount = 0;
   var pinger = null;
+
+  var leftservo = 5,
+    rightservo = 6,
+    redpin = 9,
+    greenpin = 10,
+    bluepin = 11;
+
+  var lightson = true,
+    carmoving = false;
+
+  var rgb = [0, 0, 0];
+  var colorMap = {'white':[0,0,0], 'red':[0,255,255], 'orange':[0,95,255], 'yellow':[15,70,255], 'green':[255,0,255], 'blue':[255,255,0], 'purple':[60,255,60], 'pink':[60,255,90]};
 
   var hwList = new HWList();
 
@@ -342,6 +354,16 @@
     device.send(msg.buffer);
   }
 
+  function freeMotor() {
+    return new Promise(resolve => {var interval = setInterval(function() {
+      if (carmoving == false){
+        clearInterval(interval);
+        resolve(carmoving);
+      }
+    }, 1000);
+  });
+  }
+
   ext.whenConnected = function() {
     if (notifyConnection) return true;
     return false;
@@ -411,21 +433,106 @@
     hw.val = deg;
   };
 
-  ext.moveForward = function(servo, steps) {
-    var hw = hwList.search(servo);
-    if (!hw) return;
-    var deg = steps * 180
-    rotateServo(hw.pin, deg);
-    hw.val = deg;
+  var speed = 1;
+
+  ext.moveForward = function(time) {
+    var doIt = freeMotor();
+    doIt.then(response => {
+      carmoving = true;
+      console.log(carmoving);
+      rotateServo(rightservo, Math.round(90 - speed*35));
+      rotateServo(leftservo, Math.round(90 + speed*25));
+      setTimeout(function(){
+        rotateServo(rightservo, 90);
+        rotateServo(leftservo, 90);
+        carmoving = false;
+        console.log(carmoving);
+      }, time*1000);
+    })
   };
 
-  ext.turn = function(servo, steps, direction) {
-    var hw = hwList.search(servo);
-    if (!hw) return;
-    var deg = steps * 180
-    if (direction = 'left') de
-    rotateServo(hw.pin, deg);
-    hw.val = deg;
+  ext.moveBackward = function(time) {
+    var doIt = freeMotor();
+    doIt.then(response => {
+      carmoving = true;
+      console.log(carmoving);
+      rotateServo(rightservo, Math.round(90+ speed*25));
+      rotateServo(leftservo, Math.round(90 - speed*35));
+      setTimeout(function(){
+        rotateServo(rightservo, 90);
+        rotateServo(leftservo, 90);
+        carmoving = false;
+        console.log(carmoving);
+      }, time*1000);
+    })
+  };
+
+  ext.easyturn = function(direction) {
+    carmoving = true;
+    if (direction == 'right'){
+      rotateServo(rightservo, Math.round(90+ speed*25));
+      rotateServo(leftservo, Math.round(90+ speed*25));
+      setTimeout(function(){
+        rotateServo(rightservo, 90);
+        rotateServo(leftservo, 90);
+        carmoving = false;
+      }, 2300);
+    } else if (direction == 'left') {
+      rotateServo(rightservo, Math.round(90 - speed*35)); //slower?
+      rotateServo(leftservo, Math.round(90 - speed*35)); //slower?
+      setTimeout(function(){
+        rotateServo(rightservo, 90);
+        rotateServo(leftservo, 90);
+        carmoving = false;
+      }, 2300);
+    }
+    else if (direction == 'around') {
+      rotateServo(rightservo, Math.round(90 - speed*35)); //slower?
+      rotateServo(leftservo, Math.round(90 - speed*35)); //slower?
+      setTimeout(function(){
+        rotateServo(rightservo, 90);
+        rotateServo(leftservo, 90);
+        carmoving = false;
+      }, 4350);
+    };
+  };
+
+  ext.turn = function(direction, time) {
+    carmoving = true;
+    if (direction == 'clockwise'){
+      rotateServo(rightservo, Math.round(90+ speed*25));
+      rotateServo(leftservo, Math.round(90+ speed*25));
+    } else if (direction == 'counterclockwise') {
+      rotateServo(rightservo, Math.round(90 - speed*35)); //slower?
+      rotateServo(leftservo, Math.round(90 - speed*35)); //slower?
+    };
+    setTimeout(function(){
+      rotateServo(rightservo, 90);
+      rotateServo(leftservo, 90);
+      carmoving = false;
+    }, time*1000);
+
+  };
+
+  ext.setSpeed = function(percent) {
+  if (percent > 100) percent = 100;
+  if (percent < 0) percent = 0;
+  speed = percent/100
+  };
+
+  ext.isCarMoving = function(state) {
+    if (carmoving) {
+      if (state == 'moving')
+        return true;
+      else
+        return false;
+    }
+    else {
+      if (state == 'moving')
+        return false;
+      else
+        return true;
+    }
   };
 
   ext.setLED = function(led, val) {
@@ -433,6 +540,50 @@
     if (!hw) return;
     analogWrite(hw.pin, val);
     hw.val = val;
+  };
+
+  ext.setColor = function(newcolor) {
+    color = newcolor;
+    if (color == 'random'){
+      rgb = [Math.round(255*Math.random()), Math.round(255*Math.random()), Math.round(255*Math.random())];
+      do {
+        rgb = [Math.round(255*Math.random()), Math.round(255*Math.random()), Math.round(255*Math.random())];
+      }
+      while (rgb[0] > 90 && rgb[1] > 90 && rgb[2] > 90)
+    } else {
+      rgb = colorMap[color];
+    }
+    if (lightson) {
+      analogWrite(redpin, rgb[0]);
+      analogWrite(greenpin, rgb[1]);
+      analogWrite(bluepin, rgb[2]);
+    }
+  };
+
+  ext.setLEDstrip = function(val) {
+    if (val == 'on') {
+      analogWrite(redpin, rgb[0]);
+      analogWrite(greenpin, rgb[1]);
+      analogWrite(bluepin, rgb[2]);
+      lightson = true;
+    } else if (val == 'off') {
+      analogWrite(redpin, 255);
+      analogWrite(greenpin, 255);
+      analogWrite(bluepin, 255);
+      lightson = false;
+    }
+  };
+
+  ext.RedRead = function() {
+    return rgb[0];
+  };
+
+  ext.GreenRead = function() {
+    return rgb[1];
+  };
+
+  ext.BlueRead = function() {
+    return rgb[2];
   };
 
   ext.changeLED = function(led, val) {
@@ -454,6 +605,21 @@
     } else if (val == 'off') {
       digitalWrite(hw.pin, LOW);
       hw.val = 0;
+    }
+  };
+
+  ext.areLightsOn = function(state) {
+    if (lightson) {
+      if (state == 'on')
+        return true;
+      else
+        return false;
+    }
+    else {
+      if (state == 'on')
+        return false;
+      else
+        return true;
     }
   };
 
@@ -568,11 +734,23 @@
       [' ', 'set %m.leds %m.outputs', 'digitalLED', 'led A', 'on'],
       [' ', 'set %m.leds brightness to %n%', 'setLED', 'led A', 100],
       [' ', 'change %m.leds brightness by %n%', 'changeLED', 'led A', 20],
+      [' ', 'turn light strip %m.outputs', 'setLEDstrip', 'on'],
+      [' ', 'set light color to %m.colors', 'setColor', 'white'],
+      ['b', 'lights %m.outputs ?', 'areLightsOn', 'on'],
+      ['r', 'red value', 'RedRead'],
+      ['r', 'green value', 'GreenRead'],
+      ['r', 'blue value', 'BlueRead'],
       ['-'],
       [' ', 'rotate %m.servos to %n degrees', 'rotateServo', 'servo A', 180],
       [' ', 'rotate %m.servos by %n degrees', 'changeServo', 'servo A', 20],
-      [' ', 'move forward %n steps', 'moveForward', 'servo A', 180],
-      [' ', 'turn %m.directions %n steps', 'turn', 'servo A', 180],
+      [' ', 'move forward for %n seconds', 'moveForward', 5],
+      [' ', 'move backward for %n seconds', 'moveBackward', 5],
+      [' ', 'turn %m.turning', 'easyturn', 'left'],
+      [' ', 'set speed to %n', 'setSpeed', 100],
+      [' ', 'turn %m.directions for %n seconds', 'turn', 'clockwise', 5],
+      ['b', 'car %m.carStates ?', 'isCarMoving', 'moving'],
+      // ['r', 'car left value', 'carLeftRead'],
+      // ['r', 'car right value', 'carRightRead'],
       ['-'],
       ['h', 'when %m.buttons is %m.btnStates', 'whenButton', 'button A', 'pressed'],
       ['b', '%m.buttons pressed?', 'isButtonPressed', 'button A'],
@@ -596,13 +774,16 @@
     en: {
       buttons: ['button A', 'button B', 'button C', 'button D'],
       btnStates: ['pressed', 'released'],
+      carStates: ['moving', 'stopped'],
       hwIn: ['rotation knob', 'light sensor', 'temperature sensor'],
       hwOut: ['led A', 'led B', 'led C', 'led D', 'button A', 'button B', 'button C', 'button D', 'servo A', 'servo B', 'servo C', 'servo D'],
       leds: ['led A', 'led B', 'led C', 'led D'],
       outputs: ['on', 'off'],
       ops: ['>', '=', '<'],
-      directions: ['left', 'right'],
-      servos: ['servo A', 'servo B', 'servo C', 'servo D']
+      turning: ['left', 'right', 'around'],
+      directions: ['clockwise', 'counterclockwise'],
+      servos: ['servo A', 'servo B', 'servo C', 'servo D'],
+      colors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink', 'white', 'random']
     }};
 
   var descriptor = {
