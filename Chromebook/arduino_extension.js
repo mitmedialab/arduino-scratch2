@@ -428,7 +428,7 @@ Arduino.prototype.attemptConnection = function () {
             // Get list of ports (Arduino compatible)
             var ports = Arduino.getSerialPorts(function (ports) {
             	// RANDI just connect to the first one
-            	console.log('Callback to connect');
+            	console.log('Callback to connect: ' + Object.keys(ports));
                 myself.connect(Object.keys(ports)[0]);
             });
         } else {
