@@ -97,8 +97,8 @@
   function HWList() {
   console.log("Running HWList");
   console.log("Can we see dispatcher?");
-  console.log(Dispatcher);
-  console.log(Dispatcher.prototype.getDevices());
+  console.log(Firmata);
+  console.log(serialports);
     this.devices = [];
 
     this.add = function(dev, pin) {
