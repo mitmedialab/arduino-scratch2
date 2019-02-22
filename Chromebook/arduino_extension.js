@@ -523,12 +523,9 @@ Arduino.prototype.connect = function (port) {
                     if (retries > 40) {
                         clearInterval(boardReadyInterval);
                         myself.board = null;
-                        myself.hideMessage();
-                        ide.inform(
-                                console.log('Could not talk to Arduino in port'
-                                 + port + 'Check if firmata is loaded.');
-                                );
-                    }
+                        console.log('Could not talk to Arduino in port'
+                         + port + 'Check if firmata is loaded.');
+                     }
 
                     retries ++;
                 },
