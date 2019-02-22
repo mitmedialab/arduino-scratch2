@@ -96,7 +96,6 @@
 
   function HWList() {
   console.log("Running HWList");
-  console.log(this);
     this.devices = [];
 
     this.add = function(dev, pin) {
@@ -794,6 +793,6 @@
     url: 'http://khanning.github.io/scratch-arduino-extension'
   };
 
-  ScratchExtensions.register('Arduino', descriptor, ext, {type:'serial'});
+  ScratchExtensions.register('Arduino', descriptor, ext);
 
 })({});
