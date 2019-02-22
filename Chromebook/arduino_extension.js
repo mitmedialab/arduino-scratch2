@@ -96,6 +96,7 @@
 
   function HWList() {
   console.log("Running HWList");
+  console.log(Dispatcher.prototype.getDevices);
     this.devices = [];
 
     this.add = function(dev, pin) {
