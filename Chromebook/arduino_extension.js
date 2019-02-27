@@ -300,6 +300,7 @@ Arduino.getSerialPorts = function (callback) {
         if (devices) { 
             devices.forEach(function (device) { 
                 if (!myself.isPortLocked(device.path) && portcheck.test(device.path)) {
+                	console.log('Got device');
                     portList[device.path] = device.path; 
                 }
             });
@@ -427,7 +428,8 @@ Arduino.prototype.attemptConnection = function () {
         if (this.board === undefined) {
             // Get list of ports (Arduino compatible)
             var ports = Arduino.getSerialPorts(function (ports) {
-            	// RANDI just connect to the first one
+            	// RANDI just connect to the first one...these are empty 2/22/19
+              console.log(myself);
             	console.log('Callback to connect: ' + Object.keys(ports));
             	console.log('Callback to connect: ' + ports);
                 myself.connect(Object.keys(ports)[0]);
