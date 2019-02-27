@@ -296,7 +296,7 @@ Arduino.getSerialPorts = function (callback) {
         portList = [],
         portcheck = /usb|DevB|rfcomm|acm|^com|ttyS/i; // Not sure about rfcomm! We must dig further how bluetooth works in Gnu/Linux
 
-    console.log('Calling getDevices');
+    console.log('Calling getDevices now');
     chrome.serial.getDevices(function (devices) {
         if (devices) { 
         console.log('We got devices yall!');
