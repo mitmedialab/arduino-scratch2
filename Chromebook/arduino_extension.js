@@ -294,7 +294,7 @@ Arduino.isPortLocked = function (port) {
 Arduino.getSerialPorts = function (callback) {
     var myself = this,
         portList = [],
-        portcheck = /usb|DevB|rfcomm|acm|^com/i; // Not sure about rfcomm! We must dig further how bluetooth works in Gnu/Linux
+        portcheck = /usb|DevB|rfcomm|acm|^com|ttyS/i; // Not sure about rfcomm! We must dig further how bluetooth works in Gnu/Linux
 
     console.log('Calling getDevices');
     chrome.serial.getDevices(function (devices) {
@@ -573,8 +573,8 @@ chrome.serial = {
 	console.log(Arduino);
 	Arduino.prototype.attemptConnection();
 
-
-  var hwList = new HWList();
+ /* RANSI see if calling hw list messes something up somehow */
+  //var hwList = new HWList();
 
   function HWList() {
   console.log("Running HWList");
