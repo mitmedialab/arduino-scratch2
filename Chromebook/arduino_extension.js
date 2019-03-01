@@ -205,10 +205,12 @@ function Buffer (data) {
 };
 
 /* plugin.js */
+console.log('plugin.js');
 var extensionId = 'oohlojlbppekmcklhkcpphahghdlmnmn',
     postal = new Postal(),
     firmata = {
         Board: function(port, callback) {
+          console.log('running connect');
             chrome.runtime.sendMessage(extensionId, { command: 'connectBoard', args: [ port ] }, callback)
         }
     },
