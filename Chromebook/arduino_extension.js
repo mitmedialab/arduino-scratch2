@@ -1,952 +1,426 @@
-/*
- *This program is free software: you can redistribute it and/or modify
- *it under the terms of the GNU General Public License as published by
- *the Free Software Foundation, either version 3 of the License, or
- *(at your option) any later version.
- *
- *This program is distributed in the hope that it will be useful,
- *but WITHOUT ANY WARRANTY; without even the implied warranty of
- *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *GNU General Public License for more details.
- *
- *You should have received a copy of the GNU General Public License
- *along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-(function (ext) {
-
-  var PIN_MODE = 0xF4,
-        REPORT_DIGITAL = 0xD0,
-        REPORT_ANALOG = 0xC0,
-        DIGITAL_MESSAGE = 0x90,
-        START_SYSEX = 0xF0,
-        END_SYSEX = 0xF7,
-        QUERY_FIRMWARE = 0x79,
-        REPORT_VERSION = 0xF9,
-        ANALOG_MESSAGE = 0xE0,
-        ANALOG_MAPPING_QUERY = 0x69,
-        ANALOG_MAPPING_RESPONSE = 0x6A,
-        CAPABILITY_QUERY = 0x6B,
-        CAPABILITY_RESPONSE = 0x6C;
+(function(ext) {
 
   var INPUT = 0x00,
-        OUTPUT = 0x01,
-        ANALOG = 0x02,
-        PWM = 0x03,
-        SERVO = 0x04,
-        SHIFT = 0x05,
-        I2C = 0x06,
-        ONEWIRE = 0x07,
-        STEPPER = 0x08,
-        ENCODER = 0x09,
-        SERIAL = 0x0A,
-        PULLUP = 0x0B,
-        IGNORE = 0x7F,
-        TOTAL_PIN_MODES = 13;
+    OUTPUT = 0x01,
+    ANALOG = 0x02,
+    PWM = 0x03,
+    SERVO = 0x04,
+    SHIFT = 0x05,
+    I2C = 0x06,
+    ONEWIRE = 0x07,
+    STEPPER = 0x08,
+    ENCODER = 0x09,
+    IGNORE = 0x7F;
 
-  var LOW = 0,
-        HIGH = 1;
+      var PIN_MODE = 0xF4,
+    REPORT_DIGITAL = 0xD0,
+    REPORT_ANALOG = 0xC0,
+    DIGITAL_MESSAGE = 0x90,
+    START_SYSEX = 0xF0,
+    END_SYSEX = 0xF7,
+    QUERY_FIRMWARE = 0x79,
+    REPORT_VERSION = 0xF9,
+    ANALOG_MESSAGE = 0xE0,
+    ANALOG_MAPPING_QUERY = 0x69,
+    ANALOG_MAPPING_RESPONSE = 0x6A,
+    CAPABILITY_QUERY = 0x6B,
+    CAPABILITY_RESPONSE = 0x6C;
+    STRING_DATA = 0x71;
 
-  var MAX_DATA_BYTES = 4096;
-  var MAX_PINS = 128;
+    var LOW = 0, HIGH = 1;
 
-  var parsingSysex = false,
-    waitForData = 0,
-    executeMultiByteCommand = 0,
-    multiByteChannel = 0,
-    sysexBytesRead = 0,
-    storedInputData = new Uint8Array(MAX_DATA_BYTES);
+	var poller = null;
 
-  var digitalOutputData = new Uint8Array(16),
-    digitalInputData = new Uint8Array(16),
-    analogInputData = new Uint16Array(16);
+    var LOFI_ID = "opdjdfckgbogbagnkbkpjgficbampcel"; // APP ID
+    var mConnection;
+    var mStatus = 0;
+    var _selectors = {};
 
-  var analogChannel = new Uint8Array(MAX_PINS);
-  var pinModes = [];
-  for (var i = 0; i < TOTAL_PIN_MODES; i++) pinModes[i] = [];
+    var digitalOutputData = new Uint8Array(16);
+    var analogInputData = new Uint16Array(16);
 
-  var majorVersion = 0,
-    minorVersion = 0;
+    var analogRead1, analogRead2, analogRead3, analogRead0;
+	var analog0enable = false;
+	var analog1enable = false;
+	var analog2enable = false;
+	var analog3enable = false;
 
-  var connected = false;
-  var notifyConnection = false;
-  var device = null;
-  var inputData = null;
+	var pinmode = new Uint8Array(16);
 
-  // TEMPORARY WORKAROUND
-  // Since _deviceRemoved is not used with Serial devices
-  // ping device regularly to check connection
-  var pinging = false;
-  var pingCount = 0;
-  var pinger = null;
-
-  var leftservo = 5,
-    rightservo = 6,
-    redpin = 9,
-    greenpin = 10,
-    bluepin = 11;
-
-  var lightson = true,
-    carmoving = false;
-
-  var rgb = [0, 0, 0];
-  var colorMap = {'white':[0,0,0], 'red':[0,255,255], 'orange':[0,95,255], 'yellow':[15,70,255], 'green':[255,0,255], 'blue':[255,255,0], 'purple':[60,255,60], 'pink':[60,255,90]};
-
-/************* FROM SNAP ****************/
-
-/* arduino.js */
-Arduino.prototype.attemptConnection = function () {
-    var myself = this;
-
-    if (!this.connecting) {
-        if (this.board === undefined) {
-            // Get list of ports (Arduino compatible)
-            var ports = Arduino.getSerialPorts(function (ports) {
-            	// RANDI just connect to the first one...these are empty 2/22/19
-              console.log(myself);
-            	console.log('Callback to connect: ' + Object.keys(ports));
-            	console.log('Callback to connect: ' + ports);
-                myself.connect(Object.keys(ports)[0]);
-            });
-        } else {
-        console.log('Already a board connected to this sprite');
-        }
-    }
-
-    if (this.justConnected) {
-        this.justConnected = undefined;
-        return;
-    }
-};
-
-window.onunload = function (evt) {
-    ide.sprites.asArray().forEach(function (each) { each.arduino.disconnect(true); });
-};
-
-Arduino.prototype.connect = function (port) {
-    var myself = this;
-
-    this.disconnect(true);
-
-    console.log('Connecting board at port:' + port);
-    this.connecting = true;
-
-    // Hyper convoluted due to the async nature of Firmata
-    // Brace yourselves, you're about to dive into the Amazing Callback Vortex
-    new Arduino.firmata.Board(port, function (boardId) { 
-        var board,
-        retries = 0,
-        boardReadyInterval = setInterval(
-                function () {
-                    postal.sendCommand('getBoard', [ boardId ], function (board) {
-                        myself.board = board;
-                        if (board && board.versionReceived) {
-                            clearInterval(boardReadyInterval);
-                            // We need to populate the board with functions that make use of the browser plugin
-                            myself.populateBoard(myself.board);
-
-                            myself.keepAliveIntervalID = setInterval(function() { myself.keepAlive() }, 5000);
-
-                            Arduino.lockPort(port);
-                            myself.port = myself.board.sp.path;
-                            myself.connecting = false;
-                            myself.justConnected = true;
-                            myself.board.connected = true;
-							console.log('Connected!');
-                        }
-                    });
-
-                    if (retries > 40) {
-                        clearInterval(boardReadyInterval);
-                        myself.board = null;
-                        console.log('Could not talk to Arduino in port'
-                         + port + 'Check if firmata is loaded.');
-                     }
-
-                    retries ++;
-                },
-        250);
-    });
-};
-
-Arduino.prototype.populateBoard = function (board) {
-    board.events = {};
-
-    board.sp.close = postal.commandSender('closeSerial', board.id);
-    board.sp.removeListener = nop;
-    board.sp.removeAllListeners = nop;
-
-    board.sp.write = function (contents) { postal.sendCommand('serialWrite', [ board.id, contents ]); };
-
-    board.transport = board.sp;
-
-    // pin is already converted to absolute position, we don't care whether it's analog or not
-    board.pinMode = function (pin, mode) { postal.sendCommand('pinMode', [ board.id, pin, mode ], function() { board.pins[pin].mode = mode; }); };
-    board.digitalWrite = function (pin, value) { postal.sendCommand('digitalWrite', [ board.id, pin, value ]); };
-    board.servoWrite = function (pin, value) { postal.sendCommand('servoWrite', [ board.id, pin, value ]); };
-    board.servoConfig = function (pin, value1, value2) { postal.sendCommand('servoConfig', [ board.id, pin, value1, value2 ]); };
-    board.analogWrite = function (pin, value) { postal.sendCommand('analogWrite', [ board.id, pin, value ]); };
-    board.once = function (name, callback) { postal.sendCommand('once', [ board.id, name ], function (response) { board[name] = response; }); };
-    board.reportDigitalPin = function (pin, value) { postal.sendCommand('reportDigitalPin', [board.id, pin, value ]);};
-    board.getDigitalPinValue = function (pin) { postal.sendCommand('getDigitalPinValue', [board.id, pin], function (response) { board.pins[pin].value = response; board.pins[pin].report = 2;}); };
-    board.getAnalogPinValue = function (aPin) { postal.sendCommand('getAnalogPinValue', [board.id, aPin], function (response) { board.pins[aPin].value = response; board.pins[aPin].report = 2;}); };
-    board.getArduinoBoardParam = function (name) {postal.sendCommand('getArduinoBoardParam', [board.id, name], function (response) { board[name] = response;}); };
-    board.checkArduinoBoardParam = function (name) {postal.sendCommand('checkArduinoBoardParam', [board.id, name], function (response) { board[name] = response;}); };
-    board.i2cConfig = function () {postal.sendCommand('i2cConfig', [board.id]); };
-    board.i2cWrite = function (address, reg, bytes) { postal.sendCommand('i2cWrite', [board.id, address, reg, bytes]); };
-    board.i2cReadOnce = function (address, reg, callback) { postal.sendCommand('i2cReadOnce', [board.id, address, reg], function (response) { board['i2cResponse-' + Number(address)] = response; }); };
-
-};
-
-// Fake Buffer definition, needed by some Firmata extensions
-
-function Buffer (data) {
-    return data;
-};
-
-/* plugin.js */
-console.log('plugin.js');
-var extensionId = 'oohlojlbppekmcklhkcpphahghdlmnmn',
-    postal = new Postal(),
-    firmata = {
-        Board: function(port, callback) {
-          console.log('running connect');
-            chrome.runtime.sendMessage(extensionId, { command: 'connectBoard', args: [ port ] }, callback)
-        }
-    },
-    require = function () {};
-
-// Messaging between web client and plugin
-
-function Postal() {};
-
-// Command sender function factory
-Postal.prototype.commandSender = function () {
-    var myself = this,
-        command = arguments[0],
-        args = Array.from(arguments).slice(1),
-        callback = typeof args[args.length - 1] === 'function' ? args.splice(args.length - 1) : null;
-
-    return function () { myself.sendCommand(command, args, callback); };
-};
-
-Postal.prototype.sendCommand = function (command, args, callback) {
-    chrome.runtime.sendMessage(extensionId, { command: command, args: args }, callback);
-};
-
-chrome.serial = {
-    getDevices: function (callback) { postal.sendCommand('getDevices', null, callback) }
-};
+	pinmode[2] = 0;
+	pinmode[3] = 1;
+	pinmode[4] = 0;
+	pinmode[5] = 1;
+	pinmode[6] = 1;
+	pinmode[7] = 0;
+	pinmode[8] = 0;
+	pinmode[9] = 1;
+	pinmode[10] = 1;
+	pinmode[11] = 1;
+	pinmode[12] = 1;
+	pinmode[13] = 1;
+	pinmode[14] = 1;
+	pinmode[15] = 1;
+	pinmode[16] = 1;
 
 
+	var msg1 = {};
+	var msg2 = {};
 
-/* END FROM SNAP */
-	console.log("Can we see Arduino?");
-	console.log(Arduino);
-	Arduino.prototype.attemptConnection();
+	var servo_smooth = [];
+	var servo_position_smooth;
 
- /* RANDI see if calling hw list messes something up somehow */
-  //var hwList = new HWList();
-
-  function HWList() {
-  console.log("Running HWList");
-    this.devices = [];
-
-    this.add = function(dev, pin) {
-      var device = this.search(dev);
-      if (!device) {
-        device = {name: dev, pin: pin, val: 0};
-        this.devices.push(device);
-      } else {
-        device.pin = pin;
-        device.val = 0;
-      }
-    };
-
-    this.search = function(dev) {
-      for (var i=0; i<this.devices.length; i++) {
-        if (this.devices[i].name === dev)
-          return this.devices[i];
-      }
-      return null;
-    };
-  }
-
-  function init() {
-
-    for (var i = 0; i < 16; i++) {
-      var output = new Uint8Array([REPORT_DIGITAL | i, 0x01]);
-      device.send(output.buffer);
-    }
-
-    queryCapabilities();
-
-    // TEMPORARY WORKAROUND
-    // Since _deviceRemoved is not used with Serial devices
-    // ping device regularly to check connection
-    pinger = setInterval(function() {
-      if (pinging) {
-        if (++pingCount > 6) {
-          clearInterval(pinger);
-          pinger = null;
-          connected = false;
-          if (device) device.close();
-          device = null;
-          return;
-        }
-      } else {
-        if (!device) {
-          clearInterval(pinger);
-          pinger = null;
-          return;
-        }
-        queryFirmware();
-        pinging = true;
-      }
-    }, 100);
-  }
-
-  function hasCapability(pin, mode) {
-    if (pinModes[mode].indexOf(pin) > -1)
-      return true;
-    else
-      return false;
-  }
-
-  function queryFirmware() {
-    var output = new Uint8Array([START_SYSEX, QUERY_FIRMWARE, END_SYSEX]);
-    device.send(output.buffer);
-  }
-
-  function queryCapabilities() {
-    console.log('Querying ' + device.id + ' capabilities');
-    var msg = new Uint8Array([
-        START_SYSEX, CAPABILITY_QUERY, END_SYSEX]);
-    device.send(msg.buffer);
-  }
-
-  function queryAnalogMapping() {
-    console.log('Querying ' + device.id + ' analog mapping');
-    var msg = new Uint8Array([
-        START_SYSEX, ANALOG_MAPPING_QUERY, END_SYSEX]);
-    device.send(msg.buffer);
-  }
-
-  function setDigitalInputs(portNum, portData) {
-    digitalInputData[portNum] = portData;
-  }
-
-  function setAnalogInput(pin, val) {
-    analogInputData[pin] = val;
-  }
-
-  function setVersion(major, minor) {
-    majorVersion = major;
-    minorVersion = minor;
-  }
-
-  function processSysexMessage() {
-    switch(storedInputData[0]) {
-      case CAPABILITY_RESPONSE:
-        for (var i = 1, pin = 0; pin < MAX_PINS; pin++) {
-          while (storedInputData[i++] != 0x7F) {
-            pinModes[storedInputData[i-1]].push(pin);
-            i++; //Skip mode resolution
-          }
-          if (i == sysexBytesRead) break;
-        }
-        queryAnalogMapping();
-        break;
-      case ANALOG_MAPPING_RESPONSE:
-        for (var pin = 0; pin < analogChannel.length; pin++)
-          analogChannel[pin] = 127;
-        for (var i = 1; i < sysexBytesRead; i++)
-          analogChannel[i-1] = storedInputData[i];
-        for (var pin = 0; pin < analogChannel.length; pin++) {
-          if (analogChannel[pin] != 127) {
-            var out = new Uint8Array([
-                REPORT_ANALOG | analogChannel[pin], 0x01]);
-            device.send(out.buffer);
-          }
-        }
-        notifyConnection = true;
-        setTimeout(function() {
-          notifyConnection = false;
-        }, 100);
-        break;
-      case QUERY_FIRMWARE:
-        if (!connected) {
-          clearInterval(poller);
-          poller = null;
-          clearTimeout(watchdog);
-          watchdog = null;
-          connected = true;
-          setTimeout(init, 200);
-        }
-        pinging = false;
-        pingCount = 0;
-        break;
-    }
-  }
-
-  function processInput(inputData) {
-    for (var i=0; i < inputData.length; i++) {
-      if (parsingSysex) {
-        if (inputData[i] == END_SYSEX) {
-          parsingSysex = false;
-          processSysexMessage();
-        } else {
-          storedInputData[sysexBytesRead++] = inputData[i];
-        }
-      } else if (waitForData > 0 && inputData[i] < 0x80) {
-        storedInputData[--waitForData] = inputData[i];
-        if (executeMultiByteCommand !== 0 && waitForData === 0) {
-          switch(executeMultiByteCommand) {
-            case DIGITAL_MESSAGE:
-              setDigitalInputs(multiByteChannel, (storedInputData[0] << 7) + storedInputData[1]);
-              break;
-            case ANALOG_MESSAGE:
-              setAnalogInput(multiByteChannel, (storedInputData[0] << 7) + storedInputData[1]);
-              break;
-            case REPORT_VERSION:
-              setVersion(storedInputData[1], storedInputData[0]);
-              break;
-          }
-        }
-      } else {
-        if (inputData[i] < 0xF0) {
-          command = inputData[i] & 0xF0;
-          multiByteChannel = inputData[i] & 0x0F;
-        } else {
-          command = inputData[i];
-        }
-        switch(command) {
-          case DIGITAL_MESSAGE:
-          case ANALOG_MESSAGE:
-          case REPORT_VERSION:
-            waitForData = 2;
-            executeMultiByteCommand = command;
-            break;
-          case START_SYSEX:
-            parsingSysex = true;
-            sysexBytesRead = 0;
-            break;
-        }
-      }
-    }
-  }
+	var dist_read  = 0;
+	var last_reading = 0;
 
   function pinMode(pin, mode) {
-    var msg = new Uint8Array([PIN_MODE, pin, mode]);
-    device.send(msg.buffer);
+  var msg = {};
+    msg.buffer = [PIN_MODE, pin, mode];
+    mConnection.postMessage(msg);
+    //addPackage(arrayBufferFromArray(msg.buffer), function(){});
   }
 
-  function analogRead(pin) {
-    if (pin >= 0 && pin < pinModes[ANALOG].length) {
-      return Math.round((analogInputData[pin] * 100) / 1023);
-    } else {
-      var valid = [];
-      for (var i = 0; i < pinModes[ANALOG].length; i++)
-        valid.push(i);
-      console.log('ERROR: valid analog pins are ' + valid.join(', '));
-      return;
-    }
+  function pinMode_init() {
+
+  pinMode(2,OUTPUT);
+  pinMode(4,OUTPUT);
+  pinMode(3,PWM);
+
+  pinMode(7,OUTPUT);
+  pinMode(8,OUTPUT);
+  pinMode(5,PWM);
+
+  pinMode(10,PWM);
+  pinMode(9,PWM);
+  pinMode(6,PWM);
+
+  pinMode(16,OUTPUT);
+  console.log("Pins initialized");
   }
 
-  function digitalRead(pin) {
-    if (!hasCapability(pin, INPUT)) {
-      console.log('ERROR: valid input pins are ' + pinModes[INPUT].join(', '));
-      return;
-    }
-    pinMode(pin, INPUT);
-    return (digitalInputData[pin >> 3] >> (pin & 0x07)) & 0x01;
+
+  function valBetween(v, min, max) {
+    return (Math.min(max, Math.max(min, v)));
   }
 
-  function analogWrite(pin, val) {
-    if (!hasCapability(pin, PWM)) {
-      console.log('ERROR: valid PWM pins are ' + pinModes[PWM].join(', '));
-      return;
-    }
-    if (val < 0) val = 0;
-    else if (val > 100) val = 100;
-    val = Math.round((val / 100) * 255);
-    pinMode(pin, PWM);
-    var msg = new Uint8Array([
-        ANALOG_MESSAGE | (pin & 0x0F),
-        val & 0x7F,
-        val >> 7]);
-    device.send(msg.buffer);
+
+  ext.buzzer = function(stan) {
+
+	  var msg = {}
+
+	  if (stan == 'włączony') {
+
+    msg.buffer = [201,1];
+     mConnection.postMessage(msg);
+	  }
+	  else {
+		  msg.buffer = [201,0];
+     mConnection.postMessage(msg);
+	  }
   }
 
-  function digitalWrite(pin, val) {
-    if (!hasCapability(pin, OUTPUT)) {
-      console.log('ERROR: valid output pins are ' + pinModes[OUTPUT].join(', '));
-      return;
+
+
+
+
+
+    ext.setOUTPUT = function(output, value) {
+
+	var msg = {}
+	value = valBetween(value,0,100);
+
+     if (output == 'OUTPUT 1') {
+   	msg.buffer = [204,value];
     }
-    var portNum = (pin >> 3) & 0x0F;
-    if (val == LOW)
-      digitalOutputData[portNum] &= ~(1 << (pin & 0x07));
-    else
-      digitalOutputData[portNum] |= (1 << (pin & 0x07));
-    pinMode(pin, OUTPUT);
-    var msg = new Uint8Array([
-        DIGITAL_MESSAGE | portNum,
-        digitalOutputData[portNum] & 0x7F,
-        digitalOutputData[portNum] >> 0x07]);
-    device.send(msg.buffer);
+       if (output == 'OUTPUT 2') {
+    msg.buffer = [205,value];
+    }
+       if (output == 'OUTPUT 3') {
+    msg.buffer = [206,value];
+    }
+       if (output == 'OUTPUT 4') {
+    msg.buffer = [207,value];
+    }
+
+    mConnection.postMessage(msg);
+
   }
 
-  function rotateServo(pin, deg) {
-    if (!hasCapability(pin, SERVO)) {
-      console.log('ERROR: valid servo pins are ' + pinModes[SERVO].join(', '));
-      return;
-    }
-    pinMode(pin, SERVO);
-    var msg = new Uint8Array([
-        ANALOG_MESSAGE | (pin & 0x0F),
-        deg & 0x7F,
-        deg >> 0x07]);
-    device.send(msg.buffer);
+
+  	ext.silnik = function(motor,direction,speed) {
+
+	var msg = {};
+	speed = valBetween(speed,0,100);
+
+	if (direction == 'tył' && speed > 0) {
+		speed = speed + 100;
+	}
+	if (direction == 'tył' && speed == 0) {
+		speed = 0;
+	}
+
+	if (motor == 'M1') {
+	 msg.buffer = [202,speed];
+	}
+	if (motor == 'M2') {
+	 msg.buffer = [203,speed];
+	}
+
+     mConnection.postMessage(msg);
+
+
+  	}
+
+
+
+  ext.servo_off = function() {
+	  var msg = {};
+	 msg.buffer = [212,99];
+     mConnection.postMessage(msg);
+     console.log('off');
   }
 
-  function freeMotor() {
-    return new Promise(resolve => {var interval = setInterval(function() {
-      if (carmoving == false){
-        clearInterval(interval);
-        resolve(carmoving);
-      }
-    }, 1000);
-  });
+  ext.serwo = function(pin, deg) {
+
+	  /*
+	  servo_position_smooth = 0;
+	  servo_smooth[0] = deg;
+
+	  for (i = 20; i > 0; i--) {
+		  servo_smooth[i] = servo_smooth[i-1];
+		  //console.log(servo_smooth[i]);
+	  }
+
+
+	  for (i = 0; i < 20; i++) {
+		  servo_position_smooth = servo_position_smooth + servo_smooth[i];
+	  }
+
+	  */
+
+
+
+   	var msg = {};
+
+
+   	var output;
+   	if (pin == "OUTPUT 1") {
+	   	output = 208;
+	   //	console.log("111");
+   	}
+   	if (pin == "OUTPUT 2") {
+	   	output = 209;
+   	}
+   	if (pin == "OUTPUT 3") {
+	   	output = 210;
+   	}
+   	if (pin == "OUTPUT 4") {
+	   	output = 211
+   	}
+
+    deg = valBetween(deg,0,100);
+	  msg.buffer = [output,Math.round(deg)];
+
+    mConnection.postMessage(msg);
+   //console.log(msg);
   }
 
-  ext.whenConnected = function() {
-    if (notifyConnection) return true;
-    return false;
-  };
 
-  ext.analogWrite = function(pin, val) {
-    analogWrite(pin, val);
-  };
 
-  ext.digitalWrite = function(pin, val) {
-    if (val == menus[lang]['outputs'][0])
-      digitalWrite(pin, HIGH);
-    else if (val == menus[lang]['outputs'][1])
-      digitalWrite(pin, LOW);
-  };
 
-  ext.analogRead = function(pin) {
-    return analogRead(pin);
-  };
 
-  ext.digitalRead = function(pin) {
-    return digitalRead(pin);
-  };
 
-  ext.whenAnalogRead = function(pin, op, val) {
-    if (pin >= 0 && pin < pinModes[ANALOG].length) {
-      if (op == '>')
-        return analogRead(pin) > val;
-      else if (op == '<')
-        return analogRead(pin) < val;
-      else if (op == '=')
-        return analogRead(pin) == val;
-      else
-        return false;
+
+  function messageParser(buf) {
+
+  var msg = {};
+
+  if (buf[0]==224){
+  msg1 = buf;
+  }
+  else if (buf[0] != 224) {
+  msg2 = buf;
+  }
+
+
+  msg.buffer = msg1.concat(msg2);
+
+  if (msg.buffer.length > 10) {
+	  msg.buffer = msg.buffer.slice(0,10);
+	  //console.log("H");
+	  //console.log(msg.buffer);
+  }
+
+
+  if (msg.buffer.length == 10){
+
+		   if (msg.buffer[0] == 224) {
+		   analogRead0 = Math.round(msg.buffer[1] );
+  		   }
+  		   if (msg.buffer[2] == 225) {
+	  	   analogRead1 = Math.round(msg.buffer[3] );
+  		   }
+  		   if (msg.buffer[4] == 226) {
+	  	   analogRead2 = Math.round(msg.buffer[5] );
+  		   }
+  		   if (msg.buffer[6] == 227) {
+	  	   analogRead3 = Math.round(msg.buffer[7] );
+  		   }
+         if (msg.buffer[8] == 240) {
+         dist_read = Math.round(msg.buffer[9] );
+         }
+	  //console.log(analogRead0);
+  }
+
+  }
+
+
+    ext.readINPUTanalog = function(input) {
+
+    var reading = 0;
+    var msg = {};
+
+
+
+
+    if (input == 'INPUT 1'){
+    reading = analogRead0;
     }
-  };
 
-  ext.whenDigitalRead = function(pin, val) {
-    if (hasCapability(pin, INPUT)) {
-      if (val == menus[lang]['outputs'][0])
-        return digitalRead(pin);
-      else if (val == menus[lang]['outputs'][1])
-        return digitalRead(pin) === false;
+    if (input == 'INPUT 2'){
+    reading = analogRead1;
     }
-  };
 
-  ext.connectHW = function(hw, pin) {
-    hwList.add(hw, pin);
-  };
-
-  ext.rotateServo = function(servo, deg) {
-    var hw = hwList.search(servo);
-    if (!hw) return;
-    if (deg < 0) deg = 0;
-    else if (deg > 180) deg = 180;
-    rotateServo(hw.pin, deg);
-    hw.val = deg;
-  };
-
-  ext.changeServo = function(servo, change) {
-    var hw = hwList.search(servo);
-    if (!hw) return;
-    var deg = hw.val + change;
-    if (deg < 0) deg = 0;
-    else if (deg > 180) deg = 180;
-    rotateServo(hw.pin, deg);
-    hw.val = deg;
-  };
-
-  var speed = 1;
-
-  ext.moveForward = function(time) {
-    var doIt = freeMotor();
-    doIt.then(response => {
-      carmoving = true;
-      console.log(carmoving);
-      rotateServo(rightservo, Math.round(90 - speed*35));
-      rotateServo(leftservo, Math.round(90 + speed*25));
-      setTimeout(function(){
-        rotateServo(rightservo, 90);
-        rotateServo(leftservo, 90);
-        carmoving = false;
-        console.log(carmoving);
-      }, time*1000);
-    })
-  };
-
-  ext.moveBackward = function(time) {
-    var doIt = freeMotor();
-    doIt.then(response => {
-      carmoving = true;
-      console.log(carmoving);
-      rotateServo(rightservo, Math.round(90+ speed*25));
-      rotateServo(leftservo, Math.round(90 - speed*35));
-      setTimeout(function(){
-        rotateServo(rightservo, 90);
-        rotateServo(leftservo, 90);
-        carmoving = false;
-        console.log(carmoving);
-      }, time*1000);
-    })
-  };
-
-  ext.easyturn = function(direction) {
-    carmoving = true;
-    if (direction == 'right'){
-      rotateServo(rightservo, Math.round(90+ speed*25));
-      rotateServo(leftservo, Math.round(90+ speed*25));
-      setTimeout(function(){
-        rotateServo(rightservo, 90);
-        rotateServo(leftservo, 90);
-        carmoving = false;
-      }, 2300);
-    } else if (direction == 'left') {
-      rotateServo(rightservo, Math.round(90 - speed*35)); //slower?
-      rotateServo(leftservo, Math.round(90 - speed*35)); //slower?
-      setTimeout(function(){
-        rotateServo(rightservo, 90);
-        rotateServo(leftservo, 90);
-        carmoving = false;
-      }, 2300);
+    if (input == 'INPUT 3'){
+    reading = analogRead2;
     }
-    else if (direction == 'around') {
-      rotateServo(rightservo, Math.round(90 - speed*35)); //slower?
-      rotateServo(leftservo, Math.round(90 - speed*35)); //slower?
-      setTimeout(function(){
-        rotateServo(rightservo, 90);
-        rotateServo(leftservo, 90);
-        carmoving = false;
-      }, 4350);
+
+    if (input == 'INPUT 4'){
+    reading = analogRead3;
+    }
+
+
+
+
+    return reading;
+
+  }
+
+
+  ext.readUltrasound = function(input) {
+
+    //var msg = new Uint8Array([0xF0,0x08,14,0xF7]);
+    //device.send(msg.buffer);
+
+    var msg = {};
+    msg.buffer = [0xF0,0x08,14,0xF7];
+    //240 8 14 247
+
+    //mConnection.postMessage(msg);
+
+  	var distance = dist_read;
+  	if (distance == 0) {
+  	distance = 1000;
+  	}
+      	//console.log(storedInputData[i]);
+    //console.log(distance);
+
+    //this.arduino.board.sp.write(new Buffer([0xF0, 0x08, pinNumber, 0xF7])
+
+  return distance;
+
+  }
+
+
+
+
+
+	var descriptor = {
+
+	url: 'http://www.lofirobot.com',
+
+        blocks: [
+			[' ', 'obracaj silnik %m.silnik w  kierunku %m.kierunek z mocą %n', 'silnik', 'M1','przód', 100],
+			//[' ', '2obracaj silnik %m.silnik w  kierunku %m.kierunek z mocą %n', 'silnik2', 'M1','przód', 100],
+			[' ', 'ustaw wyjście %m.output na wartość  %n%', 'setOUTPUT', 'OUTPUT 1', 100],
+			//[' ', 'ustaw wyjście %m.output jako  %m.stan', 'setOUTPUTdigital', 'OUTPUT 1', 'włączony'],
+			[' ', 'ustaw serwo na wyjściu %m.output na pozycję %n', 'serwo', 'OUTPUT 1', 0],
+			//[' ', 'wyłącz wszystkie SERWO', 'servo_off'],
+			[' ', 'ustaw BUZZER jako %m.stan', 'buzzer', 'włączony'],
+			//[' ', 'ustaw BUZZER2 jako %m.stan', 'buzzer2', 'włączony'],
+			['r', 'czujnik odległości', 'readUltrasound', 'INPUT 1'],
+			['r', 'odczytaj wejście %m.input', 'readINPUTanalog', 'INPUT 1']
+
+			],
+        menus: {
+
+      silnik: ['M1','M2'],
+      kierunek: ['przód', 'tył'],
+      input: ['INPUT 1','INPUT 2','INPUT 3','INPUT 4'],
+      output: ['OUTPUT 1','OUTPUT 2', 'OUTPUT 3', 'OUTPUT 4'],
+      stan: ['włączony', 'wyłączony']
+		}
     };
-  };
 
-  ext.turn = function(direction, time) {
-    carmoving = true;
-    if (direction == 'clockwise'){
-      rotateServo(rightservo, Math.round(90+ speed*25));
-      rotateServo(leftservo, Math.round(90+ speed*25));
-    } else if (direction == 'counterclockwise') {
-      rotateServo(rightservo, Math.round(90 - speed*35)); //slower?
-      rotateServo(leftservo, Math.round(90 - speed*35)); //slower?
+
+	ext._getStatus = function() {
+        return {status: mStatus, msg: mStatus==2?'Ready':'Not Ready'};
     };
-    setTimeout(function(){
-      rotateServo(rightservo, 90);
-      rotateServo(leftservo, 90);
-      carmoving = false;
-    }, time*1000);
+	ext._shutdown = function() {
+	    if(poller) poller = clearInterval(poller);
+	    status = false;
+	}
+    function getAppStatus() {
+        chrome.runtime.sendMessage(LOFI_ID, {message: "STATUS"}, function (response) {
+            if (response === undefined) { //Chrome app not found
+                console.log("Chrome app not found");
+                mStatus = 0;
+                setTimeout(getAppStatus, 1000);
+            }
+            else if (response.status === false) { //Chrome app says not connected
+                mStatus = 1;
+                setTimeout(getAppStatus, 1000);
+            }
+            else {// successfully connected
+                if (mStatus !==2) {
+                    console.log("Connected");
+                    mConnection = chrome.runtime.connect(LOFI_ID);
+                    mConnection.onMessage.addListener(onMsgApp);
 
-  };
+                    //pinMode_init();
+                }
+                mStatus = 1;
+                setTimeout(getAppStatus, 1000);
+            }
+        });
+    };
 
-  ext.setSpeed = function(percent) {
-  if (percent > 100) percent = 100;
-  if (percent < 0) percent = 0;
-  speed = percent/100
-  };
 
-  ext.isCarMoving = function(state) {
-    if (carmoving) {
-      if (state == 'moving')
-        return true;
-      else
-        return false;
-    }
-    else {
-      if (state == 'moving')
-        return false;
-      else
-        return true;
-    }
-  };
+    function onMsgApp(msg) {
+	    mStatus = 2;
+		var buffer = msg.buffer;
+		//console.log(buffer);
 
-  ext.setLED = function(led, val) {
-    var hw = hwList.search(led);
-    if (!hw) return;
-    analogWrite(hw.pin, val);
-    hw.val = val;
-  };
 
-  ext.setColor = function(newcolor) {
-    color = newcolor;
-    if (color == 'random'){
-      rgb = [Math.round(255*Math.random()), Math.round(255*Math.random()), Math.round(255*Math.random())];
-      do {
-        rgb = [Math.round(255*Math.random()), Math.round(255*Math.random()), Math.round(255*Math.random())];
-      }
-      while (rgb[0] > 90 && rgb[1] > 90 && rgb[2] > 90)
-    } else {
-      rgb = colorMap[color];
-    }
-    if (lightson) {
-      analogWrite(redpin, rgb[0]);
-      analogWrite(greenpin, rgb[1]);
-      analogWrite(bluepin, rgb[2]);
-    }
-  };
+		if ( buffer[0]==224){
+		messageParser(buffer);
+		last_reading = 0;
+		}
 
-  ext.setLEDstrip = function(val) {
-    if (val == 'on') {
-      analogWrite(redpin, rgb[0]);
-      analogWrite(greenpin, rgb[1]);
-      analogWrite(bluepin, rgb[2]);
-      lightson = true;
-    } else if (val == 'off') {
-      analogWrite(redpin, 255);
-      analogWrite(greenpin, 255);
-      analogWrite(bluepin, 255);
-      lightson = false;
-    }
-  };
 
-  ext.RedRead = function() {
-    return rgb[0];
-  };
+		if (buffer[0] != 224 && last_reading == 0){
+		    messageParser(buffer);
+		    last_reading = 1;
+		}
 
-  ext.GreenRead = function() {
-    return rgb[1];
-  };
 
-  ext.BlueRead = function() {
-    return rgb[2];
-  };
 
-  ext.changeLED = function(led, val) {
-    var hw = hwList.search(led);
-    if (!hw) return;
-    var b = hw.val + val;
-    if (b < 0) b = 0;
-    else if (b > 100) b = 100;
-    analogWrite(hw.pin, b);
-    hw.val = b;
-  };
 
-  ext.digitalLED = function(led, val) {
-    var hw = hwList.search(led);
-    if (!hw) return;
-    if (val == 'on') {
-      digitalWrite(hw.pin, HIGH);
-      hw.val = 255;
-    } else if (val == 'off') {
-      digitalWrite(hw.pin, LOW);
-      hw.val = 0;
-    }
-  };
+    };
 
-  ext.areLightsOn = function(state) {
-    if (lightson) {
-      if (state == 'on')
-        return true;
-      else
-        return false;
-    }
-    else {
-      if (state == 'on')
-        return false;
-      else
-        return true;
-    }
-  };
+    getAppStatus();
 
-  ext.readInput = function(name) {
-    var hw = hwList.search(name);
-    if (!hw) return;
-    return analogRead(hw.pin);
-  };
 
-  ext.whenButton = function(btn, state) {
-    var hw = hwList.search(btn);
-    if (!hw) return;
-    if (state === 'pressed')
-      return digitalRead(hw.pin);
-    else if (state === 'released')
-      return !digitalRead(hw.pin);
-  };
 
-  ext.isButtonPressed = function(btn) {
-    var hw = hwList.search(btn);
-    if (!hw) return;
-    return digitalRead(hw.pin);
-  };
-
-  ext.whenInput = function(name, op, val) {
-    var hw = hwList.search(name);
-    if (!hw) return;
-    if (op == '>')
-      return analogRead(hw.pin) > val;
-    else if (op == '<')
-      return analogRead(hw.pin) < val;
-    else if (op == '=')
-      return analogRead(hw.pin) == val;
-    else
-      return false;
-  };
-
-  ext.mapValues = function(val, aMin, aMax, bMin, bMax) {
-    var output = (((bMax - bMin) * (val - aMin)) / (aMax - aMin)) + bMin;
-    return Math.round(output);
-  };
-
-  ext._getStatus = function() {
-    if (!connected)
-      return { status:1, msg:'Disconnected' };
-    else
-      return { status:2, msg:'Connected' };
-  };
-
-  ext._deviceRemoved = function(dev) {
-    console.log('Device removed');
-    // Not currently implemented with serial devices
-  };
-
-  var potentialDevices = [];
-  ext._deviceConnected = function(dev) {
-    potentialDevices.push(dev);
-    if (!device)
-      tryNextDevice();
-  };
-
-  var poller = null;
-  var watchdog = null;
-  function tryNextDevice() {
-    device = potentialDevices.shift();
-    if (!device) return;
-
-    device.open({ stopBits: 0, bitRate: 57600, ctsFlowControl: 0 });
-    console.log('Attempting connection with ' + device.id);
-    device.set_receive_handler(function(data) {
-      var inputData = new Uint8Array(data);
-      processInput(inputData);
-    });
-
-    poller = setInterval(function() {
-      queryFirmware();
-    }, 1000);
-
-    watchdog = setTimeout(function() {
-      clearInterval(poller);
-      poller = null;
-      device.set_receive_handler(null);
-      device.close();
-      device = null;
-      tryNextDevice();
-    }, 5000);
-  }
-
-  ext._shutdown = function() {
-    // TODO: Bring all pins down
-    if (device) device.close();
-    if (poller) clearInterval(poller);
-    device = null;
-  };
-
-  // Check for GET param 'lang'
-  var paramString = window.location.search.replace(/^\?|\/$/g, '');
-  var vars = paramString.split("&");
-  var lang = 'en';
-  for (var i=0; i<vars.length; i++) {
-    var pair = vars[i].split('=');
-    if (pair.length > 1 && pair[0]=='lang')
-      lang = pair[1];
-  }
-
-  var blocks = {
-    en: [
-      ['h', 'when device is connected', 'whenConnected'],
-      [' ', 'connect %m.hwOut to pin %n', 'connectHW', 'led A', 3],
-      [' ', 'connect %m.hwIn to analog %n', 'connectHW', 'rotation knob', 0],
-      ['-'],
-      [' ', 'set %m.leds %m.outputs', 'digitalLED', 'led A', 'on'],
-      [' ', 'set %m.leds brightness to %n%', 'setLED', 'led A', 100],
-      [' ', 'change %m.leds brightness by %n%', 'changeLED', 'led A', 20],
-      [' ', 'turn light strip %m.outputs', 'setLEDstrip', 'on'],
-      [' ', 'set light color to %m.colors', 'setColor', 'white'],
-      ['b', 'lights %m.outputs ?', 'areLightsOn', 'on'],
-      ['r', 'red value', 'RedRead'],
-      ['r', 'green value', 'GreenRead'],
-      ['r', 'blue value', 'BlueRead'],
-      ['-'],
-      [' ', 'rotate %m.servos to %n degrees', 'rotateServo', 'servo A', 180],
-      [' ', 'rotate %m.servos by %n degrees', 'changeServo', 'servo A', 20],
-      [' ', 'move forward for %n seconds', 'moveForward', 5],
-      [' ', 'move backward for %n seconds', 'moveBackward', 5],
-      [' ', 'turn %m.turning', 'easyturn', 'left'],
-      [' ', 'set speed to %n', 'setSpeed', 100],
-      [' ', 'turn %m.directions for %n seconds', 'turn', 'clockwise', 5],
-      ['b', 'car %m.carStates ?', 'isCarMoving', 'moving'],
-      // ['r', 'car left value', 'carLeftRead'],
-      // ['r', 'car right value', 'carRightRead'],
-      ['-'],
-      ['h', 'when %m.buttons is %m.btnStates', 'whenButton', 'button A', 'pressed'],
-      ['b', '%m.buttons pressed?', 'isButtonPressed', 'button A'],
-      ['-'],
-      ['h', 'when %m.hwIn %m.ops %n%', 'whenInput', 'rotation knob', '>', 50],
-      ['r', 'read %m.hwIn', 'readInput', 'rotation knob'],
-      ['-'],
-      [' ', 'set pin %n %m.outputs', 'digitalWrite', 1, 'on'],
-      [' ', 'set pin %n to %n%', 'analogWrite', 3, 100],
-      ['-'],
-      ['h', 'when pin %n is %m.outputs', 'whenDigitalRead', 1, 'on'],
-      ['b', 'pin %n on?', 'digitalRead', 1],
-      ['-'],
-      ['h', 'when analog %n %m.ops %n%', 'whenAnalogRead', 1, '>', 50],
-      ['r', 'read analog %n', 'analogRead', 0],
-      ['-'],
-      ['r', 'map %n from %n %n to %n %n', 'mapValues', 50, 0, 100, -240, 240]
-    ]};
-
-  var menus = {
-    en: {
-      buttons: ['button A', 'button B', 'button C', 'button D'],
-      btnStates: ['pressed', 'released'],
-      carStates: ['moving', 'stopped'],
-      hwIn: ['rotation knob', 'light sensor', 'temperature sensor'],
-      hwOut: ['led A', 'led B', 'led C', 'led D', 'button A', 'button B', 'button C', 'button D', 'servo A', 'servo B', 'servo C', 'servo D'],
-      leds: ['led A', 'led B', 'led C', 'led D'],
-      outputs: ['on', 'off'],
-      ops: ['>', '=', '<'],
-      turning: ['left', 'right', 'around'],
-      directions: ['clockwise', 'counterclockwise'],
-      servos: ['servo A', 'servo B', 'servo C', 'servo D'],
-      colors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink', 'white', 'random']
-    }};
-
-  var descriptor = {
-    blocks: blocks[lang],
-    menus: menus[lang],
-    url: ''
-  };
-
-  ScratchExtensions.register('Arduino', descriptor, ext);
-
+	ScratchExtensions.register('LOFI Robot Chrome v4', descriptor, ext);
 })({});
