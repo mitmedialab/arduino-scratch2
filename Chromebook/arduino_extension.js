@@ -259,7 +259,7 @@
       servos: ['RIGHT','LEFT'],
       servo_dir: ['FORWARD','BACKWARD'],
       leds: ['RED', 'GREEN'],
-      led_on: ['ON','OFF']
+      led_on: ['ON','OFF'],
       input: ['INPUT 1','INPUT 2','INPUT 3','INPUT 4'],
       output: ['OUTPUT 1','OUTPUT 2', 'OUTPUT 3', 'OUTPUT 4'],
       stan: ['włączony', 'wyłączony']
