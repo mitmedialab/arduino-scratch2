@@ -31,20 +31,20 @@
 
 	var poller = null;
 
-    var LOFI_ID = "opdjdfckgbogbagnkbkpjgficbampcel"; // APP ID
-    var mConnection;
-    var mStatus = 0;
-    var _selectors = {};
+  var LOFI_ID = "opdjdfckgbogbagnkbkpjgficbampcel"; // APP ID
+  var mConnection;
+  var mStatus = 0;
+  var _selectors = {};
 
-    var digitalOutputData = new Uint8Array(16);
-    var analogInputData = new Uint16Array(16);
-
-    var analogRead1, analogRead2, analogRead3, analogRead0;
+  var digitalOutputData = new Uint8Array(16);
+  /* RANDI - not using and analog data
+  //var analogInputData = new Uint16Array(16);
+  //var analogRead1, analogRead2, analogRead3, analogRead0;
 	var analog0enable = false;
 	var analog1enable = false;
 	var analog2enable = false;
 	var analog3enable = false;
-
+  */
 	var pinmode = new Uint8Array(16);
 
 	pinmode[2] = 0;
@@ -82,19 +82,17 @@
 
   function pinMode_init() {
 
-  pinMode(2,OUTPUT);
-  pinMode(4,OUTPUT);
-  pinMode(3,PWM);
-
-  pinMode(7,OUTPUT);
-  pinMode(8,OUTPUT);
-  pinMode(5,PWM);
-
-  pinMode(10,PWM);
+  // Ultrasonic sensor trigger and echo
+  pinMode(6,OUTPUT);
+  pinMode(8,INPUT);
+  
+  // Left and right servos
   pinMode(9,PWM);
-  pinMode(6,PWM);
+  pinMode(10,PWM);
 
-  pinMode(16,OUTPUT);
+  // Red and green leds
+  pinMode(11,OUTPUT);
+  pinMode(12,OUTPUT);
   console.log("Pins initialized");
   }
 
@@ -104,42 +102,21 @@
   }
 
 
-  ext.buzzer = function(stan) {
-
-	  var msg = {}
-
-	  if (stan == 'włączony') {
-
-    msg.buffer = [201,1];
-     mConnection.postMessage(msg);
-	  }
-	  else {
-		  msg.buffer = [201,0];
-     mConnection.postMessage(msg);
-	  }
-  }
-
-
-
-
-
-
-    ext.setOUTPUT = function(output, value) {
+   ext.setOUTPUT = function(output, setting) {
 
 	var msg = {}
-	value = valBetween(value,0,100);
+  var value = 0;
+  
+  if (settting == 'ON') {
+    value = 100;
+  } else {
+    value = 0;
+  }
 
-     if (output == 'OUTPUT 1') {
-   	msg.buffer = [204,value];
-    }
-       if (output == 'OUTPUT 2') {
-    msg.buffer = [205,value];
-    }
-       if (output == 'OUTPUT 3') {
-    msg.buffer = [206,value];
-    }
-       if (output == 'OUTPUT 4') {
-    msg.buffer = [207,value];
+    if (output == 'RED') {
+      msg.buffer = [204,value];
+    } else if (output == 'GREEN') {
+      msg.buffer = [205,value];
     }
 
     mConnection.postMessage(msg);
@@ -159,6 +136,7 @@
 		speed = 0;
 	}
 
+  console.log('Motor: ' + motor + '\tSpeed: ' + speed);
 	if (motor == 'M1') {
 	 msg.buffer = [202,speed];
 	}
@@ -173,56 +151,38 @@
 
 
 
-  ext.servo_off = function() {
+  ext.servo_off = function(pin) {
 	  var msg = {};
-	 msg.buffer = [212,99];
-     mConnection.postMessage(msg);
-     console.log('off');
-  }
-
-  ext.serwo = function(pin, deg) {
-
-	  /*
-	  servo_position_smooth = 0;
-	  servo_smooth[0] = deg;
-
-	  for (i = 20; i > 0; i--) {
-		  servo_smooth[i] = servo_smooth[i-1];
-		  //console.log(servo_smooth[i]);
-	  }
-
-
-	  for (i = 0; i < 20; i++) {
-		  servo_position_smooth = servo_position_smooth + servo_smooth[i];
-	  }
-
-	  */
-
-
-
-   	var msg = {};
-
-
-   	var output;
-   	if (pin == "OUTPUT 1") {
+ 	 // RANDI this is what was used before msg.buffer = [212,99];
+    var output;
+   	if (pin == "RIGHT") {
 	   	output = 208;
-	   //	console.log("111");
-   	}
-   	if (pin == "OUTPUT 2") {
+   	} else if (pin == "LEFT") {
 	   	output = 209;
    	}
-   	if (pin == "OUTPUT 3") {
-	   	output = 210;
-   	}
-   	if (pin == "OUTPUT 4") {
-	   	output = 211
-   	}
-
-    deg = valBetween(deg,0,100);
-	  msg.buffer = [output,Math.round(deg)];
-
+    msg.buffer = [output,Math.round(51)];
     mConnection.postMessage(msg);
-   //console.log(msg);
+  }
+
+  ext.servo = function(pin, dir) {
+   	var msg = {};
+    var deg;
+
+   	var output;
+   	if (pin == "RIGHT") {
+	   	output = 208;
+   	} else if (pin == "LEFT") {
+	   	output = 209;
+   	}
+
+    if (dir == 'FORWARD') {
+      deg = 0;
+    } else if (dir == 'BACKWARD') {
+      deg = 100;  
+    }
+    
+	  msg.buffer = [output,Math.round(deg)];    
+    mConnection.postMessage(msg);
   }
 
 
@@ -247,86 +207,32 @@
 
   if (msg.buffer.length > 10) {
 	  msg.buffer = msg.buffer.slice(0,10);
-	  //console.log("H");
-	  //console.log(msg.buffer);
   }
 
 
   if (msg.buffer.length == 10){
 
-		   if (msg.buffer[0] == 224) {
-		   analogRead0 = Math.round(msg.buffer[1] );
-  		   }
-  		   if (msg.buffer[2] == 225) {
-	  	   analogRead1 = Math.round(msg.buffer[3] );
-  		   }
-  		   if (msg.buffer[4] == 226) {
-	  	   analogRead2 = Math.round(msg.buffer[5] );
-  		   }
-  		   if (msg.buffer[6] == 227) {
-	  	   analogRead3 = Math.round(msg.buffer[7] );
-  		   }
          if (msg.buffer[8] == 240) {
          dist_read = Math.round(msg.buffer[9] );
          }
-	  //console.log(analogRead0);
-  }
 
   }
 
-
-    ext.readINPUTanalog = function(input) {
-
-    var reading = 0;
-    var msg = {};
-
-
-
-
-    if (input == 'INPUT 1'){
-    reading = analogRead0;
-    }
-
-    if (input == 'INPUT 2'){
-    reading = analogRead1;
-    }
-
-    if (input == 'INPUT 3'){
-    reading = analogRead2;
-    }
-
-    if (input == 'INPUT 4'){
-    reading = analogRead3;
-    }
-
-
-
-
-    return reading;
-
   }
-
 
   ext.readUltrasound = function(input) {
 
-    //var msg = new Uint8Array([0xF0,0x08,14,0xF7]);
-    //device.send(msg.buffer);
-
+  
     var msg = {};
     msg.buffer = [0xF0,0x08,14,0xF7];
     //240 8 14 247
 
-    //mConnection.postMessage(msg);
-
+  
   	var distance = dist_read;
   	if (distance == 0) {
   	distance = 1000;
   	}
-      	//console.log(storedInputData[i]);
-    //console.log(distance);
-
-    //this.arduino.board.sp.write(new Buffer([0xF0, 0x08, pinNumber, 0xF7])
-
+  
   return distance;
 
   }
@@ -337,25 +243,23 @@
 
 	var descriptor = {
 
-	url: 'http://www.lofirobot.com',
+	url: '', // update to something?
 
         blocks: [
-			[' ', 'obracaj silnik %m.silnik w  kierunku %m.kierunek z mocą %n', 'silnik', 'M1','przód', 100],
-			//[' ', '2obracaj silnik %m.silnik w  kierunku %m.kierunek z mocą %n', 'silnik2', 'M1','przód', 100],
-			[' ', 'ustaw wyjście %m.output na wartość  %n%', 'setOUTPUT', 'OUTPUT 1', 100],
-			//[' ', 'ustaw wyjście %m.output jako  %m.stan', 'setOUTPUTdigital', 'OUTPUT 1', 'włączony'],
-			[' ', 'ustaw serwo na wyjściu %m.output na pozycję %n', 'serwo', 'OUTPUT 1', 0],
-			//[' ', 'wyłącz wszystkie SERWO', 'servo_off'],
-			[' ', 'ustaw BUZZER jako %m.stan', 'buzzer', 'włączony'],
-			//[' ', 'ustaw BUZZER2 jako %m.stan', 'buzzer2', 'włączony'],
-			['r', 'czujnik odległości', 'readUltrasound', 'INPUT 1'],
-			['r', 'odczytaj wejście %m.input', 'readINPUTanalog', 'INPUT 1']
-
+			//[' ', 'ustaw wyjście %m.output na wartość  %n%', 'setOUTPUT', 'OUTPUT 1', 100],
+			//[' ', 'ustaw serwo na wyjściu %m.output na pozycję %n', 'serwo', 'OUTPUT 1', 0],
+      [' ', 'turn %m.leds light %m.led_on', 'setOUTPUT', 'RED', 'ON'], 
+			[' ', 'turn %m.servos servo %n', 'servo', 'RIGHT', 'FORWARD'], // RANDI update serwo to understand forward/backward and left/right
+      [' ', 'stop %m.servos', 'servo_off', 'RIGHT'],
+      ['r', 'read distance', 'readUltrasound', 'INPUT 1'],
+			
 			],
         menus: {
 
-      silnik: ['M1','M2'],
-      kierunek: ['przód', 'tył'],
+      servos: ['RIGHT','LEFT'],
+      servo_dir: ['FORWARD','BACKWARD'],
+      leds: ['RED', 'GREEN'],
+      led_on: ['ON','OFF']
       input: ['INPUT 1','INPUT 2','INPUT 3','INPUT 4'],
       output: ['OUTPUT 1','OUTPUT 2', 'OUTPUT 3', 'OUTPUT 4'],
       stan: ['włączony', 'wyłączony']
@@ -422,5 +326,5 @@
 
 
 
-	ScratchExtensions.register('LOFI Robot Chrome v4', descriptor, ext);
+	ScratchExtensions.register('PopPet Robot', descriptor, ext);
 })({});
