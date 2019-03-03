@@ -7,7 +7,7 @@
     SERVO = 0x04,
     SHIFT = 0x05,
     I2C = 0x06,
-    ONEWIRE = 0x07,
+    onEWIRE = 0x07,
     STEPPER = 0x08,
     ENCODER = 0x09,
     IGNORE = 0x7F;
@@ -19,12 +19,12 @@
     START_SYSEX = 0xF0,
     END_SYSEX = 0xF7,
     QUERY_FIRMWARE = 0x79,
-    REPORT_VERSION = 0xF9,
+    REPORT_VERSIon = 0xF9,
     ANALOG_MESSAGE = 0xE0,
     ANALOG_MAPPING_QUERY = 0x69,
-    ANALOG_MAPPING_RESPONSE = 0x6A,
+    ANALOG_MAPPING_RESPonSE = 0x6A,
     CAPABILITY_QUERY = 0x6B,
-    CAPABILITY_RESPONSE = 0x6C;
+    CAPABILITY_RESPonSE = 0x6C;
     STRING_DATA = 0x71;
 
     var LOW = 0, HIGH = 1;
@@ -107,18 +107,18 @@
 	var msg = {}
   var value = 0;
   
-  if (settting == 'ON') {
-    value = 100;
-  } else {
+  if (settting == 'on') {
     value = 0;
+  } else {
+    value = 100;
   }
 
-    if (output == 'RED') {
+    if (output == 'red') {
       msg.buffer = [204,value];
-    } else if (output == 'GREEN') {
+    } else if (output == 'green') {
       msg.buffer = [205,value];
     }
-
+    console.log("Turning on LED");
     mConnection.postMessage(msg);
 
   }
@@ -155,9 +155,9 @@
 	  var msg = {};
  	 // RANDI this is what was used before msg.buffer = [212,99];
     var output;
-   	if (pin == "RIGHT") {
+   	if (pin == "right") {
 	   	output = 208;
-   	} else if (pin == "LEFT") {
+   	} else if (pin == "left") {
 	   	output = 209;
    	}
     msg.buffer = [output,Math.round(51)];
@@ -169,17 +169,21 @@
     var deg;
 
    	var output;
-   	if (pin == "RIGHT") {
+   	if (pin == "right") {
 	   	output = 208;
-   	} else if (pin == "LEFT") {
+      if (dir == 'forward') {
+        deg = 0;
+      } else if (dir == 'backward') {
+        deg = 100;  
+      } 
+   	} else if (pin == "left") {
 	   	output = 209;
+      if (dir == 'forward') {
+        deg = 100;
+      } else if (dir == 'backward') {
+        deg = 0;  
+      } 
    	}
-
-    if (dir == 'FORWARD') {
-      deg = 0;
-    } else if (dir == 'BACKWARD') {
-      deg = 100;  
-    }
     
 	  msg.buffer = [output,Math.round(deg)];    
     mConnection.postMessage(msg);
@@ -246,20 +250,18 @@
 	url: '', // update to something?
 
         blocks: [
-			//[' ', 'ustaw wyjście %m.output na wartość  %n%', 'setOUTPUT', 'OUTPUT 1', 100],
-			//[' ', 'ustaw serwo na wyjściu %m.output na pozycję %n', 'serwo', 'OUTPUT 1', 0],
-      [' ', 'turn %m.leds light %m.led_on', 'setOUTPUT', 'RED', 'ON'], 
-			[' ', 'turn %m.servos servo %n', 'servo', 'RIGHT', 'FORWARD'], // RANDI update serwo to understand forward/backward and left/right
-      [' ', 'stop %m.servos', 'servo_off', 'RIGHT'],
+      [' ', 'turn %m.leds light %m.led_on', 'setOUTPUT', 'red', 'on'], 
+			[' ', 'turn %m.servos servo %m.servo_dir', 'servo', 'right', 'forward'], // RANDI update serwo to understand forward/backward and left/right
+      [' ', 'stop %m.servos', 'servo_off', 'right'],
       ['r', 'read distance', 'readUltrasound', 'INPUT 1'],
 			
 			],
         menus: {
 
-      servos: ['RIGHT','LEFT'],
-      servo_dir: ['FORWARD','BACKWARD'],
-      leds: ['RED', 'GREEN'],
-      led_on: ['ON','OFF'],
+      servos: ['right','left'],
+      servo_dir: ['forward','backward'],
+      leds: ['red', 'green'],
+      led_on: ['on','off'],
       input: ['INPUT 1','INPUT 2','INPUT 3','INPUT 4'],
       output: ['OUTPUT 1','OUTPUT 2', 'OUTPUT 3', 'OUTPUT 4'],
       stan: ['włączony', 'wyłączony']
