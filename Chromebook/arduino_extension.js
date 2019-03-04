@@ -161,27 +161,27 @@
   }
   
     ext.drive = function(dir) {
-   	var msg1 = {};
-    var msg2 = {};
+   	var drive_msg1 = {};
+    var drive_msg2 = {};
     
    	if (dir == undefined) {
-	   	msg1.buffer = [208,51];
-      msg2.buffer = [209,51]; 
+	   	drive_msg1.buffer = [208,51];
+      drive_msg2.buffer = [209,51]; 
     } else if (dir == "forward") {
-	   	msg1.buffer = [208,0];
-      msg2.buffer = [209,100];
+	   	drive_msg1.buffer = [208,0];
+      drive_msg2.buffer = [209,100];
    	} else if (dir == "backward") {
-	   	msg1.buffer = [208,100];
-      msg2.buffer = [209,0]; 
+	   	drive_msg1.buffer = [208,100];
+      drive_msg2.buffer = [209,0]; 
    	} else if (dir == "left") {
-	   	msg1.buffer = [208,0];
-      msg2.buffer = [209,0]; 
+	   	drive_msg1.buffer = [208,0];
+      drive_msg2.buffer = [209,0]; 
    	} else if (dir == "right") {
-	   	msg1.buffer = [208,100];
-      msg2.buffer = [209,100]; 
+	   	drive_msg1.buffer = [208,100];
+      drive_msg2.buffer = [209,100]; 
    	} 
-    mConnection.postMessage(msg1);
-    mConnection.postMessage(msg2);
+    mConnection.postMessage(drive_msg1);
+    mConnection.postMessage(drive_msg2);
   }
   
   function appendBuffer( buffer1, buffer2 ) {
