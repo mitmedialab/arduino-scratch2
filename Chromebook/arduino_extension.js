@@ -163,9 +163,8 @@
     ext.drive = function(dir) {
    	var msg1 = {};
     var msg2 = {};
-    console.log('Drive: ' + dir);
+    
    	if (dir == undefined) {
-      console.log('stop');
 	   	msg1.buffer = [208,51];
       msg2.buffer = [209,51]; 
     } else if (dir == "forward") {
@@ -296,7 +295,7 @@
                 setTimeout(getAppStatus, 1000);
             }
             else {// successfully connected
-                if (mStatus !==2) {
+                if (mStatus ==2) {
                     console.log("Connected");
                     mConnection = chrome.runtime.connect(LOFI_ID);
                     mConnection.onMessage.addListener(onMsgApp);
