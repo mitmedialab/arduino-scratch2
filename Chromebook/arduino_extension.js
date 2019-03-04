@@ -161,6 +161,13 @@
 	  msg.buffer = [output,Math.round(deg)];    
     mConnection.postMessage(msg);
   }
+  
+  function appendBuffer( buffer1, buffer2 ) {
+    var tmp = new Uint8Array( buffer1.byteLength + buffer2.byteLength );
+    tmp.set( new Uint8Array( buffer1 ), 0 );
+    tmp.set( new Uint8Array( buffer2 ), buffer1.byteLength );
+    return tmp.buffer;
+}
 
 
   function messageParser(buf) {
@@ -175,7 +182,7 @@
   }
 
 
-  msg.buffer = Buffer.concat([msg1, msg2]); //RANDI this produced an error msg1.concat(msg2);
+  msg.buffer = appendBugger(msg1, msg2); //RANDI this produced an error msg1.concat(msg2);
 
   if (msg.buffer.length > 10) {
 	  msg.buffer = msg.buffer.slice(0,10);
