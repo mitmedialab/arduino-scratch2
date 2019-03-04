@@ -244,6 +244,7 @@
   	distance = 1000;
   	}
   
+  console.log('Returning distance');
   return distance;
 
   }
@@ -257,7 +258,7 @@
 	url: '', // update to something?
 
         blocks: [
-      [' ', 'turn %m.leds light %m.led_on', 'set_output', 'red', 'on'], 
+      [' ', 'turn %m.leds light %m.led_on', 'set_output', 'red', 'on'], // might want to turn this into a toggle
       [' ', 'drive %m.servo_dir', 'drive', 'forward'],
       [' ', 'turn %m.servos', 'drive', 'right'], // a little sloppy, but we're going to reuse the servo names here
       [' ', 'stop servos', 'drive'],
