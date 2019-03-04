@@ -295,7 +295,7 @@
                 setTimeout(getAppStatus, 1000);
             }
             else {// successfully connected
-                if (mStatus ==2) {
+                if (mStatus !== 2) {
                     console.log("Connected");
                     mConnection = chrome.runtime.connect(LOFI_ID);
                     mConnection.onMessage.addListener(onMsgApp);
