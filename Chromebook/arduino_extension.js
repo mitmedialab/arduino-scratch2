@@ -161,34 +161,39 @@
   }
   
     ext.drive = function(dir) {
-   	var msg = {};
-    var deg;
-
-   	var output;
+   	var msg1 = {};
+    var msg2 = {};
+    
    	if (dir == "forward") {
-	   	msg.buffer = [208,0];
-      msg.buffer = [209,100];
+	   	msg1.buffer = [208,0];
+      msg2.buffer = [209,100];
    	} else if (dir == "backward") {
-	   	msg.buffer = [208,100];
-      msg.buffer = [209,0]; 
+	   	msg1.buffer = [208,100];
+      msg2.buffer = [209,0]; 
    	} else if (dir == "left") {
-	   	msg.buffer = [208,0];
-      msg.buffer = [209,0]; 
+	   	msg1.buffer = [208,0];
+      msg2.buffer = [209,0]; 
    	} else if (dir == "right") {
-	   	msg.buffer = [208,100];
-      msg.buffer = [209,100]; 
+	   	msg1.buffer = [208,100];
+      msg2.buffer = [209,100]; 
    	} else if (dir == "stop") {
-	   	msg.buffer = [208,51];
-      msg.buffer = [209,51]; 
+	   	msg1.buffer = [208,51];
+      msg2.buffer = [209,51]; 
    	}
-	  msg.buffer = [output,Math.round(deg)];    
-    mConnection.postMessage(msg);
+    mConnection.postMessage(msg1);
+    mConnection.postMessage(msg2);
   }
   
   function appendBuffer( buffer1, buffer2 ) {
     var tmp = new Uint8Array( buffer1.byteLength + buffer2.byteLength );
-    tmp.set( new Uint8Array( buffer1 ), 0 );
-    tmp.set( new Uint8Array( buffer2 ), buffer1.byteLength );
+    var i;
+    for (i = 0; i < buffer1.byteLength; i++) {
+      tmp[i] = buffer1[i];
+    }
+    for (var j = 0; j < buffer2.byteLength; j++) {
+      tmp[i] = buffer2[j];
+      i++;
+    }
     return tmp.buffer;
 }
 
