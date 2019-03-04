@@ -53,8 +53,10 @@ void setup() {
 
   // red light
   pinMode(redLed,OUTPUT);
+  digitalWrite(redLed, HIGH);
   // green light
   pinMode(greenLed,OUTPUT);
+  digitalWrite(greenLed, HIGH);
 
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
