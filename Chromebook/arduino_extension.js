@@ -113,13 +113,11 @@
     value = 100;
   }
 
-    console.log("Set value");
     if (led == 'red') {
       msg.buffer = [204,value];
     } else if (led == 'green') {
       msg.buffer = [205,value];
     }
-    console.log("Turning on LED");
     mConnection.postMessage(msg);
 
   }
@@ -158,7 +156,31 @@
         deg = 0;  
       } 
    	}
-    console.log('Turn servo');
+	  msg.buffer = [output,Math.round(deg)];    
+    mConnection.postMessage(msg);
+  }
+  
+    ext.drive = function(dir) {
+   	var msg = {};
+    var deg;
+
+   	var output;
+   	if (dir == "forward") {
+	   	msg.buffer = [208,0];
+      msg.buffer = [209,100];
+   	} else if (dir == "backward") {
+	   	msg.buffer = [208,100];
+      msg.buffer = [209,0]; 
+   	} else if (dir == "left") {
+	   	msg.buffer = [208,0];
+      msg.buffer = [209,0]; 
+   	} else if (dir == "right") {
+	   	msg.buffer = [208,100];
+      msg.buffer = [209,100]; 
+   	} else if (dir == "stop") {
+	   	msg.buffer = [208,51];
+      msg.buffer = [209,51]; 
+   	}
 	  msg.buffer = [output,Math.round(deg)];    
     mConnection.postMessage(msg);
   }
@@ -185,7 +207,7 @@
   if (msg1.buffer.length < 10 && msg2.buffer.length < 10) { // otherwise it produces a source size error
     msg.buffer = appendBuffer(msg1, msg2); //RANDI this produced an error msg1.concat(msg2);
   } else {
-    msg.buffer = msg1;
+    msg.buffer = buf;
   }
 
   if (msg.buffer.length > 10) {
@@ -230,7 +252,10 @@
 
         blocks: [
       [' ', 'turn %m.leds light %m.led_on', 'set_output', 'red', 'on'], 
-			[' ', 'turn %m.servos servo %m.servo_dir', 'turn_servo', 'right', 'forward'], // RANDI update serwo to understand forward/backward and left/right
+      [' ', 'drive %m.servo_dir', 'drive', 'forward'],
+      [' ', 'turn %m.servos', 'drive', 'right'], // a little sloppy, but we're going to reuse the servo names here
+      [' ', 'stop servos', 'drive', 'stop'],
+			[' ', 'turn %m.servos servo %m.servo_dir', 'turn_servo', 'right', 'forward'],
       [' ', 'stop %m.servos', 'servo_off', 'right'],
       ['r', 'read distance', 'readUltrasound', 'INPUT 1'],
 			
