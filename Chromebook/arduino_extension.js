@@ -163,7 +163,7 @@
     ext.drive = function(dir) {
    	var msg1 = {};
     var msg2 = {};
-    
+    console.log('Drive: ' + dir);
    	if (dir == "forward") {
 	   	msg1.buffer = [208,0];
       msg2.buffer = [209,100];
@@ -177,6 +177,7 @@
 	   	msg1.buffer = [208,100];
       msg2.buffer = [209,100]; 
    	} else if (dir == "stop") {
+      console.log('stop');
 	   	msg1.buffer = [208,51];
       msg2.buffer = [209,51]; 
    	}
@@ -187,6 +188,7 @@
   function appendBuffer( buffer1, buffer2 ) {
     var tmp = new Uint8Array( buffer1.byteLength + buffer2.byteLength );
     var i;
+    
     for (i = 0; i < buffer1.byteLength; i++) {
       tmp[i] = buffer1[i];
     }
@@ -209,7 +211,7 @@
   msg2 = buf;
   }
 
-  if (msg1.buffer.length < 10 && msg2.buffer.length < 10) { // otherwise it produces a source size error
+  if (msg1 && msg2) { //msg1.buffer.length < 10 && msg2.buffer.length < 10) { // otherwise it produces a source size error
     msg.buffer = appendBuffer(msg1, msg2); //RANDI this produced an error msg1.concat(msg2);
   } else {
     msg.buffer = buf;
