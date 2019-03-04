@@ -102,20 +102,21 @@
   }
 
 
-   ext.setOUTPUT = function(output, setting) {
+   ext.set_output = function(led, setting) {
 
 	var msg = {}
   var value = 0;
   
-  if (settting == 'on') {
+  if (setting == 'on') {
     value = 0;
   } else {
     value = 100;
   }
 
-    if (output == 'red') {
+    console.log("Set value");
+    if (led == 'red') {
       msg.buffer = [204,value];
-    } else if (output == 'green') {
+    } else if (led == 'green') {
       msg.buffer = [205,value];
     }
     console.log("Turning on LED");
@@ -225,7 +226,7 @@
 	url: '', // update to something?
 
         blocks: [
-      [' ', 'turn %m.leds light %m.led_on', 'setOUTPUT', 'red', 'on'], 
+      [' ', 'turn %m.leds light %m.led_on', 'set_output', 'red', 'off'], 
 			[' ', 'turn %m.servos servo %m.servo_dir', 'turn_servo', 'right', 'forward'], // RANDI update serwo to understand forward/backward and left/right
       [' ', 'stop %m.servos', 'servo_off', 'right'],
       ['r', 'read distance', 'readUltrasound', 'INPUT 1'],
