@@ -164,7 +164,11 @@
    	var msg1 = {};
     var msg2 = {};
     console.log('Drive: ' + dir);
-   	if (dir == "forward") {
+   	if (dir == undefined) {
+      console.log('stop');
+	   	msg1.buffer = [208,51];
+      msg2.buffer = [209,51]; 
+    } else if (dir == "forward") {
 	   	msg1.buffer = [208,0];
       msg2.buffer = [209,100];
    	} else if (dir == "backward") {
@@ -176,11 +180,7 @@
    	} else if (dir == "right") {
 	   	msg1.buffer = [208,100];
       msg2.buffer = [209,100]; 
-   	} else {
-      console.log('stop');
-	   	msg1.buffer = [208,51];
-      msg2.buffer = [209,51]; 
-   	}
+   	} 
     mConnection.postMessage(msg1);
     mConnection.postMessage(msg2);
   }
