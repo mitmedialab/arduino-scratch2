@@ -124,33 +124,6 @@
   }
 
 
-  	ext.silnik = function(motor,direction,speed) {
-
-	var msg = {};
-	speed = valBetween(speed,0,100);
-
-	if (direction == 'tył' && speed > 0) {
-		speed = speed + 100;
-	}
-	if (direction == 'tył' && speed == 0) {
-		speed = 0;
-	}
-
-  console.log('Motor: ' + motor + '\tSpeed: ' + speed);
-	if (motor == 'M1') {
-	 msg.buffer = [202,speed];
-	}
-	if (motor == 'M2') {
-	 msg.buffer = [203,speed];
-	}
-
-     mConnection.postMessage(msg);
-
-
-  	}
-
-
-
   ext.servo_off = function(pin) {
 	  var msg = {};
  	 // RANDI this is what was used before msg.buffer = [212,99];
@@ -164,7 +137,7 @@
     mConnection.postMessage(msg);
   }
 
-  ext.servo = function(pin, dir) {
+  ext.turn_servo = function(pin, dir) {
    	var msg = {};
     var deg;
 
@@ -184,15 +157,10 @@
         deg = 0;  
       } 
    	}
-    
+    console.log('Turn servo');
 	  msg.buffer = [output,Math.round(deg)];    
     mConnection.postMessage(msg);
   }
-
-
-
-
-
 
 
   function messageParser(buf) {
@@ -207,7 +175,7 @@
   }
 
 
-  msg.buffer = msg1.concat(msg2);
+  msg.buffer = Buffer.concat([msg1, msg2]); //RANDI this produced an error msg1.concat(msg2);
 
   if (msg.buffer.length > 10) {
 	  msg.buffer = msg.buffer.slice(0,10);
@@ -251,7 +219,7 @@
 
         blocks: [
       [' ', 'turn %m.leds light %m.led_on', 'setOUTPUT', 'red', 'on'], 
-			[' ', 'turn %m.servos servo %m.servo_dir', 'servo', 'right', 'forward'], // RANDI update serwo to understand forward/backward and left/right
+			[' ', 'turn %m.servos servo %m.servo_dir', 'turn_servo', 'right', 'forward'], // RANDI update serwo to understand forward/backward and left/right
       [' ', 'stop %m.servos', 'servo_off', 'right'],
       ['r', 'read distance', 'readUltrasound', 'INPUT 1'],
 			
@@ -261,10 +229,7 @@
       servos: ['right','left'],
       servo_dir: ['forward','backward'],
       leds: ['red', 'green'],
-      led_on: ['on','off'],
-      input: ['INPUT 1','INPUT 2','INPUT 3','INPUT 4'],
-      output: ['OUTPUT 1','OUTPUT 2', 'OUTPUT 3', 'OUTPUT 4'],
-      stan: ['włączony', 'wyłączony']
+      led_on: ['on','off']
 		}
     };
 
