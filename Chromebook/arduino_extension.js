@@ -182,8 +182,9 @@
   msg2 = buf;
   }
 
-
-  msg.buffer = appendBuffer(msg1, msg2); //RANDI this produced an error msg1.concat(msg2);
+  if (msg1.buffer.length < 10 && msg2.buffer.length < 10) { // otherwise it produces a source size error
+    msg.buffer = appendBuffer(msg1, msg2); //RANDI this produced an error msg1.concat(msg2);
+  }
 
   if (msg.buffer.length > 10) {
 	  msg.buffer = msg.buffer.slice(0,10);
@@ -226,7 +227,7 @@
 	url: '', // update to something?
 
         blocks: [
-      [' ', 'turn %m.leds light %m.led_on', 'set_output', 'red', 'off'], 
+      [' ', 'turn %m.leds light %m.led_on', 'set_output', 'red', 'on'], 
 			[' ', 'turn %m.servos servo %m.servo_dir', 'turn_servo', 'right', 'forward'], // RANDI update serwo to understand forward/backward and left/right
       [' ', 'stop %m.servos', 'servo_off', 'right'],
       ['r', 'read distance', 'readUltrasound', 'INPUT 1'],
@@ -265,8 +266,6 @@
                     console.log("Connected");
                     mConnection = chrome.runtime.connect(LOFI_ID);
                     mConnection.onMessage.addListener(onMsgApp);
-
-                    //pinMode_init();
                 }
                 mStatus = 1;
                 setTimeout(getAppStatus, 1000);
