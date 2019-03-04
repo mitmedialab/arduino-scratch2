@@ -210,9 +210,6 @@
   msg2 = buf;
   }
 
-  //if (msg1 && msg2) { //msg1.buffer.length < 10 && msg2.buffer.length < 10) { // otherwise it produces a source size error
-  //  msg.buffer = appendBuffer(msg1, msg2); //RANDI this produced an error msg1.concat(msg2);
-  //}
   msg.buffer = msg1.concat(msg2);
 
   if (msg.buffer.length > 10) {
@@ -243,7 +240,6 @@
   	distance = 1000;
   	}
   
-  console.log('Returning distance 2');
   return distance;
 
   }
