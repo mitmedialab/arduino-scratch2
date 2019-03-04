@@ -176,7 +176,7 @@
    	} else if (dir == "right") {
 	   	msg1.buffer = [208,100];
       msg2.buffer = [209,100]; 
-   	} else if (dir == "stop") {
+   	} else {
       console.log('stop');
 	   	msg1.buffer = [208,51];
       msg2.buffer = [209,51]; 
@@ -261,10 +261,10 @@
       [' ', 'turn %m.leds light %m.led_on', 'set_output', 'red', 'on'], 
       [' ', 'drive %m.servo_dir', 'drive', 'forward'],
       [' ', 'turn %m.servos', 'drive', 'right'], // a little sloppy, but we're going to reuse the servo names here
-      [' ', 'stop servos', 'drive', 'stop'],
+      [' ', 'stop servos', 'drive'],
 			[' ', 'turn %m.servos servo %m.servo_dir', 'turn_servo', 'right', 'forward'],
       [' ', 'stop %m.servos', 'servo_off', 'right'],
-      ['r', 'read distance', 'readUltrasound', 'INPUT 1'],
+      ['r', 'read distance', 'readUltrasound'],
 			
 			],
         menus: {
