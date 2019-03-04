@@ -184,6 +184,8 @@
 
   if (msg1.buffer.length < 10 && msg2.buffer.length < 10) { // otherwise it produces a source size error
     msg.buffer = appendBuffer(msg1, msg2); //RANDI this produced an error msg1.concat(msg2);
+  } else {
+    msg.buffer = msg1;
   }
 
   if (msg.buffer.length > 10) {
