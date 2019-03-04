@@ -182,7 +182,7 @@
   }
 
 
-  msg.buffer = appendBugger(msg1, msg2); //RANDI this produced an error msg1.concat(msg2);
+  msg.buffer = appendBuffer(msg1, msg2); //RANDI this produced an error msg1.concat(msg2);
 
   if (msg.buffer.length > 10) {
 	  msg.buffer = msg.buffer.slice(0,10);
