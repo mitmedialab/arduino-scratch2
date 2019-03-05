@@ -170,8 +170,11 @@
   
   
   
-    ext.drive = function(callback, dir, secs) {
-  
+  ext.drive = function(callback, dir, secs) {
+    console.log('Drive params');
+    console.log(callback);
+    console.log(dir);
+    console.log(secs);
    	if (dir == "forward") {
       ext.turn_servo("right","forward");
       ext.turn_servo("left","forward");
