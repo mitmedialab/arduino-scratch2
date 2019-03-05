@@ -296,56 +296,50 @@
 	    if(poller) poller = clearInterval(poller);
 	    status = false;
 	}
-    function getAppStatus() {
-        chrome.runtime.sendMessage(LOFI_ID, {message: "STATUS"}, function (response) {
-            if (response === undefined) { //Chrome app not found
-                console.log("Chrome app not found");
-                mStatus = 0;
-                setTimeout(getAppStatus, 1000);
-            }
-            else if (response.status === false) { //Chrome app says not connected
-                mStatus = 1;
-                setTimeout(getAppStatus, 1000);
-            }
-            else {// successfully connected
-                if (mStatus !== 2) {
-                    console.log("Connected");
-                    mConnection = chrome.runtime.connect(LOFI_ID);
-                    mConnection.onMessage.addListener(onMsgApp);
-                    console.log('I setting mStatus to 1\tprev: ' + mStatus);
-                    mStatus = 1;
-                  setTimeout(getAppStatus, 1000);
-                }
-                
-            }
-        });
+
+  function getAppStatus() {
+      chrome.runtime.sendMessage(LOFI_ID, {message: "STATUS"}, function (response) {
+        if (response === undefined) { //Chrome app not found
+          console.log("Chrome app not found");
+          mStatus = 0;
+          setTimeout(getAppStatus, 1000);
+        }
+        else if (response.status === false) { //Chrome app says not connected
+          mStatus = 1;
+          setTimeout(getAppStatus, 1000);
+        }
+        else {// successfully connected
+          if (mStatus !== 2) {
+            mConnection = chrome.runtime.connect(LOFI_ID);
+            mConnection.onMessage.addListener(onMsgApp);
+            mStatus = 1;
+            setTimeout(getAppStatus, 1000);
+          }
+          console.log("Connected");
+        }
+      });
     };
 
 
     function onMsgApp(msg) {
 	    mStatus = 2;
-		var buffer = msg.buffer;
-		//console.log(buffer);
-
-
-		if ( buffer[0]==224){
-		messageParser(buffer);
-		last_reading = 0;
-		}
-
-
-		if (buffer[0] != 224 && last_reading == 0){
-		    messageParser(buffer);
-		    last_reading = 1;
-		}
-
-
-
-
+      var buffer = msg.buffer;
+      //console.log(buffer);
+  
+  
+      if ( buffer[0]==224){
+      messageParser(buffer);
+      last_reading = 0;
+      }
+  
+  
+      if (buffer[0] != 224 && last_reading == 0){
+          messageParser(buffer);
+          last_reading = 1;
+      }
     };
 
     getAppStatus();
-
 
 
 	ScratchExtensions.register('PopPet Robot', descriptor, ext);
