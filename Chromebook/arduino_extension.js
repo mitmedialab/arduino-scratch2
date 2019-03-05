@@ -186,7 +186,7 @@
    	}
     
     window.setTimeout(function() {
-            callback();
+            callback(); console.log('Time is up');
         }, secs*1000);
   }
   
