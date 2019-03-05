@@ -33,7 +33,7 @@
 
   var LOFI_ID = "opdjdfckgbogbagnkbkpjgficbampcel"; // APP ID
   var mConnection;
-  var mStatus = 0;
+  var mStatus = 1;
   var _selectors = {};
 
   var digitalOutputData = new Uint8Array(16);
