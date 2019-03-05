@@ -6,6 +6,8 @@ new (function() {
 
     function _get_voices() {
         var ret = [];
+        console.log('Getting voices');
+        console.log(speechSynthesis);
         var voices = speechSynthesis.getVoices();
         
         for(var i = 0; i < voices.length; i++ ) {
