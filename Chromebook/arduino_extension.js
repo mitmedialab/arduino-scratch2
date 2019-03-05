@@ -296,6 +296,7 @@
                     mConnection = chrome.runtime.connect(LOFI_ID);
                     mConnection.onMessage.addListener(onMsgApp);
                 }
+                console.log('I setting mStatus to 1\tprev: ' + mStatus);
                 mStatus = 1;
                 setTimeout(getAppStatus, 1000);
             }
