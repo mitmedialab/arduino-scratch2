@@ -186,7 +186,7 @@
    	}
     
     window.setTimeout(function() {
-            callback(); console.log('Time is up');
+            ext.servos_off(); callback();
         }, secs*1000);
   }
   
