@@ -137,6 +137,11 @@
     mConnection.postMessage(msg);
     mConnection.postMessage(msg);
   }
+  
+  ext.servos_off = function() {
+    ext.servo_off("right");
+    ext.servo_off("left");
+  }
 
   ext.turn_servo = function(pin, dir) {
    	var msg = {};
@@ -163,14 +168,11 @@
     mConnection.postMessage(msg);
   }
   
-    ext.drive = function(dir) {
-   	var drive_msg1 = {};
-    var drive_msg2 = {};
-    
-   	if (dir == undefined) {
-      ext.servo_off("right");
-      ext.servo_off("left");
-    } else if (dir == "forward") {
+  
+  
+    ext.drive = function(callback, dir, secs) {
+  
+   	if (dir == "forward") {
       ext.turn_servo("right","forward");
       ext.turn_servo("left","forward");
    	} else if (dir == "backward") {
@@ -182,7 +184,11 @@
    	} else if (dir == "right") {
       ext.turn_servo("right","backward");
       ext.turn_servo("left","forward");
-   	} 
+   	}
+    
+    window.setTimeout(function() {
+            callback();
+        }, secs*1000);
   }
   
   function appendBuffer( buffer1, buffer2 ) {
@@ -252,9 +258,9 @@
 
         blocks: [
       [' ', 'turn %m.leds light %m.led_on', 'set_output', 'red', 'on'], // might want to turn this into a toggle
-      [' ', 'drive %m.servo_dir', 'drive', 'forward'],
-      [' ', 'turn %m.servos', 'drive', 'right'], // a little sloppy, but we're going to reuse the servo names here
-      [' ', 'stop servos', 'drive'],
+      ['w', 'drive %m.servo_dir for %n seconds', 'drive', 'forward', 1],
+      ['w', 'turn %m.servos for %n seconds', 'drive', 'right', 1], // a little sloppy, but we're going to reuse the servo names here
+      [' ', 'stop servos', 'servos_off'],
 			[' ', 'turn %m.servos servo %m.servo_dir', 'turn_servo', 'right', 'forward'],
       [' ', 'stop %m.servos', 'servo_off', 'right'],
       ['r', 'read distance', 'readUltrasound'],
