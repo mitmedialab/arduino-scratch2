@@ -104,14 +104,14 @@
 
    ext.set_output = function(led, setting) {
 
-	var msg = {}
-  var value = 0;
-  
-  if (setting == 'on') {
-    value = 0;
-  } else {
-    value = 100;
-  }
+    var msg = {}
+    var value = 0;
+    
+    if (setting == 'on') {
+      value = 0;
+    } else {
+      value = 100;
+    }
 
     if (led == 'red') {
       msg.buffer = [204,value];
@@ -165,23 +165,33 @@
     var drive_msg2 = {};
     
    	if (dir == undefined) {
-	   	drive_msg1.buffer = [208,51];
-      drive_msg2.buffer = [209,51]; 
+      ext.servo_off("right");
+      ext.servo_off("left");
+	   	//drive_msg1.buffer = [208,51];
+      //drive_msg2.buffer = [209,51]; 
     } else if (dir == "forward") {
-	   	drive_msg1.buffer = [208,0];
-      drive_msg2.buffer = [209,100];
+      ext.turn_servo("right","forward");
+      ext.turn_servo("left","forward");
+	   	//drive_msg1.buffer = [208,0];
+      //drive_msg2.buffer = [209,100];
    	} else if (dir == "backward") {
-	   	drive_msg1.buffer = [208,100];
-      drive_msg2.buffer = [209,0]; 
+      ext.turn_servo("right","backward");
+      ext.turn_servo("left","backward");
+	   	//drive_msg1.buffer = [208,100];
+      //drive_msg2.buffer = [209,0]; 
    	} else if (dir == "left") {
-	   	drive_msg1.buffer = [208,0];
-      drive_msg2.buffer = [209,0]; 
+      ext.turn_servo("right","forward");
+      ext.turn_servo("left","backward");
+	   	//drive_msg1.buffer = [208,0];
+      //drive_msg2.buffer = [209,0]; 
    	} else if (dir == "right") {
-	   	drive_msg1.buffer = [208,100];
-      drive_msg2.buffer = [209,100]; 
+      ext.turn_servo("right","backward");
+      ext.turn_servo("left","forward");
+	   	//drive_msg1.buffer = [208,100];
+      //drive_msg2.buffer = [209,100]; 
    	} 
-    mConnection.postMessage(drive_msg1);
-    mConnection.postMessage(drive_msg2);
+    //mConnection.postMessage(drive_msg1);
+    //mConnection.postMessage(drive_msg2);
   }
   
   function appendBuffer( buffer1, buffer2 ) {
@@ -275,6 +285,13 @@
 	ext._getStatus = function() {
         return {status: mStatus, msg: mStatus==2?'Ready':'Not Ready'};
     };
+    
+  ext._stop = function() {
+      ext.drive();
+      ext.set_output("red","off");
+      ext.set_output("green","off");
+  };  
+    
 	ext._shutdown = function() {
 	    if(poller) poller = clearInterval(poller);
 	    status = false;
