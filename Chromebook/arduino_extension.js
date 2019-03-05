@@ -119,6 +119,7 @@
       msg.buffer = [205,value];
     }
     mConnection.postMessage(msg);
+    mConnection.postMessage(msg);
 
   }
 
@@ -133,6 +134,7 @@
 	   	output = 209;
    	}
     msg.buffer = [output,Math.round(51)];
+    mConnection.postMessage(msg);
     mConnection.postMessage(msg);
   }
 
@@ -158,6 +160,7 @@
    	}
 	  msg.buffer = [output,Math.round(deg)];    
     mConnection.postMessage(msg);
+    mConnection.postMessage(msg);
   }
   
     ext.drive = function(dir) {
@@ -167,31 +170,19 @@
    	if (dir == undefined) {
       ext.servo_off("right");
       ext.servo_off("left");
-	   	//drive_msg1.buffer = [208,51];
-      //drive_msg2.buffer = [209,51]; 
     } else if (dir == "forward") {
       ext.turn_servo("right","forward");
       ext.turn_servo("left","forward");
-	   	//drive_msg1.buffer = [208,0];
-      //drive_msg2.buffer = [209,100];
    	} else if (dir == "backward") {
       ext.turn_servo("right","backward");
       ext.turn_servo("left","backward");
-	   	//drive_msg1.buffer = [208,100];
-      //drive_msg2.buffer = [209,0]; 
    	} else if (dir == "left") {
       ext.turn_servo("right","forward");
       ext.turn_servo("left","backward");
-	   	//drive_msg1.buffer = [208,0];
-      //drive_msg2.buffer = [209,0]; 
    	} else if (dir == "right") {
       ext.turn_servo("right","backward");
       ext.turn_servo("left","forward");
-	   	//drive_msg1.buffer = [208,100];
-      //drive_msg2.buffer = [209,100]; 
    	} 
-    //mConnection.postMessage(drive_msg1);
-    //mConnection.postMessage(drive_msg2);
   }
   
   function appendBuffer( buffer1, buffer2 ) {
@@ -211,29 +202,26 @@
 
   function messageParser(buf) {
 
-  var msg = {};
-
-  if (buf[0]==224){
-  msg1 = buf;
-  }
-  else if (buf[0] != 224) {
-  msg2 = buf;
-  }
-
-  msg.buffer = msg1.concat(msg2);
-
-  if (msg.buffer.length > 10) {
-	  msg.buffer = msg.buffer.slice(0,10);
-  }
-
-
-  if (msg.buffer.length == 10){
-
-         if (msg.buffer[8] == 240) {
-         dist_read = Math.round(msg.buffer[9] );
-         }
-
-  }
+    var msg = {};
+  
+    if (buf[0]==224){
+      msg1 = buf;
+    } else if (buf[0] != 224) {
+      msg2 = buf;
+    }
+  
+    msg.buffer = msg1.concat(msg2);
+  
+    if (msg.buffer.length > 10) {
+      msg.buffer = msg.buffer.slice(0,10);
+    }
+  
+  
+    if (msg.buffer.length == 10){
+      if (msg.buffer[8] == 240) {
+        dist_read = Math.round(msg.buffer[9] );
+      }
+    }
 
   }
 
