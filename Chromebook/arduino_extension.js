@@ -110,6 +110,7 @@
     var msg = {}
     var value = 0;
     
+    console.log('Set Output ' + led + ' ' + setting);
     if (setting == 'on') {
       value = 0;
     } else {
@@ -127,6 +128,7 @@
   }
   
   ext.toggle_light = function(led) {
+    console.log('Toggle Light ' + led);
   	if (led == 'red') {
 		if (redLight) {
 			set_output(led, 'off');
@@ -363,8 +365,8 @@
       ['w', 'turn right for %n seconds', 'drive_right', 1],
       ['w', 'turn left for %n seconds', 'drive_left', 1],
       [' ', 'stop servos', 'servos_off'],
-  	  [' ', 'turn right servo %m.servo_dir', 'turn_servo', 'forward'],
-  	  [' ', 'turn left servo %m.servo_dir', 'turn_servo', 'forward'],
+  	  [' ', 'turn right servo %m.servo_dir', 'turn_servo_right', 'forward'],
+  	  [' ', 'turn left servo %m.servo_dir', 'turn_servo_left', 'forward'],
       [' ', 'stop %m.servos', 'servo_off', 'right'],
       ['r', 'read distance', 'readUltrasound'],
 			
