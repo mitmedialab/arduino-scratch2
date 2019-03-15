@@ -35,6 +35,8 @@
   var mConnection;
   var mStatus = 1;
   var stopServos = true;
+  var redLight = false;
+  var greenLight = false;;
   var _selectors = {};
 
   var digitalOutputData = new Uint8Array(16);
@@ -122,6 +124,24 @@
     mConnection.postMessage(msg);
     mConnection.postMessage(msg);
 
+  }
+  
+  ext.toggle_light = function(led) {
+  	if (led == 'red') {
+		if (redLight) {
+			set_output(led, 'off');
+		} else {
+			set_output(led, 'on');
+		}
+		redLight = !redLight;
+	} else if (led == 'green') {
+		if (greenLight) {
+			set_output(led, 'off');
+		} else {
+			set_output(led, 'on');
+		}
+		greenLight = !greenLight;
+	}
   }
 
 
@@ -337,15 +357,14 @@
 	url: '', // update to something?
 
         blocks: [
-      [' ', 'turn %m.leds light on', 'set_output', 'red', 'on'], // might want to turn this into a toggle
-      [' ', 'turn %m.leds light off', 'set_output', 'red', 'off'],
+      [' ', 'switch %m.leds led', 'toggle_light', 'red'],
       ['w', 'drive forward for %n seconds', 'drive_forward', 1],
       ['w', 'drive backward for %n seconds', 'drive_backward', 1],
       ['w', 'turn right for %n seconds', 'drive_right', 1],
       ['w', 'turn left for %n seconds', 'drive_left', 1],
       [' ', 'stop servos', 'servos_off'],
-  	  [' ', 'turn right servo %m.servo_dir', 'turn_servo', 'right', 'forward'],
-  	  [' ', 'turn left servo %m.servo_dir', 'turn_servo', 'left', 'forward'],
+  	  [' ', 'turn right servo %m.servo_dir', 'turn_servo', 'forward'],
+  	  [' ', 'turn left servo %m.servo_dir', 'turn_servo', 'forward'],
       [' ', 'stop %m.servos', 'servo_off', 'right'],
       ['r', 'read distance', 'readUltrasound'],
 			
@@ -393,9 +412,9 @@
             setTimeout(getAppStatus, 1000);
           }
           console.log("Connected");
-          if (stopServos) {
-          	ext.servos_off();
-          }
+         // if (stopServos) {
+          //	ext.servos_off();
+          //}
         }
       });
     };
