@@ -110,7 +110,6 @@
     var msg = {}
     var value = 0;
     
-    console.log('Set Output ' + led + ' ' + setting);
     if (setting == 'on') {
       value = 0;
     } else {
@@ -128,19 +127,18 @@
   }
   
   ext.toggle_light = function(led) {
-    console.log('Toggle Light ' + led);
   	if (led == 'red') {
 		if (redLight) {
-			set_output(led, 'off');
+			ext.set_output(led, 'off');
 		} else {
-			set_output(led, 'on');
+			ext.set_output(led, 'on');
 		}
 		redLight = !redLight;
 	} else if (led == 'green') {
 		if (greenLight) {
-			set_output(led, 'off');
+			ext.set_output(led, 'off');
 		} else {
-			set_output(led, 'on');
+			ext.set_output(led, 'on');
 		}
 		greenLight = !greenLight;
 	}
