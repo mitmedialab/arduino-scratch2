@@ -338,7 +338,7 @@
 
         blocks: [
       [' ', 'turn %m.leds light on', 'set_output', 'red', 'on'], // might want to turn this into a toggle
-      ' ', 'turn %m.leds light off', 'set_output', 'red', 'off'],
+      [' ', 'turn %m.leds light off', 'set_output', 'red', 'off'],
       ['w', 'drive forward for %n seconds', 'drive_forward', 1],
       ['w', 'drive backward for %n seconds', 'drive_backward', 1],
       ['w', 'turn right for %n seconds', 'drive_right', 1],
