@@ -173,7 +173,41 @@
     mConnection.postMessage(msg);
   }
   
+  ext.turn_servo_right = function( dir) {
+   	var msg = {};
+    var deg;
+
+   	var output = 208;
+   	
+   	stopServos = false;
+    if (dir == 'forward') {
+      deg = 0;
+    } else if (dir == 'backward') {
+     deg = 100;  
+    } 
+   	
+    msg.buffer = [output,Math.round(deg)];    
+    mConnection.postMessage(msg);
+    mConnection.postMessage(msg);
+  }
   
+  ext.turn_servo_left = function(dir) {
+   	var msg = {};
+    var deg;
+
+   	var output = 209;
+   	
+   	stopServos = false;
+    if (dir == 'forward') {
+      deg = 100;
+    } else if (dir == 'backward') {
+     deg = 0;  
+    } 
+   	
+    msg.buffer = [output,Math.round(deg)];    
+    mConnection.postMessage(msg);
+    mConnection.postMessage(msg);
+  }
   
   ext.drive = function(dir, secs, callback) {
 	stopServos = false;
@@ -191,6 +225,47 @@
       ext.turn_servo("left","forward");
    	}
     
+    window.setTimeout(function() {
+            ext.servos_off(); callback();
+        }, secs*1000);
+  }
+  
+  ext.drive_forward = function(secs, callback) {
+	stopServos = false;
+   	ext.turn_servo("right","forward");
+    ext.turn_servo("left","forward");
+    
+    window.setTimeout(function() {
+            ext.servos_off(); callback();
+        }, secs*1000);
+  }
+  
+  ext.drive_backward = function(secs, callback) {
+	stopServos = false;
+   	ext.turn_servo("right","backward");
+    ext.turn_servo("left","backward");
+   	
+    
+    window.setTimeout(function() {
+            ext.servos_off(); callback();
+        }, secs*1000);
+  }
+  
+  ext.drive_left = function(secs, callback) {
+	stopServos = false;
+   	ext.turn_servo("right","forward");
+    ext.turn_servo("left","backward");
+    
+    window.setTimeout(function() {
+            ext.servos_off(); callback();
+        }, secs*1000);
+  }
+  
+  ext.drive_right = function(secs, callback) {
+	stopServos = false;
+   	ext.turn_servo("right","backward");
+    ext.turn_servo("left","forward");
+   	    
     window.setTimeout(function() {
             ext.servos_off(); callback();
         }, secs*1000);
@@ -264,10 +339,10 @@
         blocks: [
       [' ', 'turn %m.leds light on', 'set_output', 'red', 'on'], // might want to turn this into a toggle
       ' ', 'turn %m.leds light off', 'set_output', 'red', 'off'],
-      ['w', 'drive forward for %n seconds', 'drive', 'forward', 1],
-      ['w', 'drive backward for %n seconds', 'drive', 'backward', 1],
-      ['w', 'turn right for %n seconds', 'drive', 'right', 1],
-      ['w', 'turn left for %n seconds', 'drive', 'left', 1],
+      ['w', 'drive forward for %n seconds', 'drive_forward', 1],
+      ['w', 'drive backward for %n seconds', 'drive_backward', 1],
+      ['w', 'turn right for %n seconds', 'drive_right', 1],
+      ['w', 'turn left for %n seconds', 'drive_left', 1],
       [' ', 'stop servos', 'servos_off'],
   	  [' ', 'turn right servo %m.servo_dir', 'turn_servo', 'right', 'forward'],
   	  [' ', 'turn left servo %m.servo_dir', 'turn_servo', 'left', 'forward'],
