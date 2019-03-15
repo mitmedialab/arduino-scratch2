@@ -5,6 +5,9 @@ new (function() {
     var ext = this;
 
     function _get_voices() {
+        if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = populateVoiceList;
+        }
         var ret = [];
         console.log('Getting voices');
         console.log(speechSynthesis);
@@ -41,7 +44,7 @@ new (function() {
 
     var descriptor = {
         blocks: [
-            ['', 'set voice to %m.voices', 'set_voice', ''],
+            //['', 'set voice to %m.voices', 'set_voice', ''],
             ['w', 'speak %s', 'speak_text', 'Hello!'],
         ],
         menus: {

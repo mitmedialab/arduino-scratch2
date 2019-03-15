@@ -34,6 +34,7 @@
   var LOFI_ID = "opdjdfckgbogbagnkbkpjgficbampcel"; // APP ID
   var mConnection;
   var mStatus = 1;
+  var stopServos = true;
   var _selectors = {};
 
   var digitalOutputData = new Uint8Array(16);
@@ -128,6 +129,7 @@
 	  var msg = {};
  	 // RANDI this is what was used before msg.buffer = [212,99];
     var output;
+  	stopServos = true;
    	if (pin == "right") {
 	   	output = 208;
    	} else if (pin == "left") {
@@ -139,6 +141,7 @@
   }
   
   ext.servos_off = function() {
+  	stopServos = true;
     ext.servo_off("right");
     ext.servo_off("left");
   }
@@ -148,6 +151,8 @@
     var deg;
 
    	var output;
+   	
+   	stopServos = false;
    	if (pin == "right") {
 	   	output = 208;
       if (dir == 'forward') {
@@ -171,6 +176,7 @@
   
   
   ext.drive = function(dir, secs, callback) {
+	stopServos = false;
    	if (dir == "forward") {
       ext.turn_servo("right","forward");
       ext.turn_servo("left","forward");
@@ -256,11 +262,15 @@
 	url: '', // update to something?
 
         blocks: [
-      [' ', 'turn %m.leds light %m.led_on', 'set_output', 'red', 'on'], // might want to turn this into a toggle
-      ['w', 'drive %m.servo_dir for %n seconds', 'drive', 'forward', 1],
-      ['w', 'turn %m.servos for %n seconds', 'drive', 'right', 1], // a little sloppy, but we're going to reuse the servo names here
+      [' ', 'turn %m.leds light on', 'set_output', 'red', 'on'], // might want to turn this into a toggle
+      ' ', 'turn %m.leds light off', 'set_output', 'red', 'off'],
+      ['w', 'drive forward for %n seconds', 'drive', 'forward', 1],
+      ['w', 'drive backward for %n seconds', 'drive', 'backward', 1],
+      ['w', 'turn right for %n seconds', 'drive', 'right', 1],
+      ['w', 'turn left for %n seconds', 'drive', 'left', 1],
       [' ', 'stop servos', 'servos_off'],
-			[' ', 'turn %m.servos servo %m.servo_dir', 'turn_servo', 'right', 'forward'],
+  	  [' ', 'turn right servo %m.servo_dir', 'turn_servo', 'right', 'forward'],
+  	  [' ', 'turn left servo %m.servo_dir', 'turn_servo', 'left', 'forward'],
       [' ', 'stop %m.servos', 'servo_off', 'right'],
       ['r', 'read distance', 'readUltrasound'],
 			
@@ -269,8 +279,7 @@
 
       servos: ['right','left'],
       servo_dir: ['forward','backward'],
-      leds: ['red', 'green'],
-      led_on: ['on','off']
+      leds: ['red', 'green']
 		}
     };
 
@@ -309,6 +318,9 @@
             setTimeout(getAppStatus, 1000);
           }
           console.log("Connected");
+          if (stopServos) {
+          	ext.servos_off();
+          }
         }
       });
     };
