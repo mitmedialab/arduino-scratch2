@@ -28,6 +28,7 @@ new (function() {
     ext.speak_text = function (text, callback) {
         var u = new SpeechSynthesisUtterance(text.toString());
         u.onend = function(event) {
+            console.log(callback);
             if (typeof callback=="function") callback();
         };
         
@@ -38,6 +39,7 @@ new (function() {
         var recognition = new webkitSpeechRecognition();
         recognition.onresult = function(event) {
             if (event.results.length > 0) {
+                console.log(callback);
                 recognized_speech = event.results[0][0].transcript;
                 if (typeof callback=="function") callback();
             }
