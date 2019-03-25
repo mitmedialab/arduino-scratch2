@@ -71,10 +71,10 @@ new (function() {
             ['w', 'speak %s', 'speak_text', 'Hello!'],
             ['w', 'ask and wait', 'recognize_speech'],
             ['r', 'answer', 'recognized_speech']
-        ],
+        ]/*,
         menus: {
             voices: _get_voices(),
-        },
+        },*/
     };
 
     ScratchExtensions.register('Text to Speech', descriptor, ext);
