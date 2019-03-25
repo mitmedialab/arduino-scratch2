@@ -48,9 +48,8 @@ new (function() {
     ext.recognized_speech = function () {return recognized_speech;};
 
     ext.ask = function (text,callback) {
-        speak_text(text);
-        recognize_speech();
-        if (typeof callback=="function") callback();
+        speak_text(text, recognize_speech(callback));
+        //if (typeof callback=="function") callback();
     };
     
     ext._shutdown = function() {};
