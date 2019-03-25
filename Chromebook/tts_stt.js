@@ -47,7 +47,7 @@ new (function() {
     
     ext.recognized_speech = function () {return recognized_speech;};
 
-    ext.ask = function (callback) {
+    ext.ask = function (text,callback) {
         speak_text(text);
         recognize_speech();
         if (typeof callback=="function") callback();
@@ -69,7 +69,7 @@ new (function() {
             //['', 'set voice to %m.voices', 'set_voice', ''],
             //['w', 'wait and recognize speech', 'recognize_speech'],
             ['w', 'speak %s', 'speak_text', 'Hello!'],
-            ['w', 'ask and wait', 'recognize_speech'],
+            ['w', 'ask %s and wait', 'ask', 'What\'s your name?'],
             ['r', 'answer', 'recognized_speech']
         ]/*,
         menus: {
