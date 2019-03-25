@@ -3,6 +3,7 @@
 
 new (function() {
     var ext = this;
+    var recognized_speech = '';
 
     function _get_voices() {
         if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
@@ -32,12 +33,33 @@ new (function() {
         
         speechSynthesis.speak(u);
     };
+    
+    ext.recognize_speech = function (callback) {
+        var recognition = new webkitSpeechRecognition();
+        recognition.onresult = function(event) {
+            if (event.results.length > 0) {
+                recognized_speech = event.results[0][0].transcript;
+                if (typeof callback=="function") callback();
+            }
+        };
+        recognition.start();
+    };
+    
+    ext.recognized_speech = function () {return recognized_speech;};
 
+    ext.ask = function (callback) {
+        speak_text(text);
+        recognize_speech();
+        if (typeof callback=="function") callback();
+    };
+    
     ext._shutdown = function() {};
 
     ext._getStatus = function() {
         if (window.SpeechSynthesisUtterance === undefined) {
             return {status: 1, msg: 'Your browser does not support text to speech. Try using Google Chrome or Safari.'};
+        } else if (window.webkitSpeechRecognition === undefined) {
+            return {status: 1, msg: 'Your browser does not support speech recognition. Try using Google Chrome.'};
         }
         return {status: 2, msg: 'Ready'};
     };
@@ -45,7 +67,10 @@ new (function() {
     var descriptor = {
         blocks: [
             //['', 'set voice to %m.voices', 'set_voice', ''],
+            //['w', 'wait and recognize speech', 'recognize_speech'],
             ['w', 'speak %s', 'speak_text', 'Hello!'],
+            ['w', 'ask and wait', 'recognize_speech'],
+            ['r', 'answer', 'recognized_speech']
         ],
         menus: {
             voices: _get_voices(),
