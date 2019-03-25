@@ -52,7 +52,7 @@ new (function() {
     ext.ask = function (text,callback) {
         console.log(text);
         console.log(callback);
-        speak_text(text, recognize_speech(callback));
+        speak_text(text, callback);//(recognize_speech(callback));
         //if (typeof callback=="function") callback();
     };
     
