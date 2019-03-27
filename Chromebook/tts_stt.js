@@ -70,8 +70,8 @@ new (function() {
     var descriptor = {
         blocks: [
             //['', 'set voice to %m.voices', 'set_voice', ''],
-            //['w', 'wait and recognize speech', 'recognize_speech'],
             ['w', 'speak %s', 'speak_text', 'Hello!'],
+            ['w', 'listen for speech', 'recognize_speech'],
             ['w', 'ask %s and wait', 'ask', 'What\'s your name?'],
             ['r', 'answer', 'recognized_speech']
         ]/*,
