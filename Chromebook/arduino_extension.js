@@ -31,7 +31,7 @@
 
 	var poller = null;
 
-  var LOFI_ID = "opdjdfckgbogbagnkbkpjgficbampcel"; // APP ID
+  var LOFI_ID = "pnjoidacmeigcdbikhgjolnadkdiegca"; // APP ID
   var mConnection;
   var mStatus = 1;
   var stopServos = true;
