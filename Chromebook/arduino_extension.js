@@ -357,7 +357,7 @@
 	url: '', // update to something?
 
         blocks: [
-      [' ', 'switch %m.leds led', 'toggle_light', 'red'],
+      [' ', 'switch randi %m.leds led', 'toggle_light', 'red'],
       ['w', 'drive forward for %n seconds', 'drive_forward', 1],
       ['w', 'drive backward for %n seconds', 'drive_backward', 1],
       ['w', 'turn right for %n seconds', 'drive_right', 1],
