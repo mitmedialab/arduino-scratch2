@@ -105,7 +105,7 @@
   }
 
 
-   ext.set_output = function(led, setting) {
+   ext.set_output = function(led, setting) {			
 
     var msg = {}
     var value = 0;
@@ -125,7 +125,30 @@
     mConnection.postMessage(msg);
 
   }
+	
+	  ext.set_output2 = function(rval, gval, bval) {			//change this function
+
+    var msg = {}
+   
+      msg.buffer = [204,rval];
+    mConnection.postMessage(msg);
+    mConnection.postMessage(msg);
+      msg.buffer = [205,gval];
+    mConnection.postMessage(msg);
+    mConnection.postMessage(msg);
+	msg.buffer = [206,bval];  
+    mConnection.postMessage(msg);
+    mConnection.postMessage(msg);
+
+  }
   
+ext.set_rgb = function(color)
+{
+	if(color=='red') {
+		ext.set_output2(255,0,0);
+	}
+}
+
   ext.toggle_light = function(led) {
   	if (led == 'red') {
 		if (redLight) {
@@ -358,6 +381,7 @@
 
         blocks: [
       [' ', 'switch randi %m.leds led', 'toggle_light', 'red'],
+	[' ', 'set led to %m.colors', 'set_rgb', 'red'],
       ['w', 'drive forward for %n seconds', 'drive_forward', 1],
       ['w', 'drive backward for %n seconds', 'drive_backward', 1],
       ['w', 'turn right for %n seconds', 'drive_right', 1],
@@ -373,7 +397,8 @@
 
       servos: ['right','left'],
       servo_dir: ['forward','backward'],
-      leds: ['red', 'green']
+      leds: ['red', 'green'],
+	colors: ['off', 'red', 'green', 'blue', 'white', 'magenta', 'orange', 'cyan']
 		}
     };
 
