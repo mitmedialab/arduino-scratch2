@@ -368,9 +368,13 @@ ext.set_rgb = function(color)
   
   
     if (msg.buffer.length == 10){
+      console.log('Message buffer is right length');
       if (msg.buffer[8] == 240) {
+       	console.log('Reading distance');
         dist_read = Math.round(msg.buffer[9] );
       }
+    } else {
+    	console.log('Message buffer is the wrong length');
     }
 
   }
