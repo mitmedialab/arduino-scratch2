@@ -369,7 +369,7 @@
           if (mStatus !== 2) {
             mConnection = chrome.runtime.connect(CHROME_EXTENSION_ID);
             mConnection.onMessage.addListener(onMsgApp);
-            mStatus = 2; // used to be 1. bug?
+            mStatus = 1; // not sure why this is 1 but it works
             setTimeout(getAppStatus, 1000);
           }
           console.log("Connected");
