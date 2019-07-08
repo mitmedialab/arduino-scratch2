@@ -323,8 +323,8 @@
 	  [' ', 'arm %m.arm_dir', 'servo_arm', 'up'],
       ['w', 'drive forward %n step', 'drive_forward', 1],
       ['w', 'drive backward %n step', 'drive_backward', 1],
-      ['w', 'turn right', 'drive_right', 1],
-      ['w', 'turn left', 'drive_left', 1],
+      ['w', 'turn right %n time', 'drive_right', 1],
+      ['w', 'turn left %n time', 'drive_left', 1],
       ['r', 'read distance', 'readUltrasound'],
 			
 			],
