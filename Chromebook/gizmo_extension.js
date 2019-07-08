@@ -12,7 +12,7 @@
     ENCODER = 0x09,
     IGNORE = 0x7F;
 
-      var PIN_MODE = 0xF4,
+  var PIN_MODE = 0xF4,
     REPORT_DIGITAL = 0xD0,
     REPORT_ANALOG = 0xC0,
     DIGITAL_MESSAGE = 0x90,
@@ -35,8 +35,6 @@
   var mConnection;
   var mStatus = 1;
   var stopServos = true;
-  var redLight = false;
-  var greenLight = false;;
   var _selectors = {};
 
   var digitalOutputData = new Uint8Array(16);
@@ -50,13 +48,13 @@
   */
 	var pinmode = new Uint8Array(16);
 
-	pinmode[2] = 0;
-	pinmode[3] = 1;
+	pinmode[2] = 1;
+	pinmode[3] = 0;
 	pinmode[4] = 0;
 	pinmode[5] = 1;
-	pinmode[6] = 1;
+	pinmode[6] = 1; // 1 means output
 	pinmode[7] = 0;
-	pinmode[8] = 0;
+	pinmode[8] = 0; // 0 means output
 	pinmode[9] = 1;
 	pinmode[10] = 1;
 	pinmode[11] = 1;
@@ -86,17 +84,20 @@
   function pinMode_init() {
 
   // Ultrasonic sensor trigger and echo
-  pinMode(6,OUTPUT);
-  pinMode(8,INPUT);
+  pinMode(2,OUTPUT);
+  pinMode(3,INPUT);
   
   // Left and right servos
-  pinMode(9,PWM);
-  pinMode(10,PWM);
+  pinMode(6,PWM);
 
   // Red and green leds
+  pinMode(9,OUTPUT);
+  pinMode(10,OUTPUT);
   pinMode(11,OUTPUT);
-  pinMode(12,OUTPUT);
   console.log("Pins initialized");
+  
+  // Still need steppers
+  // Still need IR sensors
   }
 
 
@@ -105,45 +106,51 @@
   }
 
 
-   ext.set_output = function(led, setting) {
+  ext.set_output = function(rval, gval, bval) {			//change this function
 
     var msg = {}
-    var value = 0;
+   
+    msg.buffer = [204,rval];
+    mConnection.postMessage(msg);
+    mConnection.postMessage(msg);
     
-    if (setting == 'on') {
-      value = 0;
-    } else {
-      value = 100;
-    }
-
-    if (led == 'red') {
-      msg.buffer = [204,value];
-    } else if (led == 'green') {
-      msg.buffer = [205,value];
-    }
+    msg.buffer = [205,gval];
+    mConnection.postMessage(msg);
+    mConnection.postMessage(msg);
+	
+	msg.buffer = [206,bval];  
     mConnection.postMessage(msg);
     mConnection.postMessage(msg);
 
   }
   
-  ext.toggle_light = function(led) {
-  	if (led == 'red') {
-		if (redLight) {
-			ext.set_output(led, 'off');
-		} else {
-			ext.set_output(led, 'on');
-		}
-		redLight = !redLight;
-	} else if (led == 'green') {
-		if (greenLight) {
-			ext.set_output(led, 'off');
-		} else {
-			ext.set_output(led, 'on');
-		}
-		greenLight = !greenLight;
+  ext.set_rgb = function(color)
+  {
+	if(color=='red') {
+		ext.set_output(255,0,0);
+	}
+	else if(color='green'){
+		ext.set_output(0,255,0);
+	}
+	else if(color='blue'){
+		ext.set_output(0,0,255);
+	}
+	else if(color='white'){
+		ext.set_output(255,255,255);
+	}
+	else if(color='magenta'){
+		ext.set_output(255,0,255);
+	}
+	else if(color='yellow'){
+		ext.set_output(255,255,0);
+	}
+	else if(color='cyan'){
+		ext.set_output(0,255,255);
+	}
+	else if(color='off'){
+		ext.set_output(0,0,0);
 	}
   }
-
 
   ext.servo_off = function(pin) {
 	  var msg = {};
@@ -357,15 +364,11 @@
 	url: '', // update to something?
 
         blocks: [
-      [' ', 'switch %m.leds led', 'toggle_light', 'red'],
-      ['w', 'drive forward for %n seconds', 'drive_forward', 1],
-      ['w', 'drive backward for %n seconds', 'drive_backward', 1],
-      ['w', 'turn right for %n seconds', 'drive_right', 1],
-      ['w', 'turn left for %n seconds', 'drive_left', 1],
-      [' ', 'stop servos', 'servos_off'],
-  	  [' ', 'turn right servo %m.servo_dir', 'turn_servo_right', 'forward'],
-  	  [' ', 'turn left servo %m.servo_dir', 'turn_servo_left', 'forward'],
-      [' ', 'stop %m.servos', 'servo_off', 'right'],
+	  [' ', 'set led to %m.colors', 'set_rgb', 'red'],
+      ['w', 'drive forward %n step', 'drive_forward', 1],
+      ['w', 'drive backward %n step', 'drive_backward', 1],
+      ['w', 'turn right', 'drive_right', 1],
+      ['w', 'turn left', 'drive_left', 1],
       ['r', 'read distance', 'readUltrasound'],
 			
 			],
@@ -373,7 +376,7 @@
 
       servos: ['right','left'],
       servo_dir: ['forward','backward'],
-      leds: ['red', 'green']
+      colors: ['off', 'red', 'green', 'blue', 'white', 'magenta', 'yellow', 'cyan']
 		}
     };
 
@@ -441,5 +444,5 @@
     getAppStatus();
 
 
-	ScratchExtensions.register('PopPet Robot', descriptor, ext);
+	ScratchExtensions.register('Gizmo Robot', descriptor, ext);
 })({});
