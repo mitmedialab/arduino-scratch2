@@ -31,7 +31,7 @@
 
 	var poller = null;
 
-  var LOFI_ID = "pnjoidacmeigcdbikhgjolnadkdiegca"; // APP ID
+  var CHROME_EXTENSION_ID = "pnjoidacmeigcdbikhgjolnadkdiegca"; // APP ID
   var mConnection;
   var mStatus = 1;
   var stopServos = true;
@@ -394,7 +394,7 @@
 	}
 
   function getAppStatus() {
-      chrome.runtime.sendMessage(LOFI_ID, {message: "STATUS"}, function (response) {
+      chrome.runtime.sendMessage(CHROME_EXTENSION_ID, {message: "STATUS"}, function (response) {
         if (response === undefined) { //Chrome app not found
           console.log("Chrome app not found");
           mStatus = 0;
@@ -406,7 +406,7 @@
         }
         else {// successfully connected
           if (mStatus !== 2) {
-            mConnection = chrome.runtime.connect(LOFI_ID);
+            mConnection = chrome.runtime.connect(CHROME_EXTENSION_ID);
             mConnection.onMessage.addListener(onMsgApp);
             mStatus = 1;
             setTimeout(getAppStatus, 1000);
