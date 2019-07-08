@@ -81,7 +81,7 @@
     //addPackage(arrayBufferFromArray(msg.buffer), function(){});
   }
 
-  function pinMode_init() {
+  function pinMode_init() { // not sure where this function gets called
 
   // Ultrasonic sensor trigger and echo
   pinMode(2,OUTPUT);
@@ -106,7 +106,7 @@
   }
 
 
-  ext.set_output = function(rval, gval, bval) {			//change this function
+  ext.set_output = function(rval, gval, bval) {	
 
     var msg = {}
    
@@ -188,7 +188,7 @@
 
 	msg.buffer = [output,deg];    
     mConnection.postMessage(msg);
-    mConnection.postMessage(msg);
+    //mConnection.postMessage(msg); not sure if it's necessary to do this twice
   }
   
   ext.drive = function(dir, secs, callback) {
