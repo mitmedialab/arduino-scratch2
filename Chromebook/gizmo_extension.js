@@ -49,7 +49,7 @@
 	var pinmode = new Uint8Array(16);
 
 	pinmode[2] = 1;
-	pinmode[3] = 0;
+	pinmode[3] = 1;
 	pinmode[4] = 0;
 	pinmode[5] = 1;
 	pinmode[6] = 1; // 1 means output
