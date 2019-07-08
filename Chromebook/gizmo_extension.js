@@ -152,9 +152,8 @@
 	}
   }
 
-  ext.servo_off = function(pin) {
+/*  ext.servo_off = function(pin) {
 	  var msg = {};
- 	 // RANDI this is what was used before msg.buffer = [212,99];
     var output;
   	stopServos = true;
    	if (pin == "right") {
@@ -172,66 +171,22 @@
     ext.servo_off("right");
     ext.servo_off("left");
   }
-
-  ext.turn_servo = function(pin, dir) {
+*/
+  ext.servo_arm = function(pin, dir) {
    	var msg = {};
     var deg;
 
    	var output;
    	
    	stopServos = false;
-   	if (pin == "right") {
-	   	output = 208;
-      if (dir == 'forward') {
+   	output = 208;
+    if (dir == 'up') {
         deg = 0;
-      } else if (dir == 'backward') {
+    } else if (dir == 'down') {
         deg = 100;  
-      } 
-   	} else if (pin == "left") {
-	   	output = 209;
-      if (dir == 'forward') {
-        deg = 100;
-      } else if (dir == 'backward') {
-        deg = 0;  
-      } 
-   	}
+    } 
+
 	  msg.buffer = [output,Math.round(deg)];    
-    mConnection.postMessage(msg);
-    mConnection.postMessage(msg);
-  }
-  
-  ext.turn_servo_right = function( dir) {
-   	var msg = {};
-    var deg;
-
-   	var output = 208;
-   	
-   	stopServos = false;
-    if (dir == 'forward') {
-      deg = 0;
-    } else if (dir == 'backward') {
-     deg = 100;  
-    } 
-   	
-    msg.buffer = [output,Math.round(deg)];    
-    mConnection.postMessage(msg);
-    mConnection.postMessage(msg);
-  }
-  
-  ext.turn_servo_left = function(dir) {
-   	var msg = {};
-    var deg;
-
-   	var output = 209;
-   	
-   	stopServos = false;
-    if (dir == 'forward') {
-      deg = 100;
-    } else if (dir == 'backward') {
-     deg = 0;  
-    } 
-   	
-    msg.buffer = [output,Math.round(deg)];    
     mConnection.postMessage(msg);
     mConnection.postMessage(msg);
   }
@@ -365,6 +320,7 @@
 
         blocks: [
 	  [' ', 'set led to %m.colors', 'set_rgb', 'red'],
+	  [' ', 'arm %m.arm_dir', 'servo_arm', 'up'],
       ['w', 'drive forward %n step', 'drive_forward', 1],
       ['w', 'drive backward %n step', 'drive_backward', 1],
       ['w', 'turn right', 'drive_right', 1],
@@ -375,6 +331,7 @@
         menus: {
 
       servos: ['right','left'],
+      arm_dir: ['up','down'],
       servo_dir: ['forward','backward'],
       colors: ['off', 'red', 'green', 'blue', 'white', 'magenta', 'yellow', 'cyan']
 		}
@@ -387,8 +344,7 @@
     
   ext._stop = function() {
       ext.drive();
-      ext.set_output("red","off");
-      ext.set_output("green","off");
+      ext.set_output(0,0,0);
   };  
     
 	ext._shutdown = function() {
