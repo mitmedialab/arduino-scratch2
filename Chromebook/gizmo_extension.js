@@ -182,13 +182,15 @@
    	output = 208;
     if (dir == 'up') {
         deg = 0;
+        console.log('Arm up');
     } else if (dir == 'down') {
         deg = 100;  
+        console.log('Arm down');
     } 
 
 	msg.buffer = [output,deg];    
     mConnection.postMessage(msg);
-    //mConnection.postMessage(msg); not sure if it's necessary to do this twice
+    //mConnection.postMessage(msg); seems it's not necessary to do this twice
   }
   
   ext.drive = function(dir, secs, callback) {
