@@ -31,7 +31,7 @@
 
 	var poller = null;
 
-  var LOFI_ID = "opdjdfckgbogbagnkbkpjgficbampcel";//pnjoidacmeigcdbikhgjolnadkdiegca"; // APP ID
+  var CHROME_EXTENSION_ID = "opdjdfckgbogbagnkbkpjgficbampcel";//pnjoidacmeigcdbikhgjolnadkdiegca"; // APP ID
   var mConnection;
   var mStatus = 1;
   var stopServos = true;
