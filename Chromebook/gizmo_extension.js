@@ -288,10 +288,13 @@
   
   
     if (msg.buffer.length == 10){
+	console.log('Message buffer is right length?');
       if (msg.buffer[8] == 240) {
         dist_read = Math.round(msg.buffer[9] );
         console.log('Dist read: ' + dist_read);
       }
+    } else {
+    	console.log('Message buffer is wrong length?');
     }
 
   }
