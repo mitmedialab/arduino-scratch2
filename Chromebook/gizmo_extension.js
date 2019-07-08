@@ -186,7 +186,7 @@
         deg = 100;  
     } 
 
-	  msg.buffer = [output,Math.round(deg)];    
+	msg.buffer = [output,deg];    
     mConnection.postMessage(msg);
     mConnection.postMessage(msg);
   }
@@ -343,7 +343,7 @@
     };
     
   ext._stop = function() {
-      ext.drive();
+      //ext.drive();
       ext.set_output(0,0,0);
   };  
     
