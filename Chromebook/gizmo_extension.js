@@ -129,25 +129,25 @@
 	if(color=='red') {
 		ext.set_output(255,0,0);
 	}
-	else if(color='green'){
+	else if(color=='green'){
 		ext.set_output(0,255,0);
 	}
-	else if(color='blue'){
+	else if(color=='blue'){
 		ext.set_output(0,0,255);
 	}
-	else if(color='white'){
+	else if(color=='white'){
 		ext.set_output(255,255,255);
 	}
-	else if(color='magenta'){
+	else if(color=='magenta'){
 		ext.set_output(255,0,255);
 	}
-	else if(color='yellow'){
+	else if(color=='yellow'){
 		ext.set_output(255,255,0);
 	}
-	else if(color='cyan'){
+	else if(color=='cyan'){
 		ext.set_output(0,255,255);
 	}
-	else if(color='off'){
+	else if(color=='off'){
 		ext.set_output(0,0,0);
 	}
   }
