@@ -174,21 +174,14 @@
 */
   ext.servo_arm = function(pin, dir) {
    	var msg = {};
-    var deg;
-
-   	var output;
-   	
+   
    	stopServos = false;
-   	output = 208;
     if (dir == 'up') {
-        deg = 0;
-        console.log('Arm up');
+    	msg.buffer = [208,0]; 
     } else if (dir == 'down') {
-        deg = 100;  
-        console.log('Arm down');
+    	msg.buffer = [208,120]; 
     } 
 
-	msg.buffer = [output,deg];    
     mConnection.postMessage(msg);
     //mConnection.postMessage(msg); seems it's not necessary to do this twice
   }
