@@ -1,0 +1,32 @@
+{
+   "app": {
+      "background": {
+         "persistent": true,
+         "scripts": [ "background.js" ]
+      }
+   },
+   "bluetooth": {
+      "low_energy": true,
+      "socket": true,
+      "uuids": [ "1101" ]
+   },
+   "description": "Connect Scratch to Arduino version of Gizmo robots",
+   "externally_connectable": {
+      "matches": [ "*://localhost/*", "*://scratchx.org/*" ]
+   },
+   "icons": {
+      "128": "assets/poppet_128.png",
+      "16": "assets/poppet_16.png"
+   },
+   "manifest_version": 2,
+   "minimum_chrome_version": "38",
+   "name": "Gizmo Robot Extension",
+   "permissions": [ "serial", "hid", {
+      "usbDevices": [ {
+         "productId": 65535,
+         "vendorId": 1046
+      } ]
+   } ],
+   "short_name": "Gizmo Robot Extension",
+   "version": "1.0.0"
+}

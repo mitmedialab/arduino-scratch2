@@ -1,0 +1,48 @@
+/* CSS file placeholder. */
+body  {
+  color: #fff;
+  background-color: #4B0082;
+  font-size: 14px;
+  padding:20px;
+  margin: 0;
+}
+
+#logo {
+  display: block;
+  margin: 0 auto;
+}
+
+
+button {
+  border-radius: 5px;
+  outline: 0px;
+  border: 0px;
+  color: #4B0082;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor:pointer;
+}
+
+button:hover {
+  opacity:0.8;
+
+}
+
+#hid-device-panel, #serial-device-panel, #BLE-device-panel {
+margin-bottom: 10px;
+margin-top: 10px;
+}
+
+#scanning-panel {
+  margin-top: 20px;
+}
+
+#scanning-panel button {
+  margin-right: 10px;
+  height: 28px;
+}
+
+#openscratchx {
+  float:right;
+  margin-right: 0px !important;
+}
