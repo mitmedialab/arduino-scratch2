@@ -29,7 +29,7 @@
 
     var LOW = 0, HIGH = 1;
 
-	var poller = nullserv
+	var poller = null;
 
   var CHROME_EXTENSION_ID = "opdjdfckgbogbagnkbkpjgficbampcel";//pnjoidacmeigcdbikhgjolnadkdiegca"; // APP ID
   var mConnection;
