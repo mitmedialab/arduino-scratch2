@@ -29,7 +29,7 @@
 
     var LOW = 0, HIGH = 1;
 
-	var poller = null;
+	var poller = nullserv
 
   var CHROME_EXTENSION_ID = "opdjdfckgbogbagnkbkpjgficbampcel";//pnjoidacmeigcdbikhgjolnadkdiegca"; // APP ID
   var mConnection;
@@ -198,10 +198,10 @@ ext.set_rgb = function(color)
    	}*/
     msg.buffer = [207,99];
     mConnection.postMessage(msg);
-    mConnection.postMessage(msg);
   }
   
   ext.servos_off = function() {
+	  var msg = {};
   	stopServos = true;
 	      msg.buffer = [207,99];
     mConnection.postMessage(msg);
