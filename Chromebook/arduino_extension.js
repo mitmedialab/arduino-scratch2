@@ -141,7 +141,7 @@
   
 ext.set_rgb = function(color)
 {
-	if(color=='green') { // cyan
+	if(color=='blue') { // cyan
 		ext.set_output2(255,0,0);
 	}
 	else if(color='pink'){ //  magenta
@@ -421,16 +421,12 @@ ext.set_rgb = function(color)
 	url: '', // update to something?
 
         blocks: [
-   [' ', 'alejo', 'set_rgb', 'red'],
-	  [' ', 'set led to %m.colors', 'set_rgb', 'green'],
+	  [' ', 'set led to %m.colors', 'set_rgb', 'blue'],
       ['w', 'drive forward for %n seconds', 'drive_forward', 1],
       ['w', 'drive backward for %n seconds', 'drive_backward', 1],
       ['w', 'turn right for %n seconds', 'drive_right', 1],
       ['w', 'turn left for %n seconds', 'drive_left', 1],
       [' ', 'stop servos', 'servos_off'],
-  	  [' ', 'turn right servo %m.servo_dir', 'turn_servo_right', 'forward'],
-  	  [' ', 'turn left servo %m.servo_dir', 'turn_servo_left', 'forward'],
-      [' ', 'stop %m.servos', 'servo_off', 'right'],
       ['r', 'read distance', 'readUltrasound'],
 			
 			],
@@ -439,7 +435,7 @@ ext.set_rgb = function(color)
       servos: ['right','left'],
       servo_dir: ['forward','backward'],
       leds: ['red', 'green'],
-	colors: ['green', 'pink','off']//, 'red', 'green', 'blue', 'white', 'magenta', 'yellow', 'cyan']
+	colors: ['blue', 'pink']//, 'red', 'green', 'blue', 'white', 'magenta', 'yellow', 'cyan']
 		}
     };
 
@@ -452,7 +448,7 @@ ext.set_rgb = function(color)
       ext.servos_off();
       //ext.set_output("red","off");
       //ext.set_output("green","off");
-	ext.set_output(0,0,0);
+	ext.set_output2(0,0,0);
   };  
     
 	ext._shutdown = function() {
