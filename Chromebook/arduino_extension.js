@@ -295,9 +295,10 @@ ext.set_rgb = function(color)
   }
   
   ext.drive_forward = function(secs, callback) {
-	stopServos = false;
-	msg.buffer = [208,99];    
+	  var msg = {}; 
 	  console.log("Sending 208 to drive forward");
+	stopServos = false;
+	msg.buffer = [208,99];   
     mConnection.postMessage(msg);
  //  	ext.turn_servo("right","forward");
  //   ext.turn_servo("left","forward");
@@ -308,9 +309,10 @@ ext.set_rgb = function(color)
   }
   
   ext.drive_backward = function(secs, callback) {
-	stopServos = false;
-	  	msg.buffer = [209,99];    
-	  console.log("Sending 209 to drive backward");
+	var msg = {};
+	  stopServos = false;
+	  console.log("Sending 209 to drive backward")
+	  	msg.buffer = [209,99];    ;
     mConnection.postMessage(msg);
 //   	ext.turn_servo("right","backward");
 //    ext.turn_servo("left","backward");
@@ -322,9 +324,11 @@ ext.set_rgb = function(color)
   }
   
   ext.drive_left = function(secs, callback) {
-	stopServos = false;
-	 msg.buffer = [210,99];
+	var msg = {};
+	  stopServos = false;
+	  
 	  console.log("Sending 210 to drive left");
+	 msg.buffer = [210,99];
     mConnection.postMessage(msg);
    //	ext.turn_servo("right","forward");
    // ext.turn_servo("left","backward");
@@ -335,9 +339,11 @@ ext.set_rgb = function(color)
   }
   
   ext.drive_right = function(secs, callback) {
-	stopServos = false;
-	 msg.buffer = [211,99];
+	var msg = {};
 	  console.log("Sending 211 to drive right");
+	  stopServos = false;
+	 msg.buffer = [211,99];
+
     mConnection.postMessage(msg);
    	//ext.turn_servo("right","backward");
     //ext.turn_servo("left","forward");
@@ -413,7 +419,7 @@ ext.set_rgb = function(color)
 	url: '', // update to something?
 
         blocks: [
-   [' ', 'pablo', 'set_rgb', 'red'],
+   [' ', 'alejo', 'set_rgb', 'red'],
 	  [' ', 'set led to %m.colors', 'set_rgb', 'red'],
       ['w', 'drive forward for %n seconds', 'drive_forward', 1],
       ['w', 'drive backward for %n seconds', 'drive_backward', 1],
