@@ -141,13 +141,15 @@
   
 ext.set_rgb = function(color)
 {
-	if(color=='red') {
+	if(color=='green') { // cyan
 		ext.set_output2(255,0,0);
 	}
-	else if(color='green'){
+	else if(color='pink'){ //  magenta
 		ext.set_output2(0,255,0);
+	} else {
+		ext.set_output2(0,0,0);	
 	}
-	else if(color='blue'){
+/*	else if(color='blue'){
 		ext.set_output2(0,0,255);
 	}
 	else if(color='white'){
@@ -164,7 +166,7 @@ ext.set_rgb = function(color)
 	}
 	else if(color='off'){
 		ext.set_output(0,0,0);
-	}
+	}*/
 }
 
   ext.toggle_light = function(led) {
@@ -420,7 +422,7 @@ ext.set_rgb = function(color)
 
         blocks: [
    [' ', 'alejo', 'set_rgb', 'red'],
-	  [' ', 'set led to %m.colors', 'set_rgb', 'red'],
+	  [' ', 'set led to %m.colors', 'set_rgb', 'green'],
       ['w', 'drive forward for %n seconds', 'drive_forward', 1],
       ['w', 'drive backward for %n seconds', 'drive_backward', 1],
       ['w', 'turn right for %n seconds', 'drive_right', 1],
@@ -437,7 +439,7 @@ ext.set_rgb = function(color)
       servos: ['right','left'],
       servo_dir: ['forward','backward'],
       leds: ['red', 'green'],
-	colors: ['off', 'red', 'green', 'blue', 'white', 'magenta', 'yellow', 'cyan']
+	colors: ['green', 'pink','off']//, 'red', 'green', 'blue', 'white', 'magenta', 'yellow', 'cyan']
 		}
     };
 
