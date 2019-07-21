@@ -413,7 +413,6 @@ ext.set_rgb = function(color)
 	url: '', // update to something?
 
         blocks: [
-      [' ', 'switch randi %m.leds led', 'toggle_light', 'red'],
 	  [' ', 'set led to %m.colors', 'set_rgb', 'red'],
       ['w', 'drive forward for %n seconds', 'drive_forward', 1],
       ['w', 'drive backward for %n seconds', 'drive_backward', 1],
