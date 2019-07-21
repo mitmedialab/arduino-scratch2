@@ -132,12 +132,9 @@
    
       msg.buffer = [204,rval];
     mConnection.postMessage(msg);
-    mConnection.postMessage(msg);
       msg.buffer = [205,gval];
     mConnection.postMessage(msg);
-    mConnection.postMessage(msg);
 	msg.buffer = [206,bval];  
-    mConnection.postMessage(msg);
     mConnection.postMessage(msg);
 
   }
@@ -383,13 +380,9 @@ ext.set_rgb = function(color)
   
   
     if (msg.buffer.length == 10){
-      console.log('Message buffer is right length');
       if (msg.buffer[8] == 240) {
-       	console.log('Reading distance');
         dist_read = Math.round(msg.buffer[9] );
       }
-    } else {
-    	console.log('Message buffer is the wrong length');
     }
 
   }
@@ -420,6 +413,7 @@ ext.set_rgb = function(color)
 	url: '', // update to something?
 
         blocks: [
+   [' ', 'pablo', 'set_rgb', 'red'],
 	  [' ', 'set led to %m.colors', 'set_rgb', 'red'],
       ['w', 'drive forward for %n seconds', 'drive_forward', 1],
       ['w', 'drive backward for %n seconds', 'drive_backward', 1],
@@ -447,9 +441,10 @@ ext.set_rgb = function(color)
     };
     
   ext._stop = function() {
-      ext.drive();
-      ext.set_output("red","off");
-      ext.set_output("green","off");
+      ext.servos_off();
+      //ext.set_output("red","off");
+      //ext.set_output("green","off");
+	ext.set_output(0,0,0);
   };  
     
 	ext._shutdown = function() {
