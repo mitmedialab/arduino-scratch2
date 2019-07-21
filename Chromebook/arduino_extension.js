@@ -194,12 +194,12 @@ ext.set_rgb = function(color)
  	 // RANDI this is what was used before msg.buffer = [212,99];
     var output;
   	stopServos = true;
-   	if (pin == "right") {
+   	/*if (pin == "right") {
 	   	output = 208;
    	} else if (pin == "left") {
 	   	output = 209;
-   	}
-    msg.buffer = [output,Math.round(51)];
+   	}*/
+    msg.buffer = [203,0];
     mConnection.postMessage(msg);
     mConnection.postMessage(msg);
   }
@@ -296,8 +296,10 @@ ext.set_rgb = function(color)
   
   ext.drive_forward = function(secs, callback) {
 	stopServos = false;
-   	ext.turn_servo("right","forward");
-    ext.turn_servo("left","forward");
+	msg.buffer = [203,1];    
+    mConnection.postMessage(msg);
+ //  	ext.turn_servo("right","forward");
+ //   ext.turn_servo("left","forward");
     
     window.setTimeout(function() {
             ext.servos_off(); callback();
@@ -306,8 +308,10 @@ ext.set_rgb = function(color)
   
   ext.drive_backward = function(secs, callback) {
 	stopServos = false;
-   	ext.turn_servo("right","backward");
-    ext.turn_servo("left","backward");
+	  	msg.buffer = [203,2];    
+    mConnection.postMessage(msg);
+//   	ext.turn_servo("right","backward");
+//    ext.turn_servo("left","backward");
    	
     
     window.setTimeout(function() {
@@ -317,8 +321,10 @@ ext.set_rgb = function(color)
   
   ext.drive_left = function(secs, callback) {
 	stopServos = false;
-   	ext.turn_servo("right","forward");
-    ext.turn_servo("left","backward");
+	 msg.buffer = [203,3];    
+    mConnection.postMessage(msg);
+   //	ext.turn_servo("right","forward");
+   // ext.turn_servo("left","backward");
     
     window.setTimeout(function() {
             ext.servos_off(); callback();
@@ -327,8 +333,10 @@ ext.set_rgb = function(color)
   
   ext.drive_right = function(secs, callback) {
 	stopServos = false;
-   	ext.turn_servo("right","backward");
-    ext.turn_servo("left","forward");
+	 msg.buffer = [203,4];    
+    mConnection.postMessage(msg);
+   	//ext.turn_servo("right","backward");
+    //ext.turn_servo("left","forward");
    	    
     window.setTimeout(function() {
             ext.servos_off(); callback();
