@@ -199,7 +199,7 @@ ext.set_rgb = function(color)
    	} else if (pin == "left") {
 	   	output = 209;
    	}*/
-    msg.buffer = [203,0];
+    msg.buffer = [207,99];
     mConnection.postMessage(msg);
     mConnection.postMessage(msg);
   }
@@ -296,7 +296,7 @@ ext.set_rgb = function(color)
   
   ext.drive_forward = function(secs, callback) {
 	stopServos = false;
-	msg.buffer = [203,1];    
+	msg.buffer = [208,99];    
     mConnection.postMessage(msg);
  //  	ext.turn_servo("right","forward");
  //   ext.turn_servo("left","forward");
@@ -308,7 +308,7 @@ ext.set_rgb = function(color)
   
   ext.drive_backward = function(secs, callback) {
 	stopServos = false;
-	  	msg.buffer = [203,2];    
+	  	msg.buffer = [209,99];    
     mConnection.postMessage(msg);
 //   	ext.turn_servo("right","backward");
 //    ext.turn_servo("left","backward");
@@ -321,7 +321,7 @@ ext.set_rgb = function(color)
   
   ext.drive_left = function(secs, callback) {
 	stopServos = false;
-	 msg.buffer = [203,3];    
+	 msg.buffer = [210,99];    
     mConnection.postMessage(msg);
    //	ext.turn_servo("right","forward");
    // ext.turn_servo("left","backward");
@@ -333,7 +333,7 @@ ext.set_rgb = function(color)
   
   ext.drive_right = function(secs, callback) {
 	stopServos = false;
-	 msg.buffer = [203,4];    
+	 msg.buffer = [211,99];    
     mConnection.postMessage(msg);
    	//ext.turn_servo("right","backward");
     //ext.turn_servo("left","forward");
