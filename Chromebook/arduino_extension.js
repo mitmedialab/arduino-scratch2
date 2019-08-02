@@ -91,11 +91,12 @@
   
   // Left and right servos
   pinMode(9,PWM);
-  pinMode(10,PWM);
+  //pinMode(10,PWM);
 
-  // Red and green leds
-  pinMode(11,OUTPUT);
-  pinMode(12,OUTPUT);
+  // RGB led
+  pinMode(8,OUTPUT);
+  pinMode(9,OUTPUT);
+  pinMode(10,OUTPUT);
   console.log("Pins initialized");
   }
 
@@ -105,69 +106,56 @@
   }
 
 
-   ext.set_output = function(led, setting) {			
-
-    var msg = {}
-    var value = 0;
-    
-    if (setting == 'on') {
-      value = 0;
-    } else {
-      value = 100;
-    }
-
-    if (led == 'red') {
-      msg.buffer = [204,value];
-    } else if (led == 'green') {
-      msg.buffer = [205,value];
-    }
-    mConnection.postMessage(msg);
-    mConnection.postMessage(msg);
-
-  }
-	
-	  ext.set_output2 = function(rval, gval, bval) {			//change this function
+   ext.set_output = function(rval, gval, bval) {	
 
     var msg = {}
    
-      msg.buffer = [204,rval];
+    msg.buffer = [204,rval];
     mConnection.postMessage(msg);
-      msg.buffer = [205,gval];
+    //mConnection.postMessage(msg);
+    
+    msg.buffer = [205,gval];
     mConnection.postMessage(msg);
+    //mConnection.postMessage(msg);
+	
 	msg.buffer = [206,bval];  
     mConnection.postMessage(msg);
+    //mConnection.postMessage(msg);
 
   }
   
 ext.set_rgb = function(color)
-{
-	if(color=='blue') { // cyan
-		ext.set_output2(255,0,0);
+  {
+	if(color=='red') {
+		ext.set_output(255,0,0);
 	}
-	else if(color='pink'){ //  magenta
-		ext.set_output2(0,255,0);
-	} else {
-		ext.set_output2(0,0,0);	
+	else if(color=='green'){
+		ext.set_output(0,255,0);
 	}
-/*	else if(color='blue'){
-		ext.set_output2(0,0,255);
+	else if(color=='blue'){
+		ext.set_output(0,0,255);
 	}
-	else if(color='white'){
-		ext.set_output2(255,255,255);
+	else if(color=='white'){
+		ext.set_output(255,255,255);
 	}
-	else if(color='magenta'){
-		ext.set_output2(255,0,255);
+	else if(color=='magenta'){
+		ext.set_output(255,0,255);
 	}
-	else if(color='yellow'){
-		ext.set_output2(255,255,0);
+	else if(color=='yellow'){
+		ext.set_output(255,255,0);
 	}
-	else if(color='cyan'){
-		ext.set_output2(0,255,255);
+	else if(color=='cyan'){
+		ext.set_output(0,255,255);
 	}
-	else if(color='off'){
+	else if(color=='off'){
 		ext.set_output(0,0,0);
-	}*/
-}
+	} else if (color=='random') {
+		var r = Math.floor(Math.random()*255);
+		var g = Math.floor(Math.random()*255);
+		var b = Math.floor(Math.random()*255);
+		ext.set_output(r, g, b);
+	}
+  }
 
   ext.toggle_light = function(led) {
   	if (led == 'red') {
@@ -421,7 +409,8 @@ ext.set_rgb = function(color)
 	url: '', // update to something?
 
         blocks: [
-	  [' ', 'set led to %m.colors', 'set_rgb', 'blue'],
+	  [' ', 'set light to %m.colors', 'set_rgb', 'blue'],
+ 	  [' ', 'turn light off', 'set_rgb', 'off'],
       ['w', 'drive forward for %n seconds', 'drive_forward', 1],
       ['w', 'drive backward for %n seconds', 'drive_backward', 1],
       ['w', 'turn right for %n seconds', 'drive_right', 1],
@@ -434,8 +423,7 @@ ext.set_rgb = function(color)
 
       servos: ['right','left'],
       servo_dir: ['forward','backward'],
-      leds: ['red', 'green'],
-	colors: ['blue', 'pink']//, 'red', 'green', 'blue', 'white', 'magenta', 'yellow', 'cyan']
+      colors: ['red', 'green', 'blue', 'magenta', 'yellow', 'cyan', 'white', 'random']
 		}
     };
 
@@ -446,9 +434,7 @@ ext.set_rgb = function(color)
     
   ext._stop = function() {
       ext.servos_off();
-      //ext.set_output("red","off");
-      //ext.set_output("green","off");
-	ext.set_output2(0,0,0);
+	ext.set_output(0,0,0);
   };  
     
 	ext._shutdown = function() {
