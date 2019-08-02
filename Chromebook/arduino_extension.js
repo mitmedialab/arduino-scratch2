@@ -124,8 +124,11 @@
 
   }
   
-ext.set_rgb = function(color)
-  {
+  ext.rgb_off = function() P
+  	set_rgb('off');
+  }
+  
+  ext.set_rgb = function(color) {
 	if(color=='red') {
 		ext.set_output(255,0,0);
 	}
@@ -156,48 +159,13 @@ ext.set_rgb = function(color)
 		ext.set_output(r, g, b);
 	}
   }
-
-  ext.toggle_light = function(led) {
-  	if (led == 'red') {
-		if (redLight) {
-			ext.set_output(led, 'off');
-		} else {
-			ext.set_output(led, 'on');
-		}
-		redLight = !redLight;
-	} else if (led == 'green') {
-		if (greenLight) {
-			ext.set_output(led, 'off');
-		} else {
-			ext.set_output(led, 'on');
-		}
-		greenLight = !greenLight;
-	}
-  }
-
-
-  ext.servo_off = function(pin) {
-	  var msg = {};
- 	 // RANDI this is what was used before msg.buffer = [212,99];
-    var output;
-  	stopServos = true;
-   	/*if (pin == "right") {
-	   	output = 208;
-   	} else if (pin == "left") {
-	   	output = 209;
-   	}*/
-    msg.buffer = [207,99];
-    mConnection.postMessage(msg);
-  }
   
   ext.servos_off = function() {
-	  var msg = {};
+	var msg = {};
   	stopServos = true;
-	      msg.buffer = [207,99];
+	console.log("Sending 207 to stop servos");
+	msg.buffer = [207,99];
     mConnection.postMessage(msg);
-
-    //ext.servo_off("right");
-    //ext.servo_off("left");
   }
 
   ext.turn_servo = function(pin, dir) {
@@ -409,20 +377,18 @@ ext.set_rgb = function(color)
 	url: '', // update to something?
 
         blocks: [
-	  [' ', 'set light to %m.colors', 'set_rgb', 'blue'],
- 	  [' ', 'turn light off', 'set_rgb', 'off'],
+	  [' ', 'set light to %m.colors', 'set_rgb', 'red'],
+ 	  [' ', 'turn light off', 'rgb_off'],
       ['w', 'drive forward for %n seconds', 'drive_forward', 1],
       ['w', 'drive backward for %n seconds', 'drive_backward', 1],
       ['w', 'turn right for %n seconds', 'drive_right', 1],
       ['w', 'turn left for %n seconds', 'drive_left', 1],
-      [' ', 'stop servos', 'servos_off'],
       ['r', 'read distance', 'readUltrasound'],
 			
 			],
         menus: {
 
       servos: ['right','left'],
-      servo_dir: ['forward','backward'],
       colors: ['red', 'green', 'blue', 'magenta', 'yellow', 'cyan', 'white', 'random']
 		}
     };
