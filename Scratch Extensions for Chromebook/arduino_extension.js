@@ -129,26 +129,26 @@
   }
   
   ext.set_rgb = function(color) {
-	if(color=='red') {
-		ext.set_output(255,0,0);
+	if(color=='red') { // 255 seems too bright
+		ext.set_output(200,0,0);
 	}
 	else if(color=='green'){
-		ext.set_output(0,255,0);
+		ext.set_output(0,200,0);
 	}
 	else if(color=='blue'){
-		ext.set_output(0,0,255);
+		ext.set_output(0,0,200);
 	}
 	else if(color=='white'){
-		ext.set_output(255,255,255);
+		ext.set_output(20,200,200);
 	}
 	else if(color=='magenta'){
-		ext.set_output(255,0,255);
+		ext.set_output(200,0,200);
 	}
 	else if(color=='yellow'){
-		ext.set_output(255,255,0);
+		ext.set_output(200,200,0);
 	}
 	else if(color=='cyan'){
-		ext.set_output(0,255,255);
+		ext.set_output(0,200,200);
 	}
 	else if(color=='off'){
 		ext.set_output(0,0,0);
