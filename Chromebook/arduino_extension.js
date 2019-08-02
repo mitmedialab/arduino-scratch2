@@ -132,25 +132,24 @@
    
       msg.buffer = [204,rval];
     mConnection.postMessage(msg);
-    mConnection.postMessage(msg);
       msg.buffer = [205,gval];
     mConnection.postMessage(msg);
-    mConnection.postMessage(msg);
 	msg.buffer = [206,bval];  
-    mConnection.postMessage(msg);
     mConnection.postMessage(msg);
 
   }
   
 ext.set_rgb = function(color)
 {
-	if(color=='red') {
+	if(color=='blue') { // cyan
 		ext.set_output2(255,0,0);
 	}
-	else if(color='green'){
+	else if(color='pink'){ //  magenta
 		ext.set_output2(0,255,0);
+	} else {
+		ext.set_output2(0,0,0);	
 	}
-	else if(color='blue'){
+/*	else if(color='blue'){
 		ext.set_output2(0,0,255);
 	}
 	else if(color='white'){
@@ -167,7 +166,7 @@ ext.set_rgb = function(color)
 	}
 	else if(color='off'){
 		ext.set_output(0,0,0);
-	}
+	}*/
 }
 
   ext.toggle_light = function(led) {
@@ -194,20 +193,23 @@ ext.set_rgb = function(color)
  	 // RANDI this is what was used before msg.buffer = [212,99];
     var output;
   	stopServos = true;
-   	if (pin == "right") {
+   	/*if (pin == "right") {
 	   	output = 208;
    	} else if (pin == "left") {
 	   	output = 209;
-   	}
-    msg.buffer = [output,Math.round(51)];
-    mConnection.postMessage(msg);
+   	}*/
+    msg.buffer = [207,99];
     mConnection.postMessage(msg);
   }
   
   ext.servos_off = function() {
+	  var msg = {};
   	stopServos = true;
-    ext.servo_off("right");
-    ext.servo_off("left");
+	      msg.buffer = [207,99];
+    mConnection.postMessage(msg);
+
+    //ext.servo_off("right");
+    //ext.servo_off("left");
   }
 
   ext.turn_servo = function(pin, dir) {
@@ -295,9 +297,13 @@ ext.set_rgb = function(color)
   }
   
   ext.drive_forward = function(secs, callback) {
+	  var msg = {}; 
+	  console.log("Sending 208 to drive forward");
 	stopServos = false;
-   	ext.turn_servo("right","forward");
-    ext.turn_servo("left","forward");
+	msg.buffer = [208,99];   
+    mConnection.postMessage(msg);
+ //  	ext.turn_servo("right","forward");
+ //   ext.turn_servo("left","forward");
     
     window.setTimeout(function() {
             ext.servos_off(); callback();
@@ -305,9 +311,13 @@ ext.set_rgb = function(color)
   }
   
   ext.drive_backward = function(secs, callback) {
-	stopServos = false;
-   	ext.turn_servo("right","backward");
-    ext.turn_servo("left","backward");
+	var msg = {};
+	  stopServos = false;
+	  console.log("Sending 209 to drive backward")
+	  	msg.buffer = [209,99];    ;
+    mConnection.postMessage(msg);
+//   	ext.turn_servo("right","backward");
+//    ext.turn_servo("left","backward");
    	
     
     window.setTimeout(function() {
@@ -316,9 +326,14 @@ ext.set_rgb = function(color)
   }
   
   ext.drive_left = function(secs, callback) {
-	stopServos = false;
-   	ext.turn_servo("right","forward");
-    ext.turn_servo("left","backward");
+	var msg = {};
+	  stopServos = false;
+	  
+	  console.log("Sending 210 to drive left");
+	 msg.buffer = [210,99];
+    mConnection.postMessage(msg);
+   //	ext.turn_servo("right","forward");
+   // ext.turn_servo("left","backward");
     
     window.setTimeout(function() {
             ext.servos_off(); callback();
@@ -326,9 +341,14 @@ ext.set_rgb = function(color)
   }
   
   ext.drive_right = function(secs, callback) {
-	stopServos = false;
-   	ext.turn_servo("right","backward");
-    ext.turn_servo("left","forward");
+	var msg = {};
+	  console.log("Sending 211 to drive right");
+	  stopServos = false;
+	 msg.buffer = [211,99];
+
+    mConnection.postMessage(msg);
+   	//ext.turn_servo("right","backward");
+    //ext.turn_servo("left","forward");
    	    
     window.setTimeout(function() {
             ext.servos_off(); callback();
@@ -368,13 +388,9 @@ ext.set_rgb = function(color)
   
   
     if (msg.buffer.length == 10){
-      console.log('Message buffer is right length');
       if (msg.buffer[8] == 240) {
-       	console.log('Reading distance');
         dist_read = Math.round(msg.buffer[9] );
       }
-    } else {
-    	console.log('Message buffer is the wrong length');
     }
 
   }
@@ -405,16 +421,12 @@ ext.set_rgb = function(color)
 	url: '', // update to something?
 
         blocks: [
-      [' ', 'switch randi %m.leds led', 'toggle_light', 'red'],
-	  [' ', 'set led to %m.colors', 'set_rgb', 'red'],
+	  [' ', 'set led to %m.colors', 'set_rgb', 'blue'],
       ['w', 'drive forward for %n seconds', 'drive_forward', 1],
       ['w', 'drive backward for %n seconds', 'drive_backward', 1],
       ['w', 'turn right for %n seconds', 'drive_right', 1],
       ['w', 'turn left for %n seconds', 'drive_left', 1],
       [' ', 'stop servos', 'servos_off'],
-  	  [' ', 'turn right servo %m.servo_dir', 'turn_servo_right', 'forward'],
-  	  [' ', 'turn left servo %m.servo_dir', 'turn_servo_left', 'forward'],
-      [' ', 'stop %m.servos', 'servo_off', 'right'],
       ['r', 'read distance', 'readUltrasound'],
 			
 			],
@@ -423,7 +435,7 @@ ext.set_rgb = function(color)
       servos: ['right','left'],
       servo_dir: ['forward','backward'],
       leds: ['red', 'green'],
-	colors: ['off', 'red', 'green', 'blue', 'white', 'magenta', 'yellow', 'cyan']
+	colors: ['blue', 'pink']//, 'red', 'green', 'blue', 'white', 'magenta', 'yellow', 'cyan']
 		}
     };
 
@@ -433,9 +445,10 @@ ext.set_rgb = function(color)
     };
     
   ext._stop = function() {
-      ext.drive();
-      ext.set_output("red","off");
-      ext.set_output("green","off");
+      ext.servos_off();
+      //ext.set_output("red","off");
+      //ext.set_output("green","off");
+	ext.set_output2(0,0,0);
   };  
     
 	ext._shutdown = function() {
