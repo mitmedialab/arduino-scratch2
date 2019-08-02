@@ -76,28 +76,9 @@
 
   function pinMode(pin, mode) {
   var msg = {};
-    msg.buffer = [PIN_MODE, pin, mode];
-    mConnection.postMessage(msg);
+    //msg.buffer = [PIN_MODE, pin, mode];
+    //mConnection.postMessage(msg);
     //addPackage(arrayBufferFromArray(msg.buffer), function(){});
-  }
-
-  function pinMode_init() { // not sure where this function gets called
-/*
-  // Ultrasonic sensor trigger and echo
-  pinMode(2,OUTPUT);
-  pinMode(3,INPUT);
-  
-  // Servo arm
-  pinMode(6,PWM);
-
-  // RGB led
-  pinMode(9,OUTPUT);
-  pinMode(10,OUTPUT);
-  pinMode(11,OUTPUT);
-  console.log("Pins initialized");
-  
-  // Still need steppers
-  // Still need IR sensors*/
   }
 
 
