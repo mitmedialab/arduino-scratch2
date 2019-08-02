@@ -38,31 +38,6 @@
   var _selectors = {};
 
   var digitalOutputData = new Uint8Array(16);
-  /* RANDI - not using and analog data
-  //var analogInputData = new Uint16Array(16);
-  //var analogRead1, analogRead2, analogRead3, analogRead0;
-	var analog0enable = false;
-	var analog1enable = false;
-	var analog2enable = false;
-	var analog3enable = false;
-  */
-	var pinmode = new Uint8Array(16);
-
-	pinmode[2] = 1;
-	pinmode[3] = 1;
-	pinmode[4] = 0;
-	pinmode[5] = 1;
-	pinmode[6] = 1; // 1 means output
-	pinmode[7] = 0;
-	pinmode[8] = 0; // 0 means output
-	pinmode[9] = 1;
-	pinmode[10] = 1;
-	pinmode[11] = 1;
-	pinmode[12] = 1;
-	pinmode[13] = 1;
-	pinmode[14] = 1;
-	pinmode[15] = 1;
-	pinmode[16] = 1;
 
 
 	var msg1 = {};
@@ -73,13 +48,6 @@
 
 	var dist_read  = 0;
 	var last_reading = 0;
-
-  function pinMode(pin, mode) {
-  var msg = {};
-    //msg.buffer = [PIN_MODE, pin, mode];
-    //mConnection.postMessage(msg);
-    //addPackage(arrayBufferFromArray(msg.buffer), function(){});
-  }
 
 
   function valBetween(v, min, max) {
