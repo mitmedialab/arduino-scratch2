@@ -1,0 +1,45 @@
+https://mitmedialab.github.io/arduino-scratch2/Chromebook/arduino_extension.js
+
+Distance Sensor
+x move the apple
+x make some noise with sound synth (https://mitmedialab.github.io/arduino-scratch2/Chromebook/tone-synth.js
+http://ericrosenbaum.github.io/tone-synth-extension/tone-synth.js)
+
+Driving
+- making a square (probably not possible)
+- following a path (probably not possible)
+x making animations
+
+Controls
+x pushing obstacles
+- avoiding obstacles
+
+Engineering Design Cycle
+- problem -> hypothesis -> solution
+- collecting data
+
+Research
+- videos about AI concepts
+
+Design
+- Creating externals
+- Adding to the character
+
+Playing Music (https://ericrosenbaum.github.io/spotify-extension/extension.js)
+- blinking lights to the beat
+- dancing to the beat
+
+Speaking and Making Noise
++ bunny bot using text to speech (d730cd40-2a2f-11e9-baeb-f9bc95f6fa354c6deb39-3b62-4a5a-b08f-3b56fbb52087)
+
+Using Machine Learning (https://machinelearningforkids.co.uk/api/scratch/<api-key>/extension.js)
++ reacting to happy and sad comments (effd1a80-3fc5-11e9-bdb2-778659617fbba4a58a23-cb3e-4556-94ef-05c6100fdb2e)
+- ask people about themselves to sort them into their perfect Harry Potter house
+- self-driving car
+
+Needs:
+tts
+- not super necessary because students can record speech 
+- (https://mitmedialab.github.io/arduino-scratch2/Chromebook/tts_stt.js)
+speech recognition
+add camera???

@@ -48,7 +48,7 @@ function onConnectSerial(){
   });
 }
 function onOpenScratch() {
-  window.open("https://scratchx.org/?url=https://mitmedialab.github.io/arduino-scratch2/Chromebook/gizmo_extension.js#scratch");
+  window.open("https://machinelearningforkids.co.uk/scratchx/?url=https://mitmedialab.github.io/arduino-scratch2/Chromebook/gizmo_extension.js#scratch");
 }
 function onConnectBT(){
   var msg = {};

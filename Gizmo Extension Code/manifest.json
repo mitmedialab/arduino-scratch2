@@ -12,7 +12,7 @@
    },
    "description": "Connect Scratch to Arduino version of Gizmo robots",
    "externally_connectable": {
-      "matches": [ "*://localhost/*", "*://scratchx.org/*" ]
+      "matches": [ "*://localhost/*", "*://scratchx.org/*", "*://machinelearningforkids.co.uk/scratchx/*" ]
    },
    "icons": {
       "128": "assets/poppet_128.png",
