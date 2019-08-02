@@ -87,7 +87,7 @@
   pinMode(2,OUTPUT);
   pinMode(3,INPUT);
   
-  // Left and right servos
+  // Servo arm
   pinMode(6,PWM);
 
   // Red and green leds
@@ -149,6 +149,11 @@
 	}
 	else if(color=='off'){
 		ext.set_output(0,0,0);
+	} else if (color=='random') {
+		var r = Math.floor(Math.random()*255);
+		var g = Math.floor(Math.random()*255);
+		var b = Math.floor(Math.random()*255);
+		ext.set_output(r, g, b);
 	}
   }
 
@@ -328,7 +333,7 @@
       servos: ['right','left'],
       arm_dir: ['up','down'],
       servo_dir: ['forward','backward'],
-      colors: ['off', 'red', 'green', 'blue', 'white', 'magenta', 'yellow', 'cyan']
+      colors: ['off', 'red', 'green', 'blue', 'magenta', 'yellow', 'cyan', 'white', 'random']
 		}
     };
 
