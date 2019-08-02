@@ -124,8 +124,8 @@
 
   }
   
-  ext.rgb_off = function() P
-  	set_rgb('off');
+  ext.rgb_off = function() {
+  	ext.set_rgb('off');
   }
   
   ext.set_rgb = function(color) {
