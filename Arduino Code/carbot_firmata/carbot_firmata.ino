@@ -5,7 +5,7 @@
 // 28.06.2018
 
 #include <Servo.h>
-
+ 
 //data sending (arduino->computer) interval  
 //raise it if you encouter communication jitter
 const long interval = 100;
@@ -249,12 +249,14 @@ void outputs_set() {
   else if (prev_byte == 210){
    Serial.println(prev_byte);
    Serial.println(current_byte);
-    goLeft();
+   goLeft();
+    
   }
 
   else if (prev_byte == 211){
        Serial.println(prev_byte);
    Serial.println(current_byte);
+    
     goRight();
   }
 
