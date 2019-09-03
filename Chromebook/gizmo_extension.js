@@ -31,7 +31,8 @@
 
 	var poller = null;
 
-  var CHROME_EXTENSION_ID = "molfimodiodghknifkeikkldkogpapki"; // APP ID
+  //var CHROME_EXTENSION_ID = "molfimodiodghknifkeikkldkogpapki"; // APP ID on Linux
+  var CHROME_EXTENSION_ID = "bllfgkceddeiellapodgilchdcobbgjn"; // APP ID on Windows
   var mConnection;
   var mStatus = 1;
   var stopServos = true;
