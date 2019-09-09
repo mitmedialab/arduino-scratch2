@@ -72,6 +72,10 @@
     //mConnection.postMessage(msg);
 
   }
+	
+  ext.rgb_off = function() {
+	ext.set_rgb('off');  
+  }
   
   ext.set_rgb = function(color)
   {
@@ -257,7 +261,7 @@ ext.readIR = function(input) {
 
         blocks: [
 	  [' ', 'set led to %m.colors', 'set_rgb', 'red'],
-      	  [' ', 'turn led off', 'set_rgb', 'off'],
+      	  [' ', 'turn led off', 'rgb_off', 'off'],
       	  ['w', 'drive forward %n step(s)', 'drive_forward', 1],
           ['w', 'drive backward %n step(s)', 'drive_backward', 1],
           ['w', 'turn right %n degrees', 'drive_right', 90],
