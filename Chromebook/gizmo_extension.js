@@ -31,7 +31,8 @@
 
 	var poller = null;
 
-  var CHROME_EXTENSION_ID = "pnjoidacmeigcdbikhgjolnadkdiegca"; // APP ID
+  //var CHROME_EXTENSION_ID = "molfimodiodghknifkeikkldkogpapki"; // APP ID on Linux
+  var CHROME_EXTENSION_ID = "bllfgkceddeiellapodgilchdcobbgjn"; // APP ID on Windows
   var mConnection;
   var mStatus = 1;
   var stopServos = true;
@@ -43,10 +44,9 @@
 	var msg1 = {};
 	var msg2 = {};
 
-	var servo_smooth = [];
-	var servo_position_smooth;
-
-	var dist_read  = 0;
+	var analog1 = 0;
+	
+	var dist_read  = 0
 	var last_reading = 0;
 
 
@@ -71,6 +71,10 @@
     mConnection.postMessage(msg);
     //mConnection.postMessage(msg);
 
+  }
+	
+  ext.rgb_off = function() {
+	ext.set_rgb('off');  
   }
   
   ext.set_rgb = function(color)
@@ -104,40 +108,6 @@
 		var b = Math.floor(Math.random()*255);
 		ext.set_output(r, g, b);
 	}
-  }
-
-/*  ext.servo_off = function(pin) {
-	  var msg = {};
-    var output;
-  	stopServos = true;
-   	if (pin == "right") {
-	   	output = 208;
-   	} else if (pin == "left") {
-	   	output = 209;
-   	}
-    msg.buffer = [output,Math.round(51)];
-    mConnection.postMessage(msg);
-    mConnection.postMessage(msg);
-  }
-  
-  ext.servos_off = function() {
-  	stopServos = true;
-    ext.servo_off("right");
-    ext.servo_off("left");
-  }
-*/
-  ext.servo_arm = function(pin, dir) {
-   	var msg = {};
-   
-   	stopServos = false;
-    if (dir == 'up') {
-    	msg.buffer = [208,0]; 
-    } else if (dir == 'down') {
-    	msg.buffer = [208,120]; 
-    } 
-
-    mConnection.postMessage(msg);
-    //mConnection.postMessage(msg); seems it's not necessary to do this twice
   }
   
   ext.drive = function(dir, secs, callback) {
@@ -235,6 +205,9 @@
   
   
     if (msg.buffer.length == 10){
+      if (msg.buffer[0] == 224) {
+	analog1 = Math.round(msg.buffer[1] );  
+      }
       if (msg.buffer[8] == 240) {
         dist_read = Math.round(msg.buffer[9] );
       }
@@ -242,17 +215,36 @@
 
   }
 
-  ext.readUltrasound = function(input) {
+  ext.readUltrasonic = function(input) {
 
-  
+  /* RANDI
     var msg = {};
     msg.buffer = [0xF0,0x08,14,0xF7];
-    //240 8 14 247
+    //240 8 14 247 */
 
   
   	var distance = dist_read;
   	if (distance == 0) {
-  	distance = 1000;
+  	distance = -1;
+  	}
+  
+  return distance;
+
+  }
+	
+ext.readIR = function(input) {
+
+  
+
+    /*RANDI - what is this for?
+        var msg = {};
+	msg.buffer = [0xF0,0x08,14,0xF7]; 
+    //240 8 14 247 */
+
+  
+  	var distance = analog1;
+  	if (distance == 0) {
+  	distance = -1;
   	}
   
   return distance;
@@ -269,12 +261,13 @@
 
         blocks: [
 	  [' ', 'set led to %m.colors', 'set_rgb', 'red'],
-	  [' ', 'arm %m.arm_dir', 'servo_arm', 'up'],
-      ['w', 'drive forward %n step', 'drive_forward', 1],
-      ['w', 'drive backward %n step', 'drive_backward', 1],
-      ['w', 'turn right %n time', 'drive_right', 1],
-      ['w', 'turn left %n time', 'drive_left', 1],
-      ['r', 'read distance', 'readUltrasound'],
+      	  [' ', 'turn led off', 'rgb_off', 'off'],
+      	  ['w', 'drive forward %n step(s)', 'drive_forward', 1],
+          ['w', 'drive backward %n step(s)', 'drive_backward', 1],
+          ['w', 'turn right %n degrees', 'drive_right', 90],
+          ['w', 'turn left %n degrees', 'drive_left', 90],
+          ['r', 'read distance', 'readUltrasonic'],
+          ['r', 'read infrared', 'readIR'],
 			
 			],
         menus: {
@@ -282,7 +275,7 @@
       servos: ['right','left'],
       arm_dir: ['up','down'],
       servo_dir: ['forward','backward'],
-      colors: ['off', 'red', 'green', 'blue', 'magenta', 'yellow', 'cyan', 'white', 'random']
+      colors: ['red', 'green', 'blue', 'magenta', 'yellow', 'cyan', 'white', 'random']
 		}
     };
 
