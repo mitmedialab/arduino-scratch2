@@ -85,7 +85,7 @@
 
   function pinMode_init() {
 
-  // Ultrasonic sensor trigger and echo
+  /* Ultrasonic sensor trigger and echo
   pinMode(6,OUTPUT);
   pinMode(8,INPUT);
   
@@ -96,7 +96,7 @@
   // RGB led
   pinMode(8,OUTPUT);
   pinMode(9,OUTPUT);
-  pinMode(10,OUTPUT);
+  pinMode(10,OUTPUT);*/
   console.log("Pins initialized");
   }
 
@@ -351,7 +351,7 @@
 
   }
 
-  ext.readUltrasound = function(input) {
+  ext.readUltrasonic = function(input) {
 
   
     var msg = {};
@@ -379,12 +379,12 @@
         blocks: [
 	  [' ', 'set light to %m.colors', 'set_rgb', 'red'],
  	  [' ', 'turn light off', 'rgb_off'],
-      ['w', 'drive forward for %n seconds', 'drive_forward', 1],
-      ['w', 'drive backward for %n seconds', 'drive_backward', 1],
-      ['w', 'turn right for %n seconds', 'drive_right', 1],
-      ['w', 'turn left for %n seconds', 'drive_left', 1],
-      ['r', 'read distance', 'readUltrasound'],
-			
+      ['w', 'drive forward %n steps', 'drive_forward', 1],
+      ['w', 'drive backward %n steps', 'drive_backward', 1],
+      ['w', 'turn right %n degrees', 'drive_right', 1],
+      ['w', 'turn left %n degrees', 'drive_left', 1],
+      ['r', 'read ultrasonic sensor', 'readUltrasonic'],
+      ['r', 'read infrared sensor', 'readIR'],			
 			],
         menus: {
 
@@ -456,5 +456,5 @@
     getAppStatus();
 
 
-	ScratchExtensions.register('PopPet Robot', descriptor, ext);
+	ScratchExtensions.register('Gizmo Robot', descriptor, ext);
 })({});

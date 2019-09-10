@@ -456,5 +456,5 @@
     getAppStatus();
 
 
-	ScratchExtensions.register('PopPet Robot', descriptor, ext);
+	ScratchExtensions.register('Arduino Robot', descriptor, ext);
 })({});

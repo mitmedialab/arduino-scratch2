@@ -305,6 +305,7 @@
       chrome.runtime.sendMessage(CHROME_EXTENSION_ID, {message: "STATUS"}, function (response) {
         if (response === undefined) { //Chrome app not found
           console.log("Chrome app not found");
+          window.prompt("Enter the correct Chrome Extension ID", "pnjoidacmeigcdbikhgjolnadkdiegca")
           mStatus = 0;
           setTimeout(getAppStatus, 1000);
         }
