@@ -109,31 +109,16 @@
 	}
   }
   
-  ext.drive = function(dir, secs, callback) {
-	stopServos = false;
-   	if (dir == "forward") {
-      ext.turn_servo("right","forward");
-      ext.turn_servo("left","forward");
-   	} else if (dir == "backward") {
-      ext.turn_servo("right","backward");
-      ext.turn_servo("left","backward");
-   	} else if (dir == "left") {
-      ext.turn_servo("right","forward");
-      ext.turn_servo("left","backward");
-   	} else if (dir == "right") {
-      ext.turn_servo("right","backward");
-      ext.turn_servo("left","forward");
-   	}
-    
-    window.setTimeout(function() {
-            ext.servos_off(); callback();
-        }, secs*1000);
+  ext.servos_off = function() {
+	var msg = {};
+	msg.buffer = [207,99];
+    mConnection.postMessage(msg);
   }
   
-  ext.drive_forward = function(secs, callback) {
-	stopServos = false;
-   	ext.turn_servo("right","forward");
-    ext.turn_servo("left","forward");
+ ext.drive_forward = function(secs, callback) {
+	var msg = {}; 
+	msg.buffer = [208,99];   
+    mConnection.postMessage(msg);
     
     window.setTimeout(function() {
             ext.servos_off(); callback();
@@ -141,20 +126,19 @@
   }
   
   ext.drive_backward = function(secs, callback) {
-	stopServos = false;
-   	ext.turn_servo("right","backward");
-    ext.turn_servo("left","backward");
+	var msg = {};
+	msg.buffer = [209,99];    ;
+    mConnection.postMessage(msg);
    	
-    
     window.setTimeout(function() {
             ext.servos_off(); callback();
         }, secs*1000);
   }
   
   ext.drive_left = function(secs, callback) {
-	stopServos = false;
-   	ext.turn_servo("right","forward");
-    ext.turn_servo("left","backward");
+	var msg = {};
+	msg.buffer = [210,99];
+    mConnection.postMessage(msg);
     
     window.setTimeout(function() {
             ext.servos_off(); callback();
@@ -162,9 +146,9 @@
   }
   
   ext.drive_right = function(secs, callback) {
-	stopServos = false;
-   	ext.turn_servo("right","backward");
-    ext.turn_servo("left","forward");
+	var msg = {};
+	msg.buffer = [211,99];
+    mConnection.postMessage(msg);
    	    
     window.setTimeout(function() {
             ext.servos_off(); callback();
@@ -286,6 +270,7 @@ ext.readIR = function(input) {
   ext._stop = function() {
       //ext.drive();
       ext.set_output(0,0,0);
+      ext.servos_off();
   };  
     
 	ext._shutdown = function() {

@@ -163,103 +163,15 @@
   ext.servos_off = function() {
 	var msg = {};
   	stopServos = true;
-	console.log("Sending 207 to stop servos");
 	msg.buffer = [207,99];
     mConnection.postMessage(msg);
   }
-
-  ext.turn_servo = function(pin, dir) {
-   	var msg = {};
-    var deg;
-
-   	var output;
-   	
-   	stopServos = false;
-   	if (pin == "right") {
-	   	output = 208;
-      if (dir == 'forward') {
-        deg = 0;
-      } else if (dir == 'backward') {
-        deg = 100;  
-      } 
-   	} else if (pin == "left") {
-	   	output = 209;
-      if (dir == 'forward') {
-        deg = 100;
-      } else if (dir == 'backward') {
-        deg = 0;  
-      } 
-   	}
-	  msg.buffer = [output,Math.round(deg)];    
-    mConnection.postMessage(msg);
-    mConnection.postMessage(msg);
-  }
-  
-  ext.turn_servo_right = function( dir) {
-   	var msg = {};
-    var deg;
-
-   	var output = 208;
-   	
-   	stopServos = false;
-    if (dir == 'forward') {
-      deg = 0;
-    } else if (dir == 'backward') {
-     deg = 100;  
-    } 
-   	
-    msg.buffer = [output,Math.round(deg)];    
-    mConnection.postMessage(msg);
-    mConnection.postMessage(msg);
-  }
-  
-  ext.turn_servo_left = function(dir) {
-   	var msg = {};
-    var deg;
-
-   	var output = 209;
-   	
-   	stopServos = false;
-    if (dir == 'forward') {
-      deg = 100;
-    } else if (dir == 'backward') {
-     deg = 0;  
-    } 
-   	
-    msg.buffer = [output,Math.round(deg)];    
-    mConnection.postMessage(msg);
-    mConnection.postMessage(msg);
-  }
-  
-  ext.drive = function(dir, secs, callback) {
-	stopServos = false;
-   	if (dir == "forward") {
-      ext.turn_servo("right","forward");
-      ext.turn_servo("left","forward");
-   	} else if (dir == "backward") {
-      ext.turn_servo("right","backward");
-      ext.turn_servo("left","backward");
-   	} else if (dir == "left") {
-      ext.turn_servo("right","forward");
-      ext.turn_servo("left","backward");
-   	} else if (dir == "right") {
-      ext.turn_servo("right","backward");
-      ext.turn_servo("left","forward");
-   	}
-    
-    window.setTimeout(function() {
-            ext.servos_off(); callback();
-        }, secs*1000);
-  }
   
   ext.drive_forward = function(secs, callback) {
-	  var msg = {}; 
-	  console.log("Sending 208 to drive forward");
+	var msg = {}; 
 	stopServos = false;
 	msg.buffer = [208,99];   
     mConnection.postMessage(msg);
- //  	ext.turn_servo("right","forward");
- //   ext.turn_servo("left","forward");
     
     window.setTimeout(function() {
             ext.servos_off(); callback();
@@ -269,12 +181,8 @@
   ext.drive_backward = function(secs, callback) {
 	var msg = {};
 	  stopServos = false;
-	  console.log("Sending 209 to drive backward")
-	  	msg.buffer = [209,99];    ;
+	  	msg.buffer = [209,99];
     mConnection.postMessage(msg);
-//   	ext.turn_servo("right","backward");
-//    ext.turn_servo("left","backward");
-   	
     
     window.setTimeout(function() {
             ext.servos_off(); callback();
@@ -283,13 +191,9 @@
   
   ext.drive_left = function(secs, callback) {
 	var msg = {};
-	  stopServos = false;
-	  
-	  console.log("Sending 210 to drive left");
-	 msg.buffer = [210,99];
+	stopServos = false;
+	msg.buffer = [210,99];
     mConnection.postMessage(msg);
-   //	ext.turn_servo("right","forward");
-   // ext.turn_servo("left","backward");
     
     window.setTimeout(function() {
             ext.servos_off(); callback();
@@ -298,13 +202,8 @@
   
   ext.drive_right = function(secs, callback) {
 	var msg = {};
-	  console.log("Sending 211 to drive right");
-	  stopServos = false;
-	 msg.buffer = [211,99];
-
+	msg.buffer = [211,99];
     mConnection.postMessage(msg);
-   	//ext.turn_servo("right","backward");
-    //ext.turn_servo("left","forward");
    	    
     window.setTimeout(function() {
             ext.servos_off(); callback();
