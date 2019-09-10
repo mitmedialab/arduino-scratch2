@@ -111,7 +111,7 @@ function startupBLED112(){
       if (devices[i].productId == 1 && devices[i].vendorId == 9304 ) {
         console.log("bled_detected");
 
-        chrome.serial.connect(devices[i].path, {bitrate: 57600}, function(connectInfo) {
+        chrome.serial.connect(devices[i].path, {bitrate: 9600}, function(connectInfo) {
               if (!connectInfo) {
                 msg.action = 'not_startupBLED112';
                 msg.warn = connectInfo;
@@ -189,7 +189,7 @@ function connectHID(deviceId){
 function connectSerial(deviceId){
   var msg = {};
   msg.action = 'connectSerial';
-  chrome.serial.connect(deviceId, {bitrate: 57600}, function(connectInfo) {
+  chrome.serial.connect(deviceId, {bitrate: 9600}, function(connectInfo) {
         if (!connectInfo) {
           msg.warn = connectInfo;
           msg.status = false;
