@@ -1,14 +1,9 @@
 {
    "app": {
       "background": {
-         "persistent": true,
+         "persistent": false,
          "scripts": [ "background.js" ]
       }
-   },
-   "bluetooth": {
-      "low_energy": true,
-      "socket": true,
-      "uuids": [ "1101" ]
    },
    "description": "Connect Scratch to Arduino version of Gizmo robots",
    "externally_connectable": {
