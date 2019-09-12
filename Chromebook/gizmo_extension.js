@@ -7,7 +7,7 @@
     SERVO = 0x04,
     SHIFT = 0x05,
     I2C = 0x06,
-    onEWIRE = 0x07,
+    ONEWIRE = 0x07,
     STEPPER = 0x08,
     ENCODER = 0x09,
     IGNORE = 0x7F;
@@ -19,34 +19,35 @@
     START_SYSEX = 0xF0,
     END_SYSEX = 0xF7,
     QUERY_FIRMWARE = 0x79,
-    REPORT_VERSIon = 0xF9,
+    REPORT_VERSION = 0xF9,
     ANALOG_MESSAGE = 0xE0,
     ANALOG_MAPPING_QUERY = 0x69,
     ANALOG_MAPPING_RESPonSE = 0x6A,
     CAPABILITY_QUERY = 0x6B,
-    CAPABILITY_RESPonSE = 0x6C;
+    CAPABILITY_RESPONSE = 0x6C;
     STRING_DATA = 0x71;
 
-    var LOW = 0, HIGH = 1;
-
-	var poller = null;
+  var LOW = 0, HIGH = 1;
+  var STEPPER_LINEAR_ROTATION = 2048;
+  var STEPPER_ANGULAR_ROTATION = 2800;
+	
+  var poller = null;
 
   var CHROME_EXTENSION_ID = "jpehlabbcdkiocalmhikacglppfenoeo"; // APP ID on Windows
   var mConnection;
   var mStatus = 1;
-  var stopServos = true;
   var _selectors = {};
 
   var digitalOutputData = new Uint8Array(16);
 
 
-	var msg1 = {};
-	var msg2 = {};
+  var msg1 = {};
+  var msg2 = {};
 
-	var analog1 = 0;
+  var analog1 = 0;
 	
-	var dist_read  = 0
-	var last_reading = 0;
+  var dist_read  = 0
+  var last_reading = 0;
 
 
   function valBetween(v, min, max) {
@@ -115,7 +116,7 @@
     mConnection.postMessage(msg);
   }
   
- ext.drive_forward = function(secs, callback) {
+ ext.drive_forward = function(steps, callback) {
 	var msg = {}; 
 	msg.buffer = [208,99];   
     mConnection.postMessage(msg);
@@ -298,9 +299,6 @@ ext.readIR = function(input) {
             setTimeout(getAppStatus, 1000);
           }
           console.log("Connected");
-         // if (stopServos) {
-          //	ext.servos_off();
-          //}
         }
       });
     };
