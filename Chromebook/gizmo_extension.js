@@ -28,8 +28,8 @@
     STRING_DATA = 0x71;
 
   var LOW = 0, HIGH = 1;
-  var STEPPER_LINEAR_ROTATION = 2048; // steps for 1 circumference forward
-  var STEPPER_ANGULAR_ROTATION = 2800; // steps for a 90-degree turn
+  var STEPPER_LINEAR_ROTATION = 4; // number of quarter-turns to move for/backward by 1 circumference
+  var STEPPER_ANGULAR_ROTATION = 5; // number of quarter-turns to rotate 90-degrees
 	
   var poller = null;
 
@@ -114,7 +114,7 @@
   }
   
  ext.drive_forward = function(steps, callback) {
-    var stepper_steps = STEPPER_LINEAR_ROTATION / 2 * steps;
+    var stepper_steps = Math.floor(STEPPER_LINEAR_ROTATION / 2 * steps);
 	  console.log('Going forward ' + stepper_steps + ' steps');
     var msg = {}; 
     msg.buffer = [208,stepper_steps];   
@@ -126,7 +126,7 @@
   }
   
   ext.drive_backward = function(steps, callback) {
-    var stepper_steps = STEPPER_LINEAR_ROTATION / 2 * steps;
+    var stepper_steps = Math.floor(STEPPER_LINEAR_ROTATION / 2 * steps);
 	  console.log('Going back ' + stepper_steps + ' steps');
     var msg = {}; 
     msg.buffer = [209,stepper_steps];   
@@ -138,7 +138,7 @@
   }
   
   ext.drive_left = function(degrees, callback) {
-    var stepper_steps = STEPPER_ANGULAR_ROTATION / 90 * degrees;
+    var stepper_steps = Math.floor(STEPPER_ANGULAR_ROTATION / 90 * degrees);
 	  console.log('Going left ' + stepper_steps + ' steps');
     var msg = {}; 
     msg.buffer = [210,stepper_steps];   
@@ -150,7 +150,7 @@
   }
   
   ext.drive_right = function(degrees, callback) {
-    var stepper_steps = STEPPER_ANGULAR_ROTATION / 90 * degrees;
+    var stepper_steps = Math.floor(STEPPER_ANGULAR_ROTATION / 90 * degrees);
 	  console.log('Going right ' + stepper_steps + ' steps');
     var msg = {}; 
     msg.buffer = [211,stepper_steps];   
