@@ -286,7 +286,7 @@ ext.readIR = function(input) {
           console.log("Chrome app not found");
 	  CHROME_EXTENSION_ID = window.localStorage.getItem('gizmo_extension_id');
           console.log("Chrome ID: " + CHROME_EXTENSION_ID);
-	  if (CHROME_EXTENSION_ID === undefined || CHROME_EXTENSION_ID === "") {
+	  if (CHROME_EXTENSION_ID === undefined || CHROME_EXTENSION_ID === "" || CHROME_EXTENSION_ID === null) {
 	     CHROME_EXTENSION_ID = window.prompt("Enter the correct Chrome Extension ID", "pnjoidacmeigcdbikhgjolnadkdiegca");
 	     window.localStorage.setItem('gizmo_extension_id', CHROME_EXTENSION_ID);
 	  }
