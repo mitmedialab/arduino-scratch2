@@ -28,8 +28,8 @@
     STRING_DATA = 0x71;
 
   var LOW = 0, HIGH = 1;
-  var STEPPER_LINEAR_ROTATION = 2048;
-  var STEPPER_ANGULAR_ROTATION = 2800;
+  var STEPPER_LINEAR_ROTATION = 2048; // steps for 1 circumference forward
+  var STEPPER_ANGULAR_ROTATION = 2800; // steps for a 90-degree turn
 	
   var poller = null;
 
@@ -61,15 +61,12 @@
    
     msg.buffer = [204,rval];
     mConnection.postMessage(msg);
-    //mConnection.postMessage(msg);
     
     msg.buffer = [205,gval];
     mConnection.postMessage(msg);
-    //mConnection.postMessage(msg);
 	
 	msg.buffer = [206,bval];  
     mConnection.postMessage(msg);
-    //mConnection.postMessage(msg);
 
   }
 	
@@ -117,43 +114,47 @@
   }
   
  ext.drive_forward = function(steps, callback) {
-	var msg = {}; 
-	msg.buffer = [208,99];   
+    var stepper_steps = STEPPER_LINEAR_ROTATION / 2 * steps;
+    var msg = {}; 
+    msg.buffer = [208,stepper_steps];   
     mConnection.postMessage(msg);
     
     window.setTimeout(function() {
-            ext.servos_off(); callback();
-        }, secs*1000);
+           callback();
+        }, steps*500); // RANDI - approximating how long this should take with time?
   }
   
-  ext.drive_backward = function(secs, callback) {
-	var msg = {};
-	msg.buffer = [209,99];    ;
-    mConnection.postMessage(msg);
-   	
-    window.setTimeout(function() {
-            ext.servos_off(); callback();
-        }, secs*1000);
-  }
-  
-  ext.drive_left = function(secs, callback) {
-	var msg = {};
-	msg.buffer = [210,99];
+  ext.drive_backward = function(steps, callback) {
+    var stepper_steps = STEPPER_LINEAR_ROTATION / 2 * steps;
+    var msg = {}; 
+    msg.buffer = [209,stepper_steps];   
     mConnection.postMessage(msg);
     
     window.setTimeout(function() {
-            ext.servos_off(); callback();
-        }, secs*1000);
+           callback();
+        }, steps*500); // RANDI - approximate how long this should take with time?
   }
   
-  ext.drive_right = function(secs, callback) {
-	var msg = {};
-	msg.buffer = [211,99];
+  ext.drive_left = function(degrees, callback) {
+    var stepper_steps = STEPPER_ANGULAR_ROTATION / 90 * degrees;
+    var msg = {}; 
+    msg.buffer = [210,stepper_steps];   
     mConnection.postMessage(msg);
-   	    
+    
     window.setTimeout(function() {
-            ext.servos_off(); callback();
-        }, secs*1000);
+           callback();
+        }, steps*500); // RANDI - approximate how long this should take with time?
+  }
+  
+  ext.drive_right = function(degrees, callback) {
+    var stepper_steps = STEPPER_ANGULAR_ROTATION / 90 * degrees;
+    var msg = {}; 
+    msg.buffer = [211,stepper_steps];   
+    mConnection.postMessage(msg);
+    
+    window.setTimeout(function() {
+           callback();
+        }, steps*500); // RANDI - approximate how long this should take with time?
   }
   
   function appendBuffer( buffer1, buffer2 ) {
