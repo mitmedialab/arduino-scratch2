@@ -246,7 +246,7 @@ ext.readIR = function(input) {
 
 	var descriptor = {
 
-	url: '', // update to something?
+	url: 'https://aieducation.mit.edu/poppet.html', // update to something?
 
         blocks: [
 	  [' ', 'set led to %m.colors', 'set_rgb', 'red'],
@@ -260,11 +260,7 @@ ext.readIR = function(input) {
 			
 			],
         menus: {
-
-      servos: ['right','left'],
-      arm_dir: ['up','down'],
-      servo_dir: ['forward','backward'],
-      colors: ['red', 'green', 'blue', 'magenta', 'yellow', 'cyan', 'white', 'random']
+	      colors: ['red', 'green', 'blue', 'magenta', 'yellow', 'cyan', 'white', 'random']
 		}
     };
 
@@ -289,6 +285,7 @@ ext.readIR = function(input) {
         if (response === undefined) { //Chrome app not found
           console.log("Chrome app not found");
 	  CHROME_EXTENSION_ID = window.localStorage.getItem('gizmo_extension_id');
+          console.log("Chrome ID: " + CHROME_EXTENSION_ID);
 	  if (CHROME_EXTENSION_ID === undefined || CHROME_EXTENSION_ID === "") {
 	     CHROME_EXTENSION_ID = window.prompt("Enter the correct Chrome Extension ID", "pnjoidacmeigcdbikhgjolnadkdiegca");
 	     window.localStorage.setItem('gizmo_extension_id', CHROME_EXTENSION_ID);
