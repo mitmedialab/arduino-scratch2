@@ -179,7 +179,6 @@
   function messageParser(buf) {
 
     var msg = {};
-    console.log("Buf: " + buf);
     if (buf[0]==224){
       msg1 = buf;
     } else if (buf[0] != 224) {
@@ -189,13 +188,11 @@
     msg.buffer = msg1.concat(msg2);
   
     if (msg.buffer.length > 10) {
-      console.log("\tBuffer is long");
       msg.buffer = msg.buffer.slice(0,10);
     } else if (msg.buffer.length < 10) {
-      console.log("\tBuffer is short");
-      msg1 = msg.buffer; // maybe it needs more than one concatenate to get the whole message
-      console.log("\tMsg1: " + msg1);
-    } else {
+      msg1 = msg.buffer;
+    } 
+    if (msg.buffer.length == 10) {
       console.log("\tReceived full buffer: " + msg.buffer);
       if (msg.buffer[0] == 224) {
 	analog1 = Math.round(msg.buffer[1] );  
@@ -316,15 +313,12 @@ ext.readIR = function(input) {
     function onMsgApp(msg) {
 	    mStatus = 2;
       var buffer = msg.buffer;
-      //console.log(buffer);
   
   
       if ( buffer[0]==224){
       messageParser(buffer);
-  //    last_reading = 0; removed because it needs to read more than two times to get the full message
       } else {
           messageParser(buffer);
-//          last_reading = 1;
       }
     };
 
