@@ -321,13 +321,10 @@ ext.readIR = function(input) {
   
       if ( buffer[0]==224){
       messageParser(buffer);
-      last_reading = 0;
-      }
-  
-  
-      if (buffer[0] != 224 && last_reading == 0){
+  //    last_reading = 0; removed because it needs to read more than two times to get the full message
+      } else {
           messageParser(buffer);
-          last_reading = 1;
+//          last_reading = 1;
       }
     };
 
