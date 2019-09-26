@@ -194,10 +194,12 @@
     } else if (msg.buffer.length < 10) {
       console.log("Buffer is short");
       msg1 = msg.buffer; // maybe it needs more than one concatenate to get the whole message
+	    console.log("Msg1: " + msg1);
     }
   
   
     if (msg.buffer.length == 10){
+	    console.log(msg.buffer);
       if (msg.buffer[0] == 224) {
 	analog1 = Math.round(msg.buffer[1] );  
       }
@@ -323,14 +325,12 @@ ext.readIR = function(input) {
       if ( buffer[0]==224){
       messageParser(buffer);
       last_reading = 0;
-	 console.log("Condition 1");
       }
   
   
       if (buffer[0] != 224 && last_reading == 0){
           messageParser(buffer);
           last_reading = 1;
-	      console.log("Condition 2");
       }
     };
 
