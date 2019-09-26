@@ -261,7 +261,8 @@ ext.readIR = function(input) {
 			],
         menus: {
 	      colors: ['red', 'green', 'blue', 'magenta', 'yellow', 'cyan', 'white', 'random']
-		}
+		},
+	test: 'Testing if I can put stuff here',
     };
 
 
@@ -313,7 +314,7 @@ ext.readIR = function(input) {
     function onMsgApp(msg) {
 	    mStatus = 2;
       var buffer = msg.buffer;
-      //console.log(buffer);
+      console.log(buffer);
   
   
       if ( buffer[0]==224){
