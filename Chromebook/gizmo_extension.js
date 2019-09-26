@@ -195,7 +195,7 @@
       console.log("\tBuffer is short");
       msg1 = msg.buffer; // maybe it needs more than one concatenate to get the whole message
       console.log("\tMsg1: " + msg1);
-    } else (msg.buffer.length == 10){
+    } else {
       console.log("\tReceived full buffer: " + msg.buffer);
       if (msg.buffer[0] == 224) {
 	analog1 = Math.round(msg.buffer[1] );  
