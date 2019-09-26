@@ -179,7 +179,7 @@
   function messageParser(buf) {
 
     var msg = {};
-  
+    console.log("Buf: " + buf);
     if (buf[0]==224){
       msg1 = buf;
     } else if (buf[0] != 224) {
@@ -189,17 +189,14 @@
     msg.buffer = msg1.concat(msg2);
   
     if (msg.buffer.length > 10) {
-      console.log("Buffer is long");
+      console.log("\tBuffer is long");
       msg.buffer = msg.buffer.slice(0,10);
     } else if (msg.buffer.length < 10) {
-      console.log("Buffer is short");
+      console.log("\tBuffer is short");
       msg1 = msg.buffer; // maybe it needs more than one concatenate to get the whole message
-	    console.log("Msg1: " + msg1);
-    }
-  
-  
-    if (msg.buffer.length == 10){
-	    console.log(msg.buffer);
+      console.log("\tMsg1: " + msg1);
+    } else (msg.buffer.length == 10){
+      console.log("\tReceived full buffer: " + msg.buffer);
       if (msg.buffer[0] == 224) {
 	analog1 = Math.round(msg.buffer[1] );  
       }
