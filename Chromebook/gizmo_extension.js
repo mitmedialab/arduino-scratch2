@@ -191,7 +191,6 @@
     }
 	  
     if (msg.buffer.length == 10) {
-      console.log("\tReceived full buffer: " + msg.buffer);
       if (msg.buffer[0] == 224) {
 	analog1 = Math.round(msg.buffer[1] );  
       }
@@ -203,12 +202,6 @@
   }
 
   ext.readUltrasonic = function(input) {
-
-  /* RANDI
-    var msg = {};
-    msg.buffer = [0xF0,0x08,14,0xF7];
-    //240 8 14 247 */
-
   
   	var distance = dist_read;
   	if (distance == 0) {
@@ -220,14 +213,6 @@
   }
 	
 ext.readIR = function(input) {
-
-  
-
-    /*RANDI - what is this for?
-        var msg = {};
-	msg.buffer = [0xF0,0x08,14,0xF7]; 
-    //240 8 14 247 */
-
   
   	var distance = analog1;
   	if (distance == 0) {
