@@ -42,7 +42,6 @@
 
 
   var msg1 = {};
-  var msg2 = {};
 
   var analog1 = 0;
 	
@@ -182,16 +181,15 @@
     if (buf[0]==224){
       msg1 = buf;
     } else if (buf[0] != 224) {
-      msg2 = buf;
+      msg1 = msg1.concat(buf);
     }
   
-    msg.buffer = msg1.concat(msg2);
+    msg.buffer = msg1;
   
     if (msg.buffer.length > 10) {
       msg.buffer = msg.buffer.slice(0,10);
-    } else if (msg.buffer.length < 10) {
-      msg1 = msg.buffer;
-    } 
+    }
+	  
     if (msg.buffer.length == 10) {
       console.log("\tReceived full buffer: " + msg.buffer);
       if (msg.buffer[0] == 224) {
