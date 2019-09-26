@@ -189,7 +189,11 @@
     msg.buffer = msg1.concat(msg2);
   
     if (msg.buffer.length > 10) {
+      console.log("Buffer is long");
       msg.buffer = msg.buffer.slice(0,10);
+    } else if (msg.buffer.length < 10) {
+      console.log("Buffer is short");
+      msg1 = msg.buffer; // maybe it needs more than one concatenate to get the whole message
     }
   
   
@@ -261,8 +265,7 @@ ext.readIR = function(input) {
 			],
         menus: {
 	      colors: ['red', 'green', 'blue', 'magenta', 'yellow', 'cyan', 'white', 'random']
-		},
-	test: 'Testing if I can put stuff here',
+		}
     };
 
 
@@ -314,18 +317,20 @@ ext.readIR = function(input) {
     function onMsgApp(msg) {
 	    mStatus = 2;
       var buffer = msg.buffer;
-      console.log(buffer);
+      //console.log(buffer);
   
   
       if ( buffer[0]==224){
       messageParser(buffer);
       last_reading = 0;
+	 console.log("Condition 1");
       }
   
   
       if (buffer[0] != 224 && last_reading == 0){
           messageParser(buffer);
           last_reading = 1;
+	      console.log("Condition 2");
       }
     };
 
