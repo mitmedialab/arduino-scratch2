@@ -7,7 +7,7 @@
     SERVO = 0x04,
     SHIFT = 0x05,
     I2C = 0x06,
-    onEWIRE = 0x07,
+    ONEWIRE = 0x07,
     STEPPER = 0x08,
     ENCODER = 0x09,
     IGNORE = 0x7F;
@@ -19,34 +19,34 @@
     START_SYSEX = 0xF0,
     END_SYSEX = 0xF7,
     QUERY_FIRMWARE = 0x79,
-    REPORT_VERSIon = 0xF9,
+    REPORT_VERSION = 0xF9,
     ANALOG_MESSAGE = 0xE0,
     ANALOG_MAPPING_QUERY = 0x69,
     ANALOG_MAPPING_RESPonSE = 0x6A,
     CAPABILITY_QUERY = 0x6B,
-    CAPABILITY_RESPonSE = 0x6C;
+    CAPABILITY_RESPONSE = 0x6C;
     STRING_DATA = 0x71;
 
-    var LOW = 0, HIGH = 1;
-
-	var poller = null;
+  var LOW = 0, HIGH = 1;
+  var STEPPER_LINEAR_ROTATION = 4; // number of quarter-turns to move for/backward by 1 circumference
+  var STEPPER_ANGULAR_ROTATION = 5; // number of quarter-turns to rotate 90-degrees
+	
+  var poller = null;
 
   var CHROME_EXTENSION_ID = "jpehlabbcdkiocalmhikacglppfenoeo"; // APP ID on Windows
   var mConnection;
   var mStatus = 1;
-  var stopServos = true;
   var _selectors = {};
 
   var digitalOutputData = new Uint8Array(16);
 
 
-	var msg1 = {};
-	var msg2 = {};
+  var msg1 = {};
 
-	var analog1 = 0;
+  var analog1 = 0;
 	
-	var dist_read  = 0
-	var last_reading = 0;
+  var dist_read  = 0
+  var last_reading = 0;
 
 
   function valBetween(v, min, max) {
@@ -60,15 +60,12 @@
    
     msg.buffer = [204,rval];
     mConnection.postMessage(msg);
-    //mConnection.postMessage(msg);
     
     msg.buffer = [205,gval];
     mConnection.postMessage(msg);
-    //mConnection.postMessage(msg);
 	
 	msg.buffer = [206,bval];  
     mConnection.postMessage(msg);
-    //mConnection.postMessage(msg);
 
   }
 	
@@ -115,44 +112,52 @@
     mConnection.postMessage(msg);
   }
   
- ext.drive_forward = function(secs, callback) {
-	var msg = {}; 
-	msg.buffer = [208,99];   
+ ext.drive_forward = function(steps, callback) {
+    var stepper_steps = Math.floor(STEPPER_LINEAR_ROTATION / 2 * steps);
+	  console.log('Going forward ' + stepper_steps + ' steps');
+    var msg = {}; 
+    msg.buffer = [208,stepper_steps];   
     mConnection.postMessage(msg);
     
     window.setTimeout(function() {
-            ext.servos_off(); callback();
-        }, secs*1000);
+           callback();
+        }, steps*500); // RANDI - approximating how long this should take with time?
   }
   
-  ext.drive_backward = function(secs, callback) {
-	var msg = {};
-	msg.buffer = [209,99];    ;
-    mConnection.postMessage(msg);
-   	
-    window.setTimeout(function() {
-            ext.servos_off(); callback();
-        }, secs*1000);
-  }
-  
-  ext.drive_left = function(secs, callback) {
-	var msg = {};
-	msg.buffer = [210,99];
+  ext.drive_backward = function(steps, callback) {
+    var stepper_steps = Math.floor(STEPPER_LINEAR_ROTATION / 2 * steps);
+	  console.log('Going back ' + stepper_steps + ' steps');
+    var msg = {}; 
+    msg.buffer = [209,stepper_steps];   
     mConnection.postMessage(msg);
     
     window.setTimeout(function() {
-            ext.servos_off(); callback();
-        }, secs*1000);
+           callback();
+        }, steps*500); // RANDI - approximate how long this should take with time?
   }
   
-  ext.drive_right = function(secs, callback) {
-	var msg = {};
-	msg.buffer = [211,99];
+  ext.drive_left = function(degrees, callback) {
+    var stepper_steps = Math.floor(STEPPER_ANGULAR_ROTATION / 90 * degrees);
+	  console.log('Going left ' + stepper_steps + ' steps');
+    var msg = {}; 
+    msg.buffer = [210,stepper_steps];   
     mConnection.postMessage(msg);
-   	    
+    
     window.setTimeout(function() {
-            ext.servos_off(); callback();
-        }, secs*1000);
+           callback();
+        }, degrees/90*500); // RANDI - approximate how long this should take with time?
+  }
+  
+  ext.drive_right = function(degrees, callback) {
+    var stepper_steps = Math.floor(STEPPER_ANGULAR_ROTATION / 90 * degrees);
+	  console.log('Going right ' + stepper_steps + ' steps');
+    var msg = {}; 
+    msg.buffer = [211,stepper_steps];   
+    mConnection.postMessage(msg);
+    
+    window.setTimeout(function() {
+           callback();
+        }, degrees/90*500); // RANDI - approximate how long this should take with time?
   }
   
   function appendBuffer( buffer1, buffer2 ) {
@@ -173,21 +178,19 @@
   function messageParser(buf) {
 
     var msg = {};
-  
     if (buf[0]==224){
       msg1 = buf;
     } else if (buf[0] != 224) {
-      msg2 = buf;
+      msg1 = msg1.concat(buf);
     }
   
-    msg.buffer = msg1.concat(msg2);
+    msg.buffer = msg1;
   
     if (msg.buffer.length > 10) {
       msg.buffer = msg.buffer.slice(0,10);
     }
-  
-  
-    if (msg.buffer.length == 10){
+	  
+    if (msg.buffer.length == 10) {
       if (msg.buffer[0] == 224) {
 	analog1 = Math.round(msg.buffer[1] );  
       }
@@ -199,12 +202,6 @@
   }
 
   ext.readUltrasonic = function(input) {
-
-  /* RANDI
-    var msg = {};
-    msg.buffer = [0xF0,0x08,14,0xF7];
-    //240 8 14 247 */
-
   
   	var distance = dist_read;
   	if (distance == 0) {
@@ -216,14 +213,6 @@
   }
 	
 ext.readIR = function(input) {
-
-  
-
-    /*RANDI - what is this for?
-        var msg = {};
-	msg.buffer = [0xF0,0x08,14,0xF7]; 
-    //240 8 14 247 */
-
   
   	var distance = analog1;
   	if (distance == 0) {
@@ -240,7 +229,7 @@ ext.readIR = function(input) {
 
 	var descriptor = {
 
-	url: '', // update to something?
+	url: 'https://aieducation.mit.edu/poppet.html', // update to something?
 
         blocks: [
 	  [' ', 'set led to %m.colors', 'set_rgb', 'red'],
@@ -254,11 +243,7 @@ ext.readIR = function(input) {
 			
 			],
         menus: {
-
-      servos: ['right','left'],
-      arm_dir: ['up','down'],
-      servo_dir: ['forward','backward'],
-      colors: ['red', 'green', 'blue', 'magenta', 'yellow', 'cyan', 'white', 'random']
+	      colors: ['red', 'green', 'blue', 'magenta', 'yellow', 'cyan', 'white', 'random']
 		}
     };
 
@@ -282,7 +267,12 @@ ext.readIR = function(input) {
       chrome.runtime.sendMessage(CHROME_EXTENSION_ID, {message: "STATUS"}, function (response) {
         if (response === undefined) { //Chrome app not found
           console.log("Chrome app not found");
-          CHROME_EXTENSION_ID = window.prompt("Enter the correct Chrome Extension ID", "pnjoidacmeigcdbikhgjolnadkdiegca")
+	  CHROME_EXTENSION_ID = window.localStorage.getItem('gizmo_extension_id');
+          console.log("Chrome ID: " + CHROME_EXTENSION_ID);
+	  if (CHROME_EXTENSION_ID === undefined || CHROME_EXTENSION_ID === "" || CHROME_EXTENSION_ID === null) {
+	     CHROME_EXTENSION_ID = window.prompt("Enter the correct Chrome Extension ID", "pnjoidacmeigcdbikhgjolnadkdiegca");
+	     window.localStorage.setItem('gizmo_extension_id', CHROME_EXTENSION_ID);
+	  }
           mStatus = 0;
           setTimeout(getAppStatus, 1000);
         }
@@ -298,9 +288,6 @@ ext.readIR = function(input) {
             setTimeout(getAppStatus, 1000);
           }
           console.log("Connected");
-         // if (stopServos) {
-          //	ext.servos_off();
-          //}
         }
       });
     };
@@ -309,18 +296,12 @@ ext.readIR = function(input) {
     function onMsgApp(msg) {
 	    mStatus = 2;
       var buffer = msg.buffer;
-      //console.log(buffer);
   
   
       if ( buffer[0]==224){
       messageParser(buffer);
-      last_reading = 0;
-      }
-  
-  
-      if (buffer[0] != 224 && last_reading == 0){
+      } else {
           messageParser(buffer);
-          last_reading = 1;
       }
     };
 
