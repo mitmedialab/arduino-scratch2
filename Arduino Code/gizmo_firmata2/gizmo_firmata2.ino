@@ -105,8 +105,8 @@ void loop() {
 void updateSteppers(){
     switch(stepper1steps){
     case 0:
-       digitalWrite(stepper1a, HIGH); 
-       digitalWrite(stepper1b, HIGH);
+       digitalWrite(stepper1a, LOW); 
+       digitalWrite(stepper1b, LOW);
      break; 
      case 1:
        digitalWrite(stepper1a, LOW); 
@@ -117,8 +117,8 @@ void updateSteppers(){
        digitalWrite(stepper1b, LOW);
      break; 
      case 3:
-       digitalWrite(stepper1a, LOW); 
-       digitalWrite(stepper1b, LOW);
+       digitalWrite(stepper1a, HIGH); 
+       digitalWrite(stepper1b, HIGH);
      break;
      default:
        digitalWrite(stepperEn, HIGH); 
@@ -127,8 +127,8 @@ void updateSteppers(){
 
     switch(stepper2steps){
     case 0:
-       digitalWrite(stepper2a, HIGH); 
-       digitalWrite(stepper2b, HIGH);
+       digitalWrite(stepper2a, LOW); 
+       digitalWrite(stepper2b, LOW);
      break; 
      case 1:
        digitalWrite(stepper2a, LOW); 
@@ -139,8 +139,8 @@ void updateSteppers(){
        digitalWrite(stepper2b, LOW);
      break; 
      case 3:
-       digitalWrite(stepper2a, LOW); 
-       digitalWrite(stepper2b, LOW);
+       digitalWrite(stepper2a, HIGH); 
+       digitalWrite(stepper2b, HIGH);
      break;
      default:
        digitalWrite(stepperEn, HIGH); 
@@ -157,8 +157,8 @@ void setMotorDirection() {
   if(stepper1dir==1){ stepper1steps++;}
   if(stepper1dir==0){ stepper1steps--; }
   // stepper 2 is opposite of stepper 1
-  if(stepper2dir==1){ stepper2steps--;}
-  if(stepper2dir==0){ stepper2steps++; }
+  if(stepper2dir==1){ stepper2steps++;}
+  if(stepper2dir==0){ stepper2steps--; }
 
   // loop the steps around
   if(stepper1steps>3){stepper1steps=0;}
@@ -291,9 +291,9 @@ void sending() {
   analog4 = analogRead(3)/10.23;
   
   Serial.write(224);
-  Serial.write(byte(steps_left));//analog1));
+  Serial.write(byte(analog1));
   Serial.write(225);
-  Serial.write(byte(analog2));
+  Serial.write(byte(steps_left));
   Serial.write(226);
   Serial.write(byte(analog3));
   Serial.write(227);
