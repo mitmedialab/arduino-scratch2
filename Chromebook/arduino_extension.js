@@ -318,8 +318,13 @@
         console.log('Canvas: ' + canvas);
     
          // Draws current image from the video element into the canvas
-        ctx.drawImage(video, 0,0, canvas.width, canvas.height);
         console.log('video: ' + video);
+        ctx.drawImage(video, 0,0, canvas.width, canvas.height);
+        // turn canvas into png and save it
+        var img    = ctx.toDataURL("image/png");
+        window.location.href = img;
+        
+        // get image data into var
         img_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
         console.log('imgData: ' + img_data.data);
         callback(img_data);
