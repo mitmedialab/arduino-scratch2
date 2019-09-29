@@ -293,7 +293,7 @@
 
   ext.stopWebcam = function() {
     console.log('Stopping media stream');
-    console.log('Wwebcamstram: ' + window.webcamstream);
+    console.log('Webcamstream: ' + window.webcamstream);
           window.webcamStream.getVideoTracks().forEach(function(track) {
             track.stop();
           });
@@ -303,7 +303,7 @@
 
      ext.getCameraImage = function() {
       console.log('in getCameraImage');
-        startImageWebcam();
+        ext.startImageWebcam();
         
         
         //---------------------
@@ -321,7 +321,7 @@
         img_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
         
         
-        stopWebcam();
+        ext.stopWebcam();
         return img_data;
       }
 
