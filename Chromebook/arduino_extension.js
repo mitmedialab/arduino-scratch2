@@ -262,6 +262,7 @@
   }
   
   ext.startImageWebcam = function() {
+    console.log('Starting Webcam');
     if (navigator.getUserMedia) {
        navigator.getUserMedia (
 
@@ -273,9 +274,11 @@
 
           // successCallback
           function(localMediaStream) {
+            console.log('Success in opening media stream: ' + localMediaStream);
               video = document.createElement('video');
              video.src = window.URL.createObjectURL(localMediaStream);
              window.webcamStream = localMediaStream;
+             console.log('webcamStream: ' + window.webcamStream);
           },
 
           // errorCallback
@@ -289,6 +292,8 @@
       }
 
   ext.stopWebcam = function() {
+    console.log('Stopping media stream');
+    console.log('Wwebcamstram: ' + window.webcamstream);
           window.webcamStream.getVideoTracks().forEach(function(track) {
             track.stop();
           });
@@ -311,6 +316,7 @@
     
          // Draws current image from the video element into the canvas
         ctx.drawImage(video, 0,0, canvas.width, canvas.height);
+        console.log('video: ' + video);
         img_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
         
         
