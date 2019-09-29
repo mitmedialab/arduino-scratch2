@@ -306,7 +306,6 @@
 
      ext.getCameraImage = function(callback) {
       console.log('in getCameraImage');
-        ext.startImageWebcam();
         
         
         //---------------------
@@ -323,10 +322,8 @@
         console.log('video: ' + video);
         img_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
         console.log('imgData: ' + img_data);
-        
-        
-        ext.stopWebcam();
         callback(img_data);
+        
       }
 
 
@@ -376,6 +373,7 @@
 	ext._shutdown = function() {
 	    if(poller) poller = clearInterval(poller);
 	    status = false;
+        ext.stopWebcam();
 	}
 
   function getAppStatus() {
@@ -393,10 +391,12 @@
           if (mStatus !== 2) {
             mConnection = chrome.runtime.connect(CHROME_EXTENSION_ID);
             mConnection.onMessage.addListener(onMsgApp);
-            mStatus = 1;
+            //mStatus = 1;
             setTimeout(getAppStatus, 1000);
+          } else {
+            console.log("Connected");
+            ext.startImageWebcam();
           }
-          console.log("Connected");
          // if (stopServos) {
           //	ext.servos_off();
           //}
