@@ -275,10 +275,10 @@
           // successCallback
           function(localMediaStream) {
             console.log('Success in opening media stream: ' + localMediaStream);
-              video = document.createElement('video');
-             video.srcObject(localMediaStream);
-             window.webcamStream = localMediaStream;
-             console.log('webcamStream: ' + window.webcamStream);
+            video = document.createElement('video');
+            video.srcObject = localMediaStream;
+            window.webcamStream = localMediaStream;
+            console.log('webcamStream: ' + window.webcamStream);
           },
 
           // errorCallback
@@ -342,7 +342,7 @@
       ['w', 'turn left %n degrees', 'drive_left', 1],
       ['r', 'read ultrasonic sensor', 'readUltrasonic'],
       ['b', 'read infrared sensor', 'readIR'],
-      ['r', 'camera image', 'getCameraImage'],
+      ['R', 'camera image', 'getCameraImage'],
 			],
         menus: {
 
