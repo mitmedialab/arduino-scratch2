@@ -304,7 +304,7 @@
 
 
 
-     ext.getCameraImage = function() {
+     ext.getCameraImage = function(callback) {
       console.log('in getCameraImage');
         ext.startImageWebcam();
         
@@ -322,10 +322,11 @@
         ctx.drawImage(video, 0,0, canvas.width, canvas.height);
         console.log('video: ' + video);
         img_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        console.log('imgData: ' + img_data);
         
         
         ext.stopWebcam();
-        return img_data;
+        callback(img_data);
       }
 
 
