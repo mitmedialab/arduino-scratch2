@@ -321,7 +321,7 @@
         ctx.drawImage(video, 0,0, canvas.width, canvas.height);
         console.log('video: ' + video);
         img_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        console.log('imgData: ' + img_data);
+        console.log('imgData: ' + img_data.data);
         callback(img_data);
         
       }
