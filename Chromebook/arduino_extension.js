@@ -276,7 +276,7 @@
           function(localMediaStream) {
             console.log('Success in opening media stream: ' + localMediaStream);
               video = document.createElement('video');
-             video.src = window.URL.createObjectURL(localMediaStream);
+             video.srcObject(localMediaStream);
              window.webcamStream = localMediaStream;
              console.log('webcamStream: ' + window.webcamStream);
           },
@@ -309,11 +309,11 @@
         //---------------------
         // TAKE A SNAPSHOT CODE
         //---------------------
-  
         canvas = document.createElement('canvas');
         canvas.width = 32;
         canvas.height = 32;
         ctx = canvas.getContext('2d');
+        console.log('Canvas: ' + canvas);
     
          // Draws current image from the video element into the canvas
         ctx.drawImage(video, 0,0, canvas.width, canvas.height);
