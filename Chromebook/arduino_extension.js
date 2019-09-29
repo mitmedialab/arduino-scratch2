@@ -36,8 +36,11 @@
   var mStatus = 1;
   var stopServos = true;
   var redLight = false;
-  var greenLight = false;;
+  var greenLight = false;
   var _selectors = {};
+  
+  var video;
+  var webcamStream;
 
   var digitalOutputData = new Uint8Array(16);
   /* RANDI - not using and analog data
@@ -277,8 +280,8 @@
             console.log('Success in opening media stream: ' + localMediaStream);
             video = document.createElement('video');
             video.srcObject = localMediaStream;
-            window.webcamStream = localMediaStream;
-            console.log('webcamStream: ' + window.webcamStream);
+            webcamStream = localMediaStream;
+            console.log('webcamStream: ' + webcamStream);
           },
 
           // errorCallback
@@ -293,8 +296,8 @@
 
   ext.stopWebcam = function() {
     console.log('Stopping media stream');
-    console.log('Webcamstream: ' + window.webcamstream);
-          window.webcamStream.getVideoTracks().forEach(function(track) {
+    console.log('Webcamstream: ' + webcamstream);
+          webcamStream.getVideoTracks().forEach(function(track) {
             track.stop();
           });
       }
@@ -334,7 +337,7 @@
 	url: '', // update to something?
 
         blocks: [
-	  [' ', 'set light to %m.colors', 'set_rgb', 'red'],
+	  [' ', 'set light to %m.colors', 'set_rgb', 'white'],
  	  [' ', 'turn light off', 'rgb_off'],
       ['w', 'drive forward %n steps', 'drive_forward', 1],
       ['w', 'drive backward %n steps', 'drive_backward', 1],
