@@ -302,6 +302,7 @@
 
 
      ext.getCameraImage = function() {
+      console.log('in getCameraImage');
         startImageWebcam();
         
         
