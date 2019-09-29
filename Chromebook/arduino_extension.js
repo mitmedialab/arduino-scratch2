@@ -322,11 +322,11 @@
         ctx.drawImage(video, 0,0, canvas.width, canvas.height);
         // turn canvas into png and save it
         var img    = ctx.toDataURL("image/png");
-        window.location.href = img;
+        console.log('Img: ' + img);
         
         // get image data into var
         img_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        console.log('imgData: ' + img_data.data);
+        //console.log('imgData: ' + img_data.data);
         callback(img_data);
         
       }
