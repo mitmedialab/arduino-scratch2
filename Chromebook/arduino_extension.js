@@ -251,12 +251,6 @@
   }
 
   ext.readUltrasonic = function(input) {
-
-  
-    var msg = {};
-    msg.buffer = [0xF0,0x08,14,0xF7];
-    //240 8 14 247
-
   
   	var distance = dist_read;
   	if (distance == 0) {
@@ -266,6 +260,63 @@
   return distance;
 
   }
+  
+  ext.startImageWebcam = function() {
+    if (navigator.getUserMedia) {
+       navigator.getUserMedia (
+
+          // constraints
+          {
+             video: true,
+             audio: false
+          },
+
+          // successCallback
+          function(localMediaStream) {
+              video = document.createElement('video');
+             video.src = window.URL.createObjectURL(localMediaStream);
+             window.webcamStream = localMediaStream;
+          },
+
+          // errorCallback
+          function(err) {
+             console.log("The following error occured: " + err);
+          }
+       );
+    } else {
+       console.log("getUserMedia not supported");
+    }  
+      }
+
+  ext.stopWebcam = function() {
+          window.webcamStream.getVideoTracks().forEach(function(track) {
+            track.stop();
+          });
+      }
+
+
+
+     ext.getCameraImage = function() {
+        startImageWebcam();
+        
+        
+        //---------------------
+        // TAKE A SNAPSHOT CODE
+        //---------------------
+  
+        canvas = document.createElement('canvas');
+        canvas.width = 32;
+        canvas.height = 32;
+        ctx = canvas.getContext('2d');
+    
+         // Draws current image from the video element into the canvas
+        ctx.drawImage(video, 0,0, canvas.width, canvas.height);
+        img_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        
+        
+        stopWebcam();
+        return img_data;
+      }
 
 
 
@@ -283,7 +334,8 @@
       ['w', 'turn right %n degrees', 'drive_right', 1],
       ['w', 'turn left %n degrees', 'drive_left', 1],
       ['r', 'read ultrasonic sensor', 'readUltrasonic'],
-      ['r', 'read infrared sensor', 'readIR'],			
+      ['b', 'read infrared sensor', 'readIR'],
+      ['r', 'camera image', 'getCameraImage'],
 			],
         menus: {
 
@@ -294,7 +346,15 @@
 
 
 	ext._getStatus = function() {
-        return {status: mStatus, msg: mStatus==2?'Ready':'Not Ready'};
+        var statusMsg;
+        if (mStatus == 0) {
+          statusMsg = 'Error connecting to LOFI Robot Chrome app, Make sure you have added the extension and that you are on scratchx.org'
+        } else if (mStatus == 1) {
+          statusMsg = 'Robot is not connected. Open the LOFI Robot extension to connect to your robot';
+        } else {
+          statusMsg = 'Ready';
+        }
+        return {status: mStatus, msg:statusMsg};
     };
     
   ext._stop = function() {
@@ -355,5 +415,5 @@
     getAppStatus();
 
 
-	ScratchExtensions.register('Gizmo Robot', descriptor, ext);
+	ScratchExtensions.register('PRG Arduino Robot', descriptor, ext);
 })({});
