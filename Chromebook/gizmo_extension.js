@@ -240,7 +240,7 @@ ext.readIR = function(input) {
       	  [' ', 'turn led off', 'rgb_off', 'off'],
       	  ['w', 'drive forward %n step(s)', 'drive_forward', 1],
           ['w', 'drive backward %n step(s)', 'drive_backward', 1],
-	[' ', 'stop steppers', 'stop_steppers'],
+	[' ', 'stop steppers', 'stop_steppers', 1],
           ['w', 'turn right %n degrees', 'drive_right', 90],
           ['w', 'turn left %n degrees', 'drive_left', 90],
           ['r', 'read distance', 'readUltrasonic'],
