@@ -348,7 +348,7 @@ ext.stop_steppers = function(button){
  	  [' ', 'turn light off', 'rgb_off'],
       ['w', 'drive forward %n steps', 'drive_forward', 1],
       ['w', 'drive backward %n steps', 'drive_backward', 1],
-	[' ', 'turn Stepper motors off', 'stop_steppers', 1],
+	[' ', 'stop motors', 'stop_steppers', 1],
       ['w', 'turn right %n degrees', 'drive_right', 1],
       ['w', 'turn left %n degrees', 'drive_left', 1],
       ['r', 'read ultrasonic sensor', 'readUltrasonic'],
