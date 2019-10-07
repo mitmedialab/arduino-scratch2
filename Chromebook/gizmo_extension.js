@@ -135,7 +135,11 @@
            callback();
         }, steps*500); // RANDI - approximate how long this should take with time?
   }
-  
+	
+ext.stop_steppers = function(button){
+	ext.drive_backward(0, button)
+}
+	
   ext.drive_left = function(degrees, callback) {
     var stepper_steps = Math.floor(STEPPER_ANGULAR_ROTATION / 90 * degrees);
 	  console.log('Going left ' + stepper_steps + ' steps');
@@ -236,6 +240,7 @@ ext.readIR = function(input) {
       	  [' ', 'turn led off', 'rgb_off', 'off'],
       	  ['w', 'drive forward %n step(s)', 'drive_forward', 1],
           ['w', 'drive backward %n step(s)', 'drive_backward', 1],
+	[' ', 'stop steppers', 'stop_steppers'],
           ['w', 'turn right %n degrees', 'drive_right', 90],
           ['w', 'turn left %n degrees', 'drive_left', 90],
           ['r', 'read distance', 'readUltrasonic'],
