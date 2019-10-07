@@ -191,6 +191,10 @@
             ext.servos_off(); callback();
         }, secs*1000);
   }
+	
+ext.stop_steppers = function(button){
+	ext.drive_backward(0, button)
+}
   
   ext.drive_left = function(secs, callback) {
 	var msg = {};
@@ -344,6 +348,7 @@
  	  [' ', 'turn light off', 'rgb_off'],
       ['w', 'drive forward %n steps', 'drive_forward', 1],
       ['w', 'drive backward %n steps', 'drive_backward', 1],
+	[' ', 'turn Stepper motors off', 'stop_steppers', 1],
       ['w', 'turn right %n degrees', 'drive_right', 1],
       ['w', 'turn left %n degrees', 'drive_left', 1],
       ['r', 'read ultrasonic sensor', 'readUltrasonic'],
