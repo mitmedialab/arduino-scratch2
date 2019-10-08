@@ -28,12 +28,12 @@
     STRING_DATA = 0x71;
 
   var LOW = 0, HIGH = 1;
-  var STEPPER_LINEAR_ROTATION = 4; // number of quarter-turns to move for/backward by 1 circumference
+  var STEPPER_LINEAR_ROTATION = 6; // number of quarter-turns to move for/backward by 1 circumference
   var STEPPER_ANGULAR_ROTATION = 5; // number of quarter-turns to rotate 90-degrees
 	
   var poller = null;
 
-  var CHROME_EXTENSION_ID = "jpehlabbcdkiocalmhikacglppfenoeo"; // APP ID on Windows
+  var CHROME_EXTENSION_ID = "jpehlabbcdkiocalmhikacglppfenoeo"; // APP ID on Chrome Web Store
   var mConnection;
   var mStatus = 1;
   var _selectors = {};
@@ -236,13 +236,13 @@ ext.readIR = function(input) {
 	url: 'https://aieducation.mit.edu/poppet.html', // update to something?
 
         blocks: [
-	  [' ', 'set led to %m.colors', 'set_rgb', 'red'],
+	  [' ', 'set led to %m.colors', 'set_rgb', 'white'],
       	  [' ', 'turn led off', 'rgb_off', 'off'],
       	  ['w', 'drive forward %n step(s)', 'drive_forward', 1],
           ['w', 'drive backward %n step(s)', 'drive_backward', 1],
-	[' ', 'stop steppers', 'stop_steppers', 1],
           ['w', 'turn right %n degrees', 'drive_right', 90],
           ['w', 'turn left %n degrees', 'drive_left', 90],
+	  [' ', 'stop motors', 'stop_steppers', 1],
           ['r', 'read distance', 'readUltrasonic'],
           ['r', 'read infrared', 'readIR'],
 			
@@ -253,8 +253,16 @@ ext.readIR = function(input) {
     };
 
 
-	ext._getStatus = function() {
-        return {status: mStatus, msg: mStatus==2?'Ready':'Not Ready'};
+    ext._getStatus = function() {
+        var statusMsg;
+        if (mStatus == 0) {
+          statusMsg = 'Error connecting to Gizmo Robot Chrome extension. Make sure you have added the extension and that you used the correct extension ID.'
+        } else if (mStatus == 1) {
+          statusMsg = 'Robot is not connected. Open the Gizmo Robot extension to connect to your robot';
+        } else {
+          statusMsg = 'Ready';
+        }
+        return {status: mStatus, msg:statusMsg};
     };
     
   ext._stop = function() {
