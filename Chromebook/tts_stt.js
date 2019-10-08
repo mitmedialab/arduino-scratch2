@@ -69,14 +69,14 @@ new (function() {
 
     var descriptor = {
         blocks: [
-            //['', 'set voice to %m.voices', 'set_voice', ''],
+            ['', 'set voice to %m.voices', 'set_voice', ''],
             ['w', 'speak %s', 'speak_text', 'Hello!'],
             ['w', 'ask %s and wait', 'ask', 'What\'s your name?'],
             ['r', 'answer', 'recognized_speech']
-        ]/*,
+        ],
         menus: {
             voices: _get_voices(),
-        },*/
+        }
     };
 
     ScratchExtensions.register('Text to Speech', descriptor, ext);
