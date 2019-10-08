@@ -6,9 +6,6 @@ new (function() {
     var recognized_speech = '';
 
     function _get_voices() {
-        if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
-            speechSynthesis.onvoiceschanged = populateVoiceList;
-        }
         var ret = [];
         console.log('Getting voices');
         console.log(speechSynthesis);
