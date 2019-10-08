@@ -226,12 +226,65 @@ ext.readIR = function(input) {
   return distance;
 
   }
+	
+/* Functions for TTS and STT. Code adapted from Sayamindu Dasgupta */
+var recognized_speech = '';
+
+    function _get_voices() {
+        if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = populateVoiceList;
+        }
+        var ret = [];
+        console.log('Getting voices');
+        console.log(speechSynthesis);
+        var voices = speechSynthesis.getVoices();
+        
+        for(var i = 0; i < voices.length; i++ ) {
+            ret.push(voices[i].name);
+            console.log(voices.toString());
+        }
+
+        return ret;
+    }
+
+    ext.set_voice = function() {
+    };
+
+    ext.speak_text = function (text, callback) {
+        var u = new SpeechSynthesisUtterance(text.toString());
+        u.onend = function(event) {
+            console.log(callback);
+            if (typeof callback=="function") callback();
+        };
+        
+        speechSynthesis.speak(u);
+    };
+    
+    ext.recognize_speech = function (callback) {
+        var recognition = new webkitSpeechRecognition();
+        recognition.onresult = function(event) {
+            if (event.results.length > 0) {
+                console.log(callback);
+                recognized_speech = event.results[0][0].transcript;
+                if (typeof callback=="function") callback();
+            }
+        };
+        recognition.start();
+    };
+    
+    ext.recognized_speech = function () {return recognized_speech;};
+
+    ext.ask = function (text,callback) {
+        console.log(text);
+        console.log(callback);
+        ext.speak_text(text, ext.recognize_speech(callback));
+        //if (typeof callback=="function") callback();
+    };
 
 
 
 
-
-	var descriptor = {
+    var descriptor = {
 
 	url: 'https://aieducation.mit.edu/poppet.html', // update to something?
 
@@ -245,6 +298,9 @@ ext.readIR = function(input) {
 	  [' ', 'stop motors', 'stop_steppers', 1],
           ['r', 'read distance', 'readUltrasonic'],
           ['r', 'read infrared', 'readIR'],
+	  ['w', 'speak %s', 'speak_text', 'Hello!'],
+          ['w', 'ask %s and wait', 'ask', 'What\'s your name?'],
+          ['r', 'answer', 'recognized_speech']
 			
 			],
         menus: {
@@ -260,7 +316,12 @@ ext.readIR = function(input) {
         } else if (mStatus == 1) {
           statusMsg = 'Robot is not connected. Open the Gizmo Robot extension to connect to your robot';
         } else {
+	  if (window.SpeechSynthesisUtterance === undefined || window.webkitSpeechRecognition === undefined) {
+            mStatus = 1;
+	    statusMsg = 'Your browser does not support text to speech. Try using Google Chrome';
+          } else {
           statusMsg = 'Ready';
+	  }
         }
         return {status: mStatus, msg:statusMsg};
     };
