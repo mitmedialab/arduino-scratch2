@@ -55,7 +55,6 @@ new (function() {
     ext._shutdown = function() {};
 
     ext._getStatus = function() {
-        _get_voices();
         if (window.SpeechSynthesisUtterance === undefined) {
             return {status: 1, msg: 'Your browser does not support text to speech. Try using Google Chrome or Safari.'};
         } else if (window.webkitSpeechRecognition === undefined) {
@@ -75,6 +74,7 @@ new (function() {
             voices:  voice_list,
         }
     };
-
+    
+    _get_voices();
     ScratchExtensions.register('Text to Speech', descriptor, ext);
 })();
