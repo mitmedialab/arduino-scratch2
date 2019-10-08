@@ -6,7 +6,7 @@ new (function() {
     var recognized_speech = '';
     var voice_list = [];
 
-    function _get_voices() {
+    async function _get_voices() {
         voice_list = [];
         console.log('Getting voices');
         var voices = await speechSynthesis.getVoices();
