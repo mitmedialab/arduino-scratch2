@@ -4,19 +4,20 @@
 new (function() {
     var ext = this;
     var recognized_speech = '';
+    var voice_list = [];
 
     function _get_voices() {
-        var ret = [];
+        voice_list = [];
         console.log('Getting voices');
         console.log(speechSynthesis);
         var voices = speechSynthesis.getVoices();
         
         for(var i = 0; i < voices.length; i++ ) {
-            ret.push(voices[i].name);
+            voices.push(voices[i].name);
             console.log(voices.toString());
         }
 
-        return ret;
+        return voice_list;
     }
 
     ext.set_voice = function() {
@@ -56,6 +57,7 @@ new (function() {
     ext._shutdown = function() {};
 
     ext._getStatus = function() {
+        _get_voices();
         if (window.SpeechSynthesisUtterance === undefined) {
             return {status: 1, msg: 'Your browser does not support text to speech. Try using Google Chrome or Safari.'};
         } else if (window.webkitSpeechRecognition === undefined) {
@@ -72,7 +74,7 @@ new (function() {
             ['r', 'answer', 'recognized_speech']
         ],
         menus: {
-            voices: _get_voices(),
+            voices:  voice_list,
         }
     };
 
