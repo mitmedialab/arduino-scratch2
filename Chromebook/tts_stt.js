@@ -9,12 +9,10 @@ new (function() {
     function _get_voices() {
         voice_list = [];
         console.log('Getting voices');
-        console.log(speechSynthesis);
         var voices = speechSynthesis.getVoices();
-        
+        console.log(voices.toString());
         for(var i = 0; i < voices.length; i++ ) {
-            voices.push(voices[i].name);
-            console.log(voices.toString());
+            voice_list.push(voices[i].name);
         }
 
         return voice_list;
