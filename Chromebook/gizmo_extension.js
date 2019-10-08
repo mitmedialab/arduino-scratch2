@@ -345,13 +345,13 @@ var recognized_speech = '';
           console.log("Chrome ID: " + CHROME_EXTENSION_ID);
 	  if (CHROME_EXTENSION_ID === undefined || CHROME_EXTENSION_ID === "" || CHROME_EXTENSION_ID === null) {
 	     CHROME_EXTENSION_ID = window.prompt("Enter the correct Chrome Extension ID", "pnjoidacmeigcdbikhgjolnadkdiegca");
-	     window.localStorage.setItem('gizmo_extension_id', CHROME_EXTENSION_ID);
 	  }
           mStatus = 0;
           setTimeout(getAppStatus, 1000);
         }
         else if (response.status === false) { //Chrome app says not connected
           mStatus = 1;
+	  window.localStorage.setItem('gizmo_extension_id', CHROME_EXTENSION_ID);
           setTimeout(getAppStatus, 1000);
         }
         else {// successfully connected
