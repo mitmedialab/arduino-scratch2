@@ -75,6 +75,7 @@ new (function() {
         }
     };
     
-    _get_voices();
-    ScratchExtensions.register('Text to Speech', descriptor, ext);
+    _get_voices().then(
+        ScratchExtensions.register('Text to Speech', descriptor, ext);
+    );
 })();
