@@ -353,12 +353,11 @@ var recognized_speech = '';
         }
         else if (response.status === false) { //Chrome app says not connected
           mStatus = 1;
-	  window.localStorage.setItem('gizmo_extension_id', CHROME_EXTENSION_ID);
           setTimeout(getAppStatus, 1000);
         }
         else {// successfully connected
           if (mStatus !== 2) {
-            mConnection = chrome.runtime.connect(CHROME_EXTENSION_ID);
+            mConnection = chrome.runtime.connect(CHROME_EXTENSION_ID);	  window.localStorage.setItem('gizmo_extension_id', CHROME_EXTENSION_ID);
             mConnection.onMessage.addListener(onMsgApp);
             mStatus = 1; // not sure why this is 1 but it works
             setTimeout(getAppStatus, 1000);
