@@ -33,15 +33,27 @@ function getCon(connections) {
 }
 
 function initBT(){
+  var devicesPaired = [];
   var msg = {};
   msg.action = 'initBT';
+  console.log('init Bluetooth');
   chrome.bluetooth.getDevices(function (deviceInfos){
-    console.log(deviceInfos);
-    msg.devices = deviceInfos;
+	if (deviceInfos.length===0) {
+		console.log('No paired Bluetooth SPP devices!');
+	} else {
+		console.log('BT devices: ');
+		for (var c=0;c<deviceInfos.length;c++) {
+			if(deviceInfos[c].paired===true) {
+				console.log(deviceInfos[c].name);
+                devicesPaired.push(deviceInfos[c]);
+			}
+		}
+	}
+    msg.devices = devicesPaired;
     sendMessage(msg);
   });
-
 }
+
 function initHID(){
   var msg = {};
   msg.action = 'initHID';
@@ -477,7 +489,7 @@ function onParseSerial(buffer){
 
     if (msg.buffer[0]==128 && msg.buffer[2]==4){
       //ramka odpowiedzi czujniki
-      //  [128, 16, 4, 5, 1, 18, 0, 1, 11, 224, 0, 225, 9, 226, 13, 227, 16, 240, 100, 105]
+      //  [128, 16, 4, 5, 1, 18, 0, 1, 11, 224, 0, 225, 9, 226, 13, 227, 16, 240, 100, 105]
 
       var msg2 = {};
       msg2.buffer = [];
