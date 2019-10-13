@@ -100,7 +100,7 @@ function onMessage(request, sender, sendResponse){
 
         for(i=0;i<request.devices.length;i++){
           option = document.createElement('option');
-		  if (request.devices[i].name === 'BT04-A') {
+		  if (request.devices[i].name === 'BT04-A' || request.devices[i].name === 'HC-05') {
 			option.text = "Gizmo Bluetooth Robot ( "+request.devices[i].name+" )";  
 		  } else {
 			option.text = ""+request.devices[i].name+" ( "+request.devices[i].address+" )";
