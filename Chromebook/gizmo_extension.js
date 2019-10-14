@@ -277,9 +277,7 @@ var recognized_speech = '';
     ext.ask = function (text,callback) {
         console.log(text);
         console.log(callback);
-        ext.speak_text(text, function(callback) 
-{ext.recognize_speech(callback)
-});
+        ext.speak_text(text, ext.recognize_speech(callback));
         //if (typeof callback=="function") callback();
     };
 
