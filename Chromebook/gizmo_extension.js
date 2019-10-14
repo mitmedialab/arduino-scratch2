@@ -301,7 +301,8 @@ var recognized_speech = '';
           ['r', 'read distance', 'readUltrasonic'],
           ['r', 'read infrared', 'readIR'],
 	  ['w', 'speak %s', 'speak_text', 'Hello!'],
-          ['w', 'ask %s and wait', 'ask', 'What\'s your name?'],
+	  ['w', 'listen for response', 'recognize_speech'],
+          //['w', 'ask %s and wait', 'ask', 'What\'s your name?'],
           ['r', 'answer', 'recognized_speech']
 			
 			],
