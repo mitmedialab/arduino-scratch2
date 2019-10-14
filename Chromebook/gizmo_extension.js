@@ -300,10 +300,10 @@ var recognized_speech = '';
 	  [' ', 'stop motors', 'stop_steppers', 1],
           ['r', 'read distance', 'readUltrasonic'],
           ['r', 'read infrared', 'readIR'],
-	  ['w', 'speak %s', 'speak_text', 'Hello!'],
-	  ['w', 'listen for response', 'recognize_speech'],
+	  //['w', 'speak %s', 'speak_text', 'Hello!'],
+	  //['w', 'listen for response', 'recognize_speech'],
           //['w', 'ask %s and wait', 'ask', 'What\'s your name?'],
-          ['r', 'answer', 'recognized_speech']
+          //['r', 'answer', 'recognized_speech']
 			
 			],
         menus: {
