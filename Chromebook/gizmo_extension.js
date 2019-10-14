@@ -252,7 +252,6 @@ var recognized_speech = '';
 
     ext.speak_text = function (text, callback) {
         var u = new SpeechSynthesisUtterance(text.toString());
-	u.pitch = ;
         u.onend = function(event) {
             console.log(callback);
             if (typeof callback=="function") callback();
