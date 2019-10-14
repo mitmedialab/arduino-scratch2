@@ -252,6 +252,7 @@ var recognized_speech = '';
 
     ext.speak_text = function (text, callback) {
         var u = new SpeechSynthesisUtterance(text.toString());
+	u.pitch = ;
         u.onend = function(event) {
             console.log(callback);
             if (typeof callback=="function") callback();
@@ -300,10 +301,10 @@ var recognized_speech = '';
 	  [' ', 'stop motors', 'stop_steppers', 1],
           ['r', 'read distance', 'readUltrasonic'],
           ['r', 'read infrared', 'readIR'],
-	  //['w', 'speak %s', 'speak_text', 'Hello!'],
+	  ['w', 'speak %s', 'speak_text', 'Hello!'],
 	  //['w', 'listen for response', 'recognize_speech'],
-          //['w', 'ask %s and wait', 'ask', 'What\'s your name?'],
-          //['r', 'answer', 'recognized_speech']
+          ['w', 'ask %s and wait', 'ask', 'What\'s your name?'],
+          ['r', 'answer', 'recognized_speech']
 			
 			],
         menus: {
