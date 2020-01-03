@@ -136,9 +136,9 @@
 	ext._getStatus = function() {
         var statusMsg;
         if (mStatus == 0) {
-          statusMsg = 'Error connecting to LOFI Robot Chrome app, Make sure you have added the extension and that you are on scratchx.org'
+          statusMsg = ''
         } else if (mStatus == 1) {
-          statusMsg = 'Robot is not connected. Open the LOFI Robot extension to connect to your robot';
+          statusMsg = '';
         } else {
           statusMsg = 'Ready';
         }
@@ -146,8 +146,6 @@
     };
     
   ext._stop = function() {
-      ext.servos_off();
-	ext.set_output(0,0,0);
   };  
     
 	ext._shutdown = function() {
@@ -157,50 +155,9 @@
 	}
 
   function getAppStatus() {
-      chrome.runtime.sendMessage(CHROME_EXTENSION_ID, {message: "STATUS"}, function (response) {
-        if (response === undefined) { //Chrome app not found
-          console.log("Chrome app not found");
-          mStatus = 0;
-          setTimeout(getAppStatus, 1000);
-        }
-        else if (response.status === false) { //Chrome app says not connected
           mStatus = 1;
-          setTimeout(getAppStatus, 1000);
-        }
-        else {// successfully connected
-          if (mStatus !== 2) {
-            mConnection = chrome.runtime.connect(CHROME_EXTENSION_ID);
-            mConnection.onMessage.addListener(onMsgApp);
-            //mStatus = 1;
-            setTimeout(getAppStatus, 1000);
-          } else {
-            console.log("Connected");
             ext.startImageWebcam();
-          }
-         // if (stopServos) {
-          //	ext.servos_off();
-          //}
-        }
-      });
-    };
-
-
-    function onMsgApp(msg) {
-	    mStatus = 2;
-      var buffer = msg.buffer;
-      //console.log(buffer);
-  
-  
-      if ( buffer[0]==224){
-      messageParser(buffer);
-      last_reading = 0;
-      }
-  
-  
-      if (buffer[0] != 224 && last_reading == 0){
-          messageParser(buffer);
-          last_reading = 1;
-      }
+ 
     };
 
     getAppStatus();
