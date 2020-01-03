@@ -115,6 +115,7 @@
                 prediction[i].className + ": " + prediction[i].probability.toFixed(2);
             labelContainer.childNodes[i].innerHTML = classPrediction;
         }*/
+        return "No idea";
     }
 
 
@@ -126,7 +127,7 @@
 	url: '', // update to something?
 
         blocks: [
-      ['w', 'recognize camera image', 'predictImage'],
+      ['r', 'recognize camera image', 'predictImage'],
       ['R', 'camera image', 'getCameraImage'],
 			]
         //,menus: {}
