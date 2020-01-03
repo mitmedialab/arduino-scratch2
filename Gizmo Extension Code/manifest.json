@@ -5,6 +5,11 @@
          "scripts": [ "background.js" ]
       }
    },
+   "bluetooth": {
+      "low_energy": true,
+      "socket": true,
+      "uuids": [ "1101" ]
+   },
    "description": "Connect Scratch to Arduino version of Gizmo robots",
    "externally_connectable": {
       "matches": [ "*://localhost/*", "*://scratchx.org/*", "*://machinelearningforkids.co.uk/scratchx/*" ]
@@ -23,5 +28,5 @@
       } ]
    } ],
    "short_name": "Gizmo Robot Extension",
-   "version": "1.0.0"
+   "version": "1.2.0"
 }

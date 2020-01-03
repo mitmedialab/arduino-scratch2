@@ -4,22 +4,18 @@
 new (function() {
     var ext = this;
     var recognized_speech = '';
+    var voice_list = [];
 
-    function _get_voices() {
-        if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
-            speechSynthesis.onvoiceschanged = populateVoiceList;
-        }
-        var ret = [];
+    async function _get_voices() {
+        voice_list = [];
         console.log('Getting voices');
-        console.log(speechSynthesis);
-        var voices = speechSynthesis.getVoices();
-        
+        var voices = await speechSynthesis.getVoices();
+        console.log(voices.toString());
         for(var i = 0; i < voices.length; i++ ) {
-            ret.push(voices[i].name);
-            console.log(voices.toString());
+            voice_list.push(voices[i].name);
         }
 
-        return ret;
+        return voice_list;
     }
 
     ext.set_voice = function() {
@@ -69,15 +65,17 @@ new (function() {
 
     var descriptor = {
         blocks: [
-            //['', 'set voice to %m.voices', 'set_voice', ''],
+            ['', 'set voice to %m.voices', 'set_voice', ''],
             ['w', 'speak %s', 'speak_text', 'Hello!'],
             ['w', 'ask %s and wait', 'ask', 'What\'s your name?'],
             ['r', 'answer', 'recognized_speech']
-        ]/*,
+        ],
         menus: {
-            voices: _get_voices(),
-        },*/
+            voices:  voice_list,
+        }
     };
-
-    ScratchExtensions.register('Text to Speech', descriptor, ext);
+    
+    _get_voices().then(() => {
+        ScratchExtensions.register('Text to Speech', descriptor, ext);
+    });
 })();

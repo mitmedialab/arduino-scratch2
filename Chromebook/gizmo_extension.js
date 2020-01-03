@@ -28,12 +28,12 @@
     STRING_DATA = 0x71;
 
   var LOW = 0, HIGH = 1;
-  var STEPPER_LINEAR_ROTATION = 4; // number of quarter-turns to move for/backward by 1 circumference
+  var STEPPER_LINEAR_ROTATION = 6; // number of quarter-turns to move for/backward by 1 circumference
   var STEPPER_ANGULAR_ROTATION = 5; // number of quarter-turns to rotate 90-degrees
 	
   var poller = null;
 
-  var CHROME_EXTENSION_ID = "jpehlabbcdkiocalmhikacglppfenoeo"; // APP ID on Windows
+  var CHROME_EXTENSION_ID = "jpehlabbcdkiocalmhikacglppfenoeo"; // APP ID on Chrome Web Store
   var mConnection;
   var mStatus = 1;
   var _selectors = {};
@@ -135,7 +135,11 @@
            callback();
         }, steps*500); // RANDI - approximate how long this should take with time?
   }
-  
+	
+ext.stop_steppers = function(button){
+	ext.drive_backward(0, button)
+}
+	
   ext.drive_left = function(degrees, callback) {
     var stepper_steps = Math.floor(STEPPER_ANGULAR_ROTATION / 90 * degrees);
 	  console.log('Going left ' + stepper_steps + ' steps');
@@ -222,24 +226,82 @@ ext.readIR = function(input) {
   return distance;
 
   }
+	
+/* Functions for TTS and STT. Code adapted from Sayamindu Dasgupta */
+var recognized_speech = '';
+
+    function _get_voices() {
+        if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = populateVoiceList;
+        }
+        var ret = [];
+        console.log('Getting voices');
+        console.log(speechSynthesis);
+        var voices = speechSynthesis.getVoices();
+        
+        for(var i = 0; i < voices.length; i++ ) {
+            ret.push(voices[i].name);
+            console.log(voices.toString());
+        }
+
+        return ret;
+    }
+
+    ext.set_voice = function() {
+    };
+
+    ext.speak_text = function (text, callback) {
+        var u = new SpeechSynthesisUtterance(text.toString());
+        u.onend = function(event) {
+            console.log(callback);
+            if (typeof callback=="function") callback();
+        };
+        
+        speechSynthesis.speak(u);
+    };
+    
+    ext.recognize_speech = function (callback) {
+        var recognition = new webkitSpeechRecognition();
+        recognition.onresult = function(event) {
+            if (event.results.length > 0) {
+                console.log(callback);
+                recognized_speech = event.results[0][0].transcript;
+                if (typeof callback=="function") callback();
+            }
+        };
+        recognition.start();
+    };
+    
+    ext.recognized_speech = function () {return recognized_speech;};
+
+    ext.ask = function (text,callback) {
+        console.log(text);
+        console.log(callback);
+        ext.speak_text(text, ext.recognize_speech(callback));
+        //if (typeof callback=="function") callback();
+    };
 
 
 
 
-
-	var descriptor = {
+    var descriptor = {
 
 	url: 'https://aieducation.mit.edu/poppet.html', // update to something?
 
         blocks: [
-	  [' ', 'set led to %m.colors', 'set_rgb', 'red'],
+	  [' ', 'set led to %m.colors', 'set_rgb', 'white'],
       	  [' ', 'turn led off', 'rgb_off', 'off'],
       	  ['w', 'drive forward %n step(s)', 'drive_forward', 1],
           ['w', 'drive backward %n step(s)', 'drive_backward', 1],
           ['w', 'turn right %n degrees', 'drive_right', 90],
           ['w', 'turn left %n degrees', 'drive_left', 90],
+	  [' ', 'stop motors', 'stop_steppers', 1],
           ['r', 'read distance', 'readUltrasonic'],
           ['r', 'read infrared', 'readIR'],
+	  ['w', 'speak %s', 'speak_text', 'Hello!'],
+	  //['w', 'listen for response', 'recognize_speech'],
+          ['w', 'ask %s and wait', 'ask', 'What\'s your name?'],
+          ['r', 'answer', 'recognized_speech']
 			
 			],
         menus: {
@@ -248,8 +310,21 @@ ext.readIR = function(input) {
     };
 
 
-	ext._getStatus = function() {
-        return {status: mStatus, msg: mStatus==2?'Ready':'Not Ready'};
+    ext._getStatus = function() {
+        var statusMsg;
+        if (mStatus == 0) {
+          statusMsg = 'Error connecting to Gizmo Robot Chrome extension. Make sure you have added the extension and that you used the correct extension ID.'
+        } else if (mStatus == 1) {
+          statusMsg = 'Robot is not connected. Open the Gizmo Robot extension to connect to your robot';
+        } else {
+	  if (window.SpeechSynthesisUtterance === undefined || window.webkitSpeechRecognition === undefined) {
+            mStatus = 1;
+	    statusMsg = 'Your browser does not support text to speech. Try using Google Chrome';
+          } else {
+          statusMsg = 'Ready';
+	  }
+        }
+        return {status: mStatus, msg:statusMsg};
     };
     
   ext._stop = function() {
@@ -271,7 +346,6 @@ ext.readIR = function(input) {
           console.log("Chrome ID: " + CHROME_EXTENSION_ID);
 	  if (CHROME_EXTENSION_ID === undefined || CHROME_EXTENSION_ID === "" || CHROME_EXTENSION_ID === null) {
 	     CHROME_EXTENSION_ID = window.prompt("Enter the correct Chrome Extension ID", "pnjoidacmeigcdbikhgjolnadkdiegca");
-	     window.localStorage.setItem('gizmo_extension_id', CHROME_EXTENSION_ID);
 	  }
           mStatus = 0;
           setTimeout(getAppStatus, 1000);
@@ -282,7 +356,7 @@ ext.readIR = function(input) {
         }
         else {// successfully connected
           if (mStatus !== 2) {
-            mConnection = chrome.runtime.connect(CHROME_EXTENSION_ID);
+            mConnection = chrome.runtime.connect(CHROME_EXTENSION_ID);	  window.localStorage.setItem('gizmo_extension_id', CHROME_EXTENSION_ID);
             mConnection.onMessage.addListener(onMsgApp);
             mStatus = 1; // not sure why this is 1 but it works
             setTimeout(getAppStatus, 1000);

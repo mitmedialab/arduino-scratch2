@@ -1,8 +1,9 @@
 var bleArray = [];
 var BLEstate = false;
 
-//clgdmbbhmdlbcgdffocenbbeclodbndh
 function onRefreshHardware(){
+  if (document.getElementById('device-selector') !== null)
+	document.getElementById('device-selector').options.length = 0;
   var msg = {};
   msg.action = "initHID";
   chrome.runtime.sendMessage(msg,function(response){
@@ -10,10 +11,10 @@ function onRefreshHardware(){
     msg.action = "initSerial";
     chrome.runtime.sendMessage(msg,function(response){
       console.log("initSerial:",response);
-    //  msg.action = "initBT";
-    //  chrome.runtime.sendMessage(msg,function(response){
-    //    console.log("initBT:",response);
-    //  });
+      msg.action = "initBT";
+      chrome.runtime.sendMessage(msg,function(response){
+        console.log("initBT:",response);
+      });
     });
   });
 
@@ -38,10 +39,19 @@ function onConnectHID(){
     console.log("hid:",response);
   });
 }
+function onConnect() {
+	var type = document.getElementById('device-selector').options[document.getElementById('device-selector').selectedIndex].class;
+	if (type==="bt") {
+		onConnectBT();
+	} else if (type == "serial") {
+		onConnectSerial();
+	}
+}
 function onConnectSerial(){
   var msg = {};
-  msg.action = document.getElementById('connectSerial').innerHTML=="Connect"?"connectSerial":"disconnectSerial";
-  msg.deviceId = document.getElementById('serial-device-selector').options[document.getElementById('serial-device-selector').selectedIndex].id;
+  msg.action = document.getElementById('connectButton').innerHTML=="Connect"?"connectSerial":"disconnectSerial";
+  document.getElementById('connectButton').innerHTML = 'Connecting...';
+  msg.deviceId = document.getElementById('device-selector').options[document.getElementById('device-selector').selectedIndex].id;
   chrome.runtime.sendMessage(msg,function(response){
     console.log("serial:",response);
 
@@ -52,11 +62,16 @@ function onOpenScratch() {
 }
 function onConnectBT(){
   var msg = {};
-  //msg.action = document.getElementById('connectBT').innerHTML=="Connect"?"connectBT":"disconnectBT";
-//  msg.address = document.getElementById('bt-device-selector').options[document.getElementById('bt-device-selector').selectedIndex].id;
-  //chrome.runtime.sendMessage(msg,function(response){
-  //  console.log("bt:",response);
-  //});
+  msg.action = document.getElementById('connectButton').innerHTML=="Connect"?"connectBT":"disconnectBT";
+  document.getElementById('connectButton').innerHTML = 'Connecting...';
+  msg.address = document.getElementById('device-selector').options[document.getElementById('device-selector').selectedIndex].id;
+  chrome.runtime.sendMessage(msg,function(response){
+    if (response === undefined) {
+        document.getElementById('connectButton').innerHTML = 'Connect';
+        console.log(chrome.runtime.lastError.message);
+    }
+    console.log("bt:",response);
+  });
 }
 
 
@@ -79,20 +94,23 @@ function onMessage(request, sender, sendResponse){
       //  document.getElementById('hid-device-selector').options.add(option);
       }
     }else if(request.action=="initBT"){
-      //document.getElementById('bt-device-selector').options.length = 0;
       console.log(request.devices);
       if(request.devices.length>0){
-
+		console.log('Found a BT device');
 
         for(i=0;i<request.devices.length;i++){
           option = document.createElement('option');
-          option.text = ""+request.devices[i].name+" ( "+request.devices[i].address+" )";
+		  if (request.devices[i].name === 'BT04-A' || request.devices[i].name === 'HC-05') {
+			option.text = "Gizmo Bluetooth Robot ( "+request.devices[i].name+" )";  
+		  } else {
+			option.text = ""+request.devices[i].name+" ( "+request.devices[i].address+" )";
+		  }
           option.id = request.devices[i].address;
-        //  document.getElementById('bt-device-selector').options.add(option);
+		  option.class="bt";
+		  document.getElementById('device-selector').options.add(option);
         }
       }
     }else if(request.action=="initSerial"){
-      document.getElementById('serial-device-selector').options.length = 0;
       if(request.devices.length>0){
         console.log(request.devices);
 
@@ -105,20 +123,18 @@ function onMessage(request, sender, sendResponse){
             request.devices[i].displayName = "Arduino UNO";
           option.text = ""+request.devices[i].path+(request.devices[i].displayName?" "+request.devices[i].displayName:"");
           option.id = request.devices[i].path;
-
-          //if (request.devices[i].displayName) {
-          document.getElementById('serial-device-selector').options.add(option);
-          //}
+		  option.class="serial";
+          document.getElementById('device-selector').options.add(option);
 
         }
       }
     }else if(request.action=="connectHID"){
       //document.getElementById('connectHID').innerHTML = request.status?'Disconnect':'Connect';
     }else if(request.action=="connectBT"){
-    //  document.getElementById('connectBT').innerHTML = request.status?'Disconnect':'Connect';
+      document.getElementById('connectButton').innerHTML = request.status?'Disconnect':'Connect';
     }else if(request.action=="connectSerial"){
       console.log(request.action,request);
-      document.getElementById('connectSerial').innerHTML = request.status?'Disconnect':'Connect';
+      document.getElementById('connectButton').innerHTML = request.status?'Disconnect':'Connect';
     }
    else if(request.action=="startupBLED112"){
     console.log(request.action,request);
@@ -150,7 +166,8 @@ function onMessage(request, sender, sendResponse){
     sendResponse(resp);
 }
 window.onload = function(){
-  document.getElementById('connectSerial').addEventListener('click', onConnectSerial);
+  document.getElementById('connectButton').addEventListener('click', onConnect);
+  //document.getElementById('connectSerial').addEventListener('click', onConnectSerial);
   document.getElementById('open_scratch').addEventListener('click', onOpenScratch);
   document.getElementById('refresh').addEventListener('click', onRefreshHardware);
   //document.getElementById('connectBLE').addEventListener('click', connectBLE);
