@@ -206,5 +206,5 @@ import * as tmImage from '@teachablemachine/image';
     getAppStatus();
 
 
-	ScratchExtensions.register('PRG Arduino Robot', descriptor, ext);
+	ScratchExtensions.register('PRG Tensorflow', descriptor, ext);
 })({});
