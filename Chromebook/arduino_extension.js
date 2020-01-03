@@ -320,7 +320,7 @@
          // Draws current image from the video element into the canvas
         console.log('video: ' + video);
         ctx.drawImage(video, 0,0, canvas.width, canvas.height);
-        // turn canvas into png and save it
+        // turn canvas into png and save it -- HANGS FOREVER
         var img    = ctx.toDataURL("image/png");
         console.log('Img: ' + img);
         
