@@ -26,9 +26,9 @@ new (function() {
             } catch (e) {
               videoElem.src = window.URL.createURLObject(localMediaStream);
             }
-            //videoElem.srcObject = localMediaStream;
             // need to call videoElem.play()?
             console.log(videoElem);
+            console.log(videoElem.srcObject);
             window.webcamStream = localMediaStream; // what is this?
           },
 
