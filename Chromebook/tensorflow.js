@@ -28,13 +28,13 @@ new (function() {
 
           // error callback
           function(err) {
-            extStatus = 1;
+            extStatus = 0;
             extStatusMsg = 'Please load the website from a secure URL: https://scratchx.org';
             console.log("Error starting webcam: " + err);
           }
        );
       } else {
-        extStatus = 1;
+        extStatus = 0;
         extStatusMsg = 'Please allow access to the webcam.';
         console.log("getUserMedia not supported");
       }  
@@ -79,8 +79,8 @@ new (function() {
     };
 
     ext._getStatus = function() {
-        if (extStatus === 1) {
-            return {status: 1, msg: 'Your browser does not support webcam access.'};
+        if (extStatus !== 2) {
+            return {status: extStatus, msg: extStatusMsg};
         }
         return {status: 2, msg: 'Ready'};
     };
