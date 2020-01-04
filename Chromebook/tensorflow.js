@@ -20,7 +20,8 @@ new (function() {
 
           // success callback
           function(localMediaStream) {
-            videoElem = document.createElement('video');
+            // Setup the video element that will contain the webcam stream      
+            videoElem = document.createElement('video');      
             try {
               videoElem.srcObject = localMediaStream;
             } catch (e) {
@@ -28,6 +29,18 @@ new (function() {
             }
             videoElem.play();
             window.webcamStream = localMediaStream; // what is this?
+
+            // Setup the canvas object that will hold an image snapshot            
+            canvas = document.createElement('canvas');
+            // Get the exact size of the video element.
+            window.width = videoElem.videoWidth; // is there a size limit on tensorflow?
+            window.height = videoElem.videoHeight; // is there a size limit on tensorflow?     
+            // Set the canvas to the same dimensions as the video.
+            canvas.width = width;
+            canvas.height = height;
+
+            // Setup the context object for working with the canvas
+            ctx = canvas.getContext('2d');
           },
 
           // error callback
@@ -39,7 +52,7 @@ new (function() {
        );
       } else {
         extStatus = 0;
-        extStatusMsg = 'Please allow access to the webcam.';
+        extStatusMsg = 'Please allow access to the webcam and refresh the page';
         console.log("getUserMedia not supported");
       }  
     }
@@ -51,20 +64,7 @@ new (function() {
     }
     
     ext.getCameraURL = function() {
-      canvas = document.createElement('canvas');
-      // Context object for working with the canvas.
-      ctx = canvas.getContext('2d');
-
-      // Get the exact size of the video element.
-      window.width = videoElem.videoWidth; // is there a size limit on tensorflow? dalton used 32
-      window.height = videoElem.videoHeight; // is there a size limit on tensorflow? dalton used 32
-      
-      // Set the canvas to the same dimensions as the video.
-      canvas.width = width;
-      canvas.height = height;
-      
-      // Draw a copy of the current frame from the video on the canvas
-      ctx.drawImage(videoElem, 0, 0, width, height);
+      updateWebcam();
       
       // Get an image dataURL from the canvas
       var imageDataURL = canvas.toDataURL('image/png');
@@ -72,6 +72,11 @@ new (function() {
       
       return imageDataURL;
     };
+    
+    ext.updateWebcam = function() {
+        // Draw a copy of the current frame from the video on the canvas
+        ctx.drawImage(videoElem, 0, 0, width, height);
+    }
     
     /*ext.callbackFunc = function (args callback) {
       if (typeof callback=="function") callback();
