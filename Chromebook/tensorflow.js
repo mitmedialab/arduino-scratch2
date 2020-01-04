@@ -93,7 +93,7 @@ new (function() {
     var descriptor = {
         blocks: [
             ['r', 'recognize camera image', 'predictImage'], // function dne
-            ['w', 'get camera url', 'getCameraURL']
+            ['r', 'get camera url', 'getCameraURL']
         ],
         menus: {}
     };
