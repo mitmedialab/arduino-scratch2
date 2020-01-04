@@ -21,7 +21,11 @@ new (function() {
           // success callback
           function(localMediaStream) {
             videoElem = document.createElement('video');
-            videoElem.src = window.URL.createObjectURL(localMediaStream);;
+            try {
+              videoElem.srcObject = localMediaStream;
+            } catch (e) {
+              videoElem.src = window.URL.createURLObject(localMediaStream);
+            }
             //videoElem.srcObject = localMediaStream;
             // need to call videoElem.play()?
             console.log(videoElem);
