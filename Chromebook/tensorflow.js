@@ -21,8 +21,8 @@ new (function() {
           // success callback
           function(localMediaStream) {
             videoElem = document.createElement('video');
-            videoElem.src = '';
-            videoElem.srcObject = localMediaStream;
+            videoElem.src = window.URL.createObjectURL(localMediaStream);;
+            //videoElem.srcObject = localMediaStream;
             // need to call videoElem.play()?
             console.log(videoElem);
             window.webcamStream = localMediaStream; // what is this?
