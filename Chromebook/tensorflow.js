@@ -51,21 +51,14 @@ new (function() {
       });
     }
     
-    ext.getCameraURL = function() {
+    ext.getCameraURL = function(callback) {
       ext.updateWebcam();
       
-      
-        console.log(videoElem);
-        console.log(videoElem.srcObject);
-        console.log(width);
-        console.log(height);
-        console.log(canvas);
-        console.log(ctx);
       // Get an image dataURL from the canvas
       var imageDataURL = canvas.toDataURL('image/png');
-      console.log(imageDataURL); // believe this works because we could draw rectangle
-      
-      return imageDataURL;
+      console.log(imageDataURL);
+      callback();
+      //return imageDataURL;
     };
     
     ext.updateWebcam = function() {
@@ -104,7 +97,7 @@ new (function() {
     var descriptor = {
         blocks: [
             ['r', 'recognize camera image', 'predictImage'], // function dne
-            ['r', 'get camera url', 'getCameraURL']
+            ['w', 'get camera url', 'getCameraURL']
         ],
         menus: {}
     };
