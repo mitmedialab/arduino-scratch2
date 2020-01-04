@@ -47,7 +47,7 @@ new (function() {
       });
     }
     
-    ext.getCameraURL = function() {
+    ext.getCameraURL = function(callback) {
       window.canvas = document.createElement('canvas');
       // Context object for working with the canvas.
       window.ctx = canvas.getContext('2d');
@@ -66,10 +66,13 @@ new (function() {
       // Get an image dataURL from the canvas.
       setTimeout(function() {
               var imageDataURL = canvas.toDataURL('image/png');
+      console.log('Image URL: ' + imageDataURL);
+      if (typeof callback=="function") callback();
       }, 2000);
 
-      console.log('Image URL: ' + imageDataURL);
-      return imageDataURL;
+      //return imageDataURL;
+    
+    
     };
     
     /*ext.callbackFunc = function (args callback) {
