@@ -24,7 +24,8 @@ new (function() {
             videoElem.src = '';
             videoElem.srcObject = localMediaStream;
             // need to call videoElem.play()?
-            window.webcamStream = localMediaStream;
+            console.log(videoElem);
+            window.webcamStream = localMediaStream; // what is this?
           },
 
           // error callback
@@ -60,7 +61,8 @@ new (function() {
       canvas.width = 32; // width;
       canvas.height = 32; // height;
 
-      // Draw a copy of the current frame from the video on the canvas.
+      // Draw a copy of the current frame from the video on the canvas
+      console.log(videoElem);
       ctx.drawImage(videoElem, 0, 0, 32, 32); //width, height);
 
       // Get an image dataURL from the canvas.
@@ -94,7 +96,7 @@ new (function() {
 
     var descriptor = {
         blocks: [
-            ['r', 'recognize camera image', 'predictImage'],
+            ['r', 'recognize camera image', 'predictImage'], // function dne
             ['w', 'get camera url', 'getCameraURL']
         ],
         menus: {}
