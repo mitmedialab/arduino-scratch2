@@ -64,7 +64,7 @@ new (function() {
     }
     
     ext.getCameraURL = function() {
-      updateWebcam();
+      ext.updateWebcam();
       
       // Get an image dataURL from the canvas
       var imageDataURL = canvas.toDataURL('image/png');
