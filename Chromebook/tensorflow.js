@@ -26,7 +26,8 @@ new (function() {
             } catch (e) {
               videoElem.src = window.URL.createURLObject(localMediaStream);
             }
-            // need to call videoElem.play()?
+            // need to call
+            videoElem.play();//?
             console.log(videoElem);
             console.log(videoElem.srcObject);
             window.webcamStream = localMediaStream; // what is this?
@@ -73,9 +74,7 @@ new (function() {
       console.log(videoElem.srcObject);
       
       ctx.drawImage(videoElem, 0, 0, width, height);
-      ctx.fillStyle = "#FF0000";
-      ctx.fillRect(0,0,150,75);
-      console.log(canvas.toDataURL());
+      console.log(canvas.toDataURL()); // believe this works because we could draw rectangle
       // Get an image dataURL from the canvas.
       setTimeout(function() {
               //var imageDataURL = canvas.toDataURL('image/png');
