@@ -29,18 +29,6 @@ new (function() {
             }
             videoElem.play();
             window.webcamStream = localMediaStream; // what is this?
-
-            // Setup the canvas object that will hold an image snapshot            
-            canvas = document.createElement('canvas');
-            // Get the exact size of the video element.
-            window.width = videoElem.videoWidth; // is there a size limit on tensorflow?
-            window.height = videoElem.videoHeight; // is there a size limit on tensorflow?     
-            // Set the canvas to the same dimensions as the video.
-            canvas.width = width;
-            canvas.height = height;
-
-            // Setup the context object for working with the canvas
-            ctx = canvas.getContext('2d');
           },
 
           // error callback
@@ -81,12 +69,17 @@ new (function() {
     };
     
     ext.updateWebcam = function() {
-        console.log(videoElem);
-        console.log(videoElem.srcObject);
-        console.log(width);
-        console.log(height);
-        console.log(canvas);
-        console.log(ctx);
+        // Setup the canvas object that will hold an image snapshot            
+        canvas = document.createElement('canvas');
+        // Get the exact size of the video element.
+        window.width = videoElem.videoWidth; // is there a size limit on tensorflow?
+        window.height = videoElem.videoHeight; // is there a size limit on tensorflow?     
+        // Set the canvas to the same dimensions as the video.
+        canvas.width = width;
+        canvas.height = height;
+
+        // Setup the context object for working with the canvas
+        ctx = canvas.getContext('2d');
         // Draw a copy of the current frame from the video on the canvas
         ctx.drawImage(videoElem, 0, 0, width, height);
     };
