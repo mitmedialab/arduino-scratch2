@@ -1,6 +1,3 @@
-/* Extension using the JavaScript Speech API for text to speech */
-/* Sayamindu Dasgupta <sayamindu@media.mit.edu>, April 2014 */
-
 new (function() {
     var ext = this;
     var videoElem = undefined;
@@ -65,7 +62,7 @@ new (function() {
       var imageDataURL = canvas.toDataURL('image/png');
       console.log('Image URL: ' + imageDataURL);
       return imageDataURL;
-    }
+    };
     
     /*ext.callbackFunc = function (args callback) {
       if (typeof callback=="function") callback();
@@ -91,9 +88,6 @@ new (function() {
         ],
         menus: {}
     };
-    
-    
-})();
     
   startImageWebcam().then(() => {
         ScratchExtensions.register('PRG Tensorflow', descriptor, ext);;
