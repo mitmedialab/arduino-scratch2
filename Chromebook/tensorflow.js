@@ -2,6 +2,7 @@ new (function() {
     var ext = this;
     var videoElem = undefined;
     var extStatus = 1;
+    var extStatusMsg = '';
     /*
      * variables
      */
@@ -27,11 +28,14 @@ new (function() {
 
           // error callback
           function(err) {
+            extStatus = 1;
+            extStatusMsg = 'Please load the website from a secure URL: https://scratchx.org';
             console.log("Error starting webcam: " + err);
           }
        );
       } else {
         extStatus = 1;
+        extStatusMsg = 'Please allow access to the webcam.';
         console.log("getUserMedia not supported");
       }  
     }
