@@ -76,7 +76,7 @@ new (function() {
     ext.updateWebcam = function() {
         // Draw a copy of the current frame from the video on the canvas
         ctx.drawImage(videoElem, 0, 0, width, height);
-    }
+    };
     
     /*ext.callbackFunc = function (args callback) {
       if (typeof callback=="function") callback();
