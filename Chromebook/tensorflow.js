@@ -64,7 +64,10 @@ new (function() {
       ctx.drawImage(videoElem, 0, 0, width, height);
 
       // Get an image dataURL from the canvas.
-      var imageDataURL = canvas.toDataURL('image/png');
+      setTimeout(function() {
+              var imageDataURL = canvas.toDataURL('image/png');
+      }, 2000);
+
       console.log('Image URL: ' + imageDataURL);
       return imageDataURL;
     };
