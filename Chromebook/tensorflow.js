@@ -66,6 +66,13 @@ new (function() {
     ext.getCameraURL = function() {
       ext.updateWebcam();
       
+      
+        console.log(videoElem);
+        console.log(videoElem.srcObject);
+        console.log(width);
+        console.log(height);
+        console.log(canvas);
+        console.log(ctx);
       // Get an image dataURL from the canvas
       var imageDataURL = canvas.toDataURL('image/png');
       console.log(imageDataURL); // believe this works because we could draw rectangle
@@ -74,6 +81,12 @@ new (function() {
     };
     
     ext.updateWebcam = function() {
+        console.log(videoElem);
+        console.log(videoElem.srcObject);
+        console.log(width);
+        console.log(height);
+        console.log(canvas);
+        console.log(ctx);
         // Draw a copy of the current frame from the video on the canvas
         ctx.drawImage(videoElem, 0, 0, width, height);
     };
