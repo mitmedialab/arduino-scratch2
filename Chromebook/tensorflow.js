@@ -58,27 +58,30 @@ new (function() {
       window.ctx = canvas.getContext('2d');
 
       // Get the exact size of the video element.
-      window.width = 32;// videoElem.videoWidth; // is there a size limit on tensorflow? dalton used 32
-      window.height = 32; // videoElem.videoHeight; // is there a size limit on tensorflow? dalton used 32
+      window.width = videoElem.videoWidth; // is there a size limit on tensorflow? dalton used 32
+      window.height = videoElem.videoHeight; // is there a size limit on tensorflow? dalton used 32
+      console.log(width);
+      console.log(height);
 
       // Set the canvas to the same dimensions as the video.
       canvas.width = 32; // width;
       canvas.height = 32; // height;
-
+      console.log(canvas);
+      
       // Draw a copy of the current frame from the video on the canvas
       console.log(videoElem);
-      ctx.drawImage(videoElem, 0, 0, 32, 32); //width, height);
-
+      console.log(videoElem.srcObject);
+      
+      ctx.drawImage(videoElem, 0, 0, width, height);
+      console.log(canvas.toDataURL());
       // Get an image dataURL from the canvas.
       setTimeout(function() {
-              var imageDataURL = canvas.toDataURL('image/png');
-      console.log('Image URL: ' + imageDataURL);
-      if (typeof callback=="function") callback();
+              //var imageDataURL = canvas.toDataURL('image/png');
+        console.log(canvas.toDataURL());
+        if (typeof callback=="function") callback();
       }, 2000);
 
       //return imageDataURL;
-    
-    
     };
     
     /*ext.callbackFunc = function (args callback) {
