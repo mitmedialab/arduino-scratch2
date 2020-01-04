@@ -64,8 +64,8 @@ new (function() {
       console.log(height);
 
       // Set the canvas to the same dimensions as the video.
-      canvas.width = 32; // width;
-      canvas.height = 32; // height;
+      canvas.width = width;
+      canvas.height = height;
       console.log(canvas);
       
       // Draw a copy of the current frame from the video on the canvas
