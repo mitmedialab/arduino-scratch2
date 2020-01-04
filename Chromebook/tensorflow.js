@@ -21,7 +21,8 @@ new (function() {
           // success callback
           function(localMediaStream) {
             videoElem = document.createElement('video');
-            videoElem.src = window.URL.createObjectURL(localMediaStream);
+            videoElem.src = '';
+            videoElem.srcObject = localMediaStream;
             // need to call videoElem.play()?
             window.webcamStream = localMediaStream;
           },
