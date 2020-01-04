@@ -73,6 +73,8 @@ new (function() {
       console.log(videoElem.srcObject);
       
       ctx.drawImage(videoElem, 0, 0, width, height);
+      ctx.fillStyle = "#FF0000";
+      ctx.fillRect(0,0,150,75);
       console.log(canvas.toDataURL());
       // Get an image dataURL from the canvas.
       setTimeout(function() {
