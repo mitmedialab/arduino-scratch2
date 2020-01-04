@@ -36,6 +36,7 @@ new (function() {
         recognition.onresult = function(event) {
             if (event.results.length > 0) {
                 console.log(callback);
+                console.log(results[0]);
                 recognized_speech = event.results[0][0].transcript;
                 if (typeof callback=="function") callback();
             }
