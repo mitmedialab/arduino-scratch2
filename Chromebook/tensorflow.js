@@ -51,14 +51,14 @@ new (function() {
       });
     }
     
-    ext.getCameraURL = function(callback) {
+    ext.getCameraURL = function() {
       ext.updateWebcam();
       
       // Get an image dataURL from the canvas
       var imageDataURL = canvas.toDataURL('image/png');
-      console.log(imageDataURL);
-      callback();
-      //return imageDataURL;
+      //console.log(imageDataURL);
+      //callback();
+      return imageDataURL;
     };
     
     ext.updateWebcam = function() {
@@ -97,7 +97,7 @@ new (function() {
     var descriptor = {
         blocks: [
             ['r', 'recognize camera image', 'predictImage'], // function dne
-            ['w', 'get camera url', 'getCameraURL']
+            ['r', 'get camera url', 'getCameraURL']
         ],
         menus: {}
     };
