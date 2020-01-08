@@ -61,6 +61,16 @@ new (function() {
       return imageDataURL;
     };
     
+    ext.getCameraURLE = function() {
+      ext.updateWebcam();
+      
+      // Get an image dataURL from the canvas
+      var imageDataURL = canvas.toDataURL('image/jpeg').substring(23);
+      console.log(imageDataURL);
+      //callback();
+      return imageDataURL;
+    };
+    
     ext.updateWebcam = function() {
         // Setup the canvas object that will hold an image snapshot            
         canvas = document.createElement('canvas');
@@ -97,7 +107,8 @@ new (function() {
     var descriptor = {
         blocks: [
             ['r', 'recognize camera image', 'predictImage'], // function dne
-            ['R', 'get camera url', 'getCameraURL']
+            ['R', 'get camera url 1', 'getCameraURL']
+            ['R', 'get camera url 2', 'getCameraURLE']
         ],
         menus: {}
     };
