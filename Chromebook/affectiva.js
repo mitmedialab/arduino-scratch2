@@ -21,6 +21,8 @@
           startExtension(); // intialize Affdex?
         }).fail(function(jqxhr, settings, exception) {
           console.log('Error loading AffdexJS');
+          extStatus = 0;
+          extStatusMsg = 'Could not load Affdex library';
           loadAffdexJS(); // try again?
         });
     }
@@ -39,6 +41,7 @@
     //Add a callback to notify when the detector is initialized and ready for runing.
     detector.addEventListener("onInitializeSuccess", function() {
       console.log("The detector reports initialized");
+      extStatus = 2;
     });
     //Add a callback to receive the results from processing an image.
     //The faces object contains the list of the faces detected in an image.
@@ -61,6 +64,8 @@
     //Initialize the emotion detector
     console.log("Starting the detector .. please wait");
     detector.start();
+    extStatus = 1;
+    extStatusMsg = 'Waiting for Affdex detector to load';
     // start webcam
     startImageWebcam();
   }
@@ -99,7 +104,7 @@
     }
   }
 
-  ext.recognize_face = function(callback) {
+  ext.recognizeFace = function(callback) {
     ext.updateWebcam();
     
     // Pass the image to the detector to track emotions
@@ -111,7 +116,7 @@
   
   ext.getNumFaces = function() {
     return numFaces;
-  }
+  };
   
   ext.stopWebcam = function() {
     window.webcamStream.getVideoTracks().forEach(function(track) {
@@ -158,8 +163,8 @@
   
   var descriptor = {
     blocks: [
-      ['w', 'camera image', 'getCameraURL'],
-      ['r', 'number of faces, getNumFaces']
+      ['w', 'recognize face emotion from camera', 'recognizeFace'],
+      ['r', 'number of faces', 'getNumFaces']
     ],
     menus: {}
   };
