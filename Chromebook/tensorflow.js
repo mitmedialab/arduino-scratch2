@@ -16,7 +16,7 @@ new (function() {
           {
             video: {
               width: {
-                max:
+                max: 320;
               }
             }
           },
