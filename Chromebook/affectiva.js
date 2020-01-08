@@ -152,7 +152,7 @@
   
   ext._getStatus = function() {
     if (webcamStatus !== 2 || affdexStatus !== 2) {
-      if (webcamStats <= affdexStatus) { 
+      if (webcamStatus <= affdexStatus) { 
         return {
           status: webcamStatus,
           msg: extStatusMsg
@@ -172,7 +172,7 @@
   
   var descriptor = {
     blocks: [
-      ['w', 'recognize face emotion from camera', 'recognizeFace'],
+      ['w', 'detect face emotion', 'recognizeFace'],
       ['r', 'number of faces', 'getNumFaces']
     ],
     menus: {}
