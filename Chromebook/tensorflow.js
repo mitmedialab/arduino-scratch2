@@ -15,9 +15,7 @@ new (function() {
           // options
           {
             video: {
-              width: {
-                max: 320;
-              }
+              width: { max: 320 }
             }
           },
 
