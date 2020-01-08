@@ -14,8 +14,11 @@ new (function() {
         navigator.getUserMedia (
           // options
           {
-            video: true,
-            audio: false
+            video: {
+              width: {
+                max:
+              }
+            }
           },
 
           // success callback
@@ -65,7 +68,7 @@ new (function() {
       ext.updateWebcam();
       
       // Get an image dataURL from the canvas
-      var imageDataURL = canvas.toDataURL('image/jpeg').substring(23);
+      var imageDataURL = canvas.toDataURL('image/jpeg').substring(23); // 23 is how many chars you need to chop off the beginning
       console.log(imageDataURL);
       //callback();
       return imageDataURL;
