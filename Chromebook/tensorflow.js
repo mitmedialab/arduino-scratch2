@@ -106,14 +106,14 @@ new (function() {
     var descriptor = {
         blocks: [
             ['r', 'recognize camera image', 'predictImage'], // function dne
-            ['R', 'get camera url 1', 'getCameraURL']
+            ['R', 'get camera url 1', 'getCameraURL'],
             ['R', 'get camera url 2', 'getCameraURLE']
         ],
         menus: {}
     };
     
   startImageWebcam().then(() => {
-        ScratchExtensions.register('PRG Tensorflow', descriptor, ext);;
+        ScratchExtensions.register('PRG Tensorflow', descriptor, ext);
   });
   
   
