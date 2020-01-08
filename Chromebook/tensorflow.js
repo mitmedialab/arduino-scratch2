@@ -56,7 +56,7 @@ new (function() {
       
       // Get an image dataURL from the canvas
       var imageDataURL = canvas.toDataURL('image/png');
-      //console.log(imageDataURL);
+      console.log(imageDataURL);
       //callback();
       return imageDataURL;
     };
@@ -97,7 +97,7 @@ new (function() {
     var descriptor = {
         blocks: [
             ['r', 'recognize camera image', 'predictImage'], // function dne
-            ['r', 'get camera url', 'getCameraURL']
+            ['R', 'get camera url', 'getCameraURL']
         ],
         menus: {}
     };
