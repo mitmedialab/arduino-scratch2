@@ -50,14 +50,13 @@ new (function() {
       });
     }
     
-    ext.getCameraURL = function() {
+    ext.getCameraURL = function(callback) {
       ext.updateWebcam();
       
       // Get an image dataURL from the canvas
       var imageDataURL = canvas.toDataURL('image/jpeg');
       console.log(imageDataURL);
-      //callback();
-      return imageDataURL;
+      callback(imageDataURL);
     };
     
     ext.getCameraURLE = function() {
@@ -66,11 +65,10 @@ new (function() {
       // Get an image dataURL from the canvas
       var imageDataURL = canvas.toDataURL('image/jpeg').substring(23); // 23 is how many chars you need to chop off the beginning
       console.log(imageDataURL);
-      //callback();
-      return imageDataURL;
+      callback(imageDataURL);
     };
     
-    ext.updateWebcam = function() {
+    ext.updateWebcam = function(callback) {
         // Setup the canvas object that will hold an image snapshot            
         canvas = document.createElement('canvas');
         // Get the exact size of the video element.
