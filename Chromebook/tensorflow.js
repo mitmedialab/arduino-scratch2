@@ -54,15 +54,6 @@ new (function() {
       ext.updateWebcam();
       
       // Get an image dataURL from the canvas
-      var imageDataURL = canvas.toDataURL('image/jpeg');
-      console.log(imageDataURL);
-      callback(imageDataURL);
-    };
-    
-    ext.getCameraURLE = function(callback) {
-      ext.updateWebcam();
-      
-      // Get an image dataURL from the canvas
       var imageDataURL = canvas.toDataURL('image/jpeg').substring(23); // 23 is how many chars you need to chop off the beginning
       console.log(imageDataURL);
       callback(imageDataURL);
@@ -104,8 +95,7 @@ new (function() {
     var descriptor = {
         blocks: [
             ['r', 'recognize camera image', 'predictImage'], // function dne
-            ['R', 'get camera url 1', 'getCameraURL'],
-            ['R', 'get camera url 2', 'getCameraURLE']
+            ['R', 'camera image', 'getCameraURL']
         ],
         menus: {}
     };
