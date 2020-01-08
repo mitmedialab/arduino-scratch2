@@ -4,6 +4,8 @@
   // extension variables
   var ext = this;
   var extStatus = 1;
+  var affdexStatus = 0;
+  var webcamStatus = 0;
   var extStatusMsg = '';
   // camera variables
   var ctx, canvas, videoElem;
@@ -21,7 +23,7 @@
           startExtension(); // intialize Affdex?
         }).fail(function(jqxhr, settings, exception) {
           console.log('Error loading AffdexJS');
-          extStatus = 0;
+          affdexStatus = 0;
           extStatusMsg = 'Could not load Affdex library';
           loadAffdexJS(); // try again?
         });
@@ -41,7 +43,7 @@
     //Add a callback to notify when the detector is initialized and ready for runing.
     detector.addEventListener("onInitializeSuccess", function() {
       console.log("The detector reports initialized");
-      extStatus = 2;
+      affdexStatus = 2;
     });
     //Add a callback to receive the results from processing an image.
     //The faces object contains the list of the faces detected in an image.
@@ -64,7 +66,7 @@
     //Initialize the emotion detector
     console.log("Starting the detector .. please wait");
     detector.start();
-    extStatus = 1;
+    affdexStatus = 1;
     extStatusMsg = 'Waiting for Affdex detector to load';
     // start webcam
     startImageWebcam();
@@ -73,7 +75,7 @@
     function startImageWebcam() { // should be async?
     console.log("Starting webcam");
     if (navigator.getUserMedia) {
-      extStatus = 2;
+      webcamStatus = 2;
       navigator.getUserMedia(
         // options
         {
@@ -93,12 +95,12 @@
         },
         // error callback
         function(err) {
-          extStatus = 0;
+          webcamStatus = 0;
           extStatusMsg = 'Please load the website from a secure URL: https://scratchx.org';
           console.log("Error starting webcam: " + err);
         });
     } else {
-      extStatus = 0;
+      webcamStatus = 0;
       extStatusMsg = 'Please allow access to the webcam and refresh the page';
       console.log("getUserMedia not supported");
     }
@@ -149,11 +151,18 @@
   };
   
   ext._getStatus = function() {
-    if (extStatus !== 2) {
-      return {
-        status: extStatus,
-        msg: extStatusMsg
-      };
+    if (webcamStatus !== 2 || affdexStatus !== 2) {
+      if (webcamStats <= affdexStatus) { 
+        return {
+          status: webcamStatus,
+          msg: extStatusMsg
+        };
+      } else {
+        return {
+          status: affdexStatus,
+          msg: extStatusMsg
+        };  
+      }
     }
     return {
       status: 2,
