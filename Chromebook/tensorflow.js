@@ -59,7 +59,7 @@ new (function() {
       callback(imageDataURL);
     };
     
-    ext.getCameraURLE = function() {
+    ext.getCameraURLE = function(callback) {
       ext.updateWebcam();
       
       // Get an image dataURL from the canvas
@@ -68,7 +68,7 @@ new (function() {
       callback(imageDataURL);
     };
     
-    ext.updateWebcam = function(callback) {
+    ext.updateWebcam = function() {
         // Setup the canvas object that will hold an image snapshot            
         canvas = document.createElement('canvas');
         // Get the exact size of the video element.
