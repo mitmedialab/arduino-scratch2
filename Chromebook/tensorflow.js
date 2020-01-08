@@ -14,9 +14,7 @@ new (function() {
         navigator.getUserMedia (
           // options
           {
-            video: {
-              width: { max: 320 }
-            }
+            video: true
           },
 
           // success callback
@@ -76,8 +74,8 @@ new (function() {
         // Setup the canvas object that will hold an image snapshot            
         canvas = document.createElement('canvas');
         // Get the exact size of the video element.
-        window.width = videoElem.videoWidth; // is there a size limit on tensorflow?
-        window.height = videoElem.videoHeight; // is there a size limit on tensorflow?     
+        window.width = 320; // videoElem.videoWidth; going to try to scale the image down 
+        window.height = 240; // videoElem.videoHeight; 
         // Set the canvas to the same dimensions as the video.
         canvas.width = width;
         canvas.height = height;
