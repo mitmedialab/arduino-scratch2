@@ -1,5 +1,6 @@
 /* Extension using the JavaScript Speech API for text to speech */
 /* Sayamindu Dasgupta <sayamindu@media.mit.edu>, April 2014 */
+/* Editied by Randi Williams <randiw12@mit.edu> July 2019 to include speech rec */
 
 new (function() {
     var ext = this;
@@ -66,7 +67,7 @@ new (function() {
 
     var descriptor = {
         blocks: [
-            ['', 'set voice to %m.voices', 'set_voice', ''],
+            //['', 'set voice to %m.voices', 'set_voice', ''],
             ['w', 'speak %s', 'speak_text', 'Hello!'],
             ['w', 'ask %s and wait', 'ask', 'What\'s your name?'],
             ['r', 'answer', 'recognized_speech']

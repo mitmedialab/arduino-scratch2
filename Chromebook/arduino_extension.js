@@ -1,3 +1,6 @@
+/* Extension using Lofi Robot Chrome extension to communicate with an Arduino robot */
+/* Edited by Randi Williams <randiw12@mit.edu> May 2019 to work with PopPet robot by Jaidyn Edwards */
+
 (function(ext) {
 
   var INPUT = 0x00,

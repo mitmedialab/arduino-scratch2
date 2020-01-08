@@ -1,3 +1,7 @@
+/* Extension using Lofi Robot Chrome extension to communicate with arduino robot from Amazon */
+/* Code originally from Lofi Robot Extension */
+/* Edited by Pablo Alejo <palejo@mit.edu>, Randi Williams <randiw12@mit.edu> July 2019 to work with Arduino robot */
+
 (function(ext) {
 
   var INPUT = 0x00,
