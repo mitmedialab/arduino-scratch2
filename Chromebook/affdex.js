@@ -196,7 +196,9 @@ affdex.Detector = function() {
 affdex.Detector.prototype.start = function() {
   if (!this.isRunning) {
     var url = affdex.getAffdexDotJsLocation();
-    XHRWorker("https://mitmedialab.github.io/arduino-scratch2/Chromebook/affdex-worker.js", function(worker) { // RANDI had to replace this line too
+    var affdexUrl = "https://mitmedialab.github.io/arduino-scratch2/Chromebook/affdex-worker.js";
+    var proxyUrl = "https://cors-anywhere.herokuapp.com/";
+    XHRWorker(proxyUrl + affdexUrl, function(worker) { // RANDI had to replace this line too
       this.worker = worker;
       this.worker.onmessage = this.onWorkerMessage;
       this.worker.postMessage( { "message": "ctor", "url": url} );
