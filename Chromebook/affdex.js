@@ -11,7 +11,7 @@ affdex.getAffdexDotJsLocation = function() {
     }
   }
   //return affdexJS;
-  return "https://download.affectiva.com/js/3.2/"; // had to replace this line
+  return "https://download.affectiva.com/js/3.2/"; // RANDI had to replace this line
 };
 
 affdex.FaceDetectorMode = {
@@ -196,7 +196,7 @@ affdex.Detector = function() {
 affdex.Detector.prototype.start = function() {
   if (!this.isRunning) {
     var url = affdex.getAffdexDotJsLocation();
-    XHRWorker(url+"affdex-worker.js", function(worker) {
+    XHRWorker("https://mitmedialab.github.io/arduino-scratch2/Chromebook/affdex-worker.js", function(worker) { // RANDI had to replace this line too
       this.worker = worker;
       this.worker.onmessage = this.onWorkerMessage;
       this.worker.postMessage( { "message": "ctor", "url": url} );
