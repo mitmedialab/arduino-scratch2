@@ -17,7 +17,7 @@
     if (typeof affdex !== 'undefined') {
       console.log('Affdex library is already loaded');
     } else {
-      $.getScript('https://download.affectiva.com/js/3.2/affdex.js') // should save this in github?
+      $.getScript('https://mitmedialab.github.io/arduino-scratch2/Chromebook/affdex.js') // should save this in github?
         .done(function(script, textStatus) {
           console.log('Loaded AffdexJS');
           startExtension(); // intialize Affdex?
