@@ -5,6 +5,7 @@
   var ext = this;
   var extStatus = 1;
   var affdexStatus = 0;
+  var webcamStatus = 0;
   var extStatusMsg = '';
   // affdex variables    
   var detector, canvasDiv;
@@ -87,6 +88,10 @@
     detector.addEventListener("onImageResultsFailure", function(image, timestamp, error) {
       console.log('Failed to process image err=' + error);
     });
+    //Add a callback to notify when camera access is denied
+      detector.addEventListener("onWebcamConnectSuccess", function() {
+        console.log("Connected to the webcam");
+      });
       //Add a callback to notify when camera access is denied
       detector.addEventListener("onWebcamConnectFailure", function() {
         webcamStatus = 0;
