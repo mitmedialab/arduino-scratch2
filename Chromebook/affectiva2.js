@@ -13,13 +13,11 @@
   var detector;
   var numFaces = 0;
   var faceAge = 'unknown';
-  var faceGender = 'unknown';
   var faceGlasses = false;
   var faceEmotion = 'unknown';
   var faceEmotionConfidence = 0;
   var faceEmotions =
     {'joy':0,'sadness':0,'anger':0,'disgust':0,'fear':0,'contempt':0,'surprise':0, 'valence':0, 'engagement':0};
-  var lastUpdateTime = 0;
   
   async function loadAffdexJS() {
     if (typeof affdex !== 'undefined') {
@@ -58,20 +56,16 @@
     //The faces object contains the list of the faces detected in an image.
     //Faces object contains probabilities for all the different expressions, emotions and appearance metrics
     detector.addEventListener("onImageResultsSuccess", function(faces, image, timestamp) {
-      console.log('#results', "Number of faces found: " + faces.length); // save in a variable?
-      numFaces = faces.length;
-      console.log('#results', "Number of faces found: " + faces.length); // save in a variable?
+      //console.log('#results', "Number of faces found: " + faces.length); // save in a variable?
       numFaces = faces.length;
       // how should we handle multiple faces?
       if (faces.length > 0) {
-        console.log("Appearance: " + JSON.stringify(faces[0].appearance));
+        //console.log("Appearance: " + JSON.stringify(faces[0].appearance));
         faceAge = faces[0].appearance.age;
-        faceGender = faces[0].appearance.gender;
         faceGlasses = (faces[0].appearance.glasses === "Yes");
         
-        faceEmotion = 'unknown';
         faceEmotionConfidence = 0;
-        console.log("Emotions: " + JSON.stringify(faces[0].emotions, function(key, val) {
+        emotionString = JSON.stringify(faces[0].emotions, function(key, val) {
           faceEmotions[key] = val;
           // Find the greatest emotion
           if (val > faceEmotionConfidence && key !== "valence" && key !== "engagement") {
@@ -79,9 +73,10 @@
             faceEmotion = key;
           }
           return val.toFixed ? Number(val.toFixed(0)) : val;
-        }));
+        });
+        console.log("Emotions: " + emotionString);
+        
       }
-      lastUpdateTime = currentTime();
     });
     //Add a callback to notify if failed receive the results from processing an image.
     detector.addEventListener("onImageResultsFailure", function(image, timestamp, error) {
@@ -129,10 +124,6 @@
       console.log("getUserMedia not supported");
     }
   }
-  
-  function currentTime() { // in milliseconds
-    return new Date().getTime();
-  }
 
   ext.getNumFaces = function() {
     return numFaces;
@@ -143,12 +134,15 @@
   ext.getEmotionConfidence = function() {
     return faceEmotionConfidence;
   };  
-  ext.recognizeAppearance = function(feature) {
+  /*ext.recognizeAppearance = function(feature) {
     if (feature === 'age') {
       return faceAge;
     } else if (feature === 'gender') {
       return faceGender;
     }
+  };*/
+  ext.recognizeAge = function() {
+    return faceAge;
   };
   ext.hasGlasses = function() {
     return faceGlasses;
@@ -214,7 +208,7 @@
   var descriptor = {
     blocks: [
       ['r', 'number of faces', 'getNumFaces'],
-      ['r', 'recognize %m.appearance', 'recognizeAppearance', 'age'],
+      ['r', 'recognize age', 'recognizeAge'],
       ['b', 'has glasses', 'hasGlasses'],
       ['r', 'recognize emotion (label)', 'getGreatestEmotion'],
       ['r', 'recognize emotion (confidence)', 'getEmotionConfidence'],
@@ -224,7 +218,6 @@
       //[' ', 'turn %m.onOff face tracker', 'enableFaceTracker', 'on']
     ],
     menus: {
-      appearance: ['age','gender'],
     	emotion: ['joy','sadness','anger','disgust','fear','contempt','surprise'],
       emotionCharacteristics: ['engagement', 'valence'],
     	onOff: ['on', 'off']
