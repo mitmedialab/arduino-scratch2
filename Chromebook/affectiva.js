@@ -12,6 +12,11 @@
   // affdex variables    
   var detector;
   var numFaces = 0;
+  var faceAge = 'unknown';
+  var faceEmotion = 'unknown';
+  var faceGender = 'unknown';
+  var faceEngagement = 0;
+  var lastUpdateTime = 0;
   
   async function loadAffdexJS() {
     if (typeof affdex !== 'undefined') {
@@ -42,7 +47,7 @@
     detector.detectAppearance.glasses = true;
     //Add a callback to notify when the detector is initialized and ready for runing.
     detector.addEventListener("onInitializeSuccess", function() {
-      console.log("The detector reports initialized");
+      console.log("Affdex detector initialized");
       affdexStatus = 2;
     });
     //Add a callback to receive the results from processing an image.
@@ -54,6 +59,8 @@
       // how should we handle multiple faces?
       if (faces.length > 0) {
         console.log("Appearance: " + JSON.stringify(faces[0].appearance));
+        faceAge = faces[0].appearance.age;
+        faceGender = faces[0].appearance.gender;
         console.log("Emotions: " + JSON.stringify(faces[0].emotions, function(key, val) {
           return val.toFixed ? Number(val.toFixed(0)) : val;
         }));
@@ -105,19 +112,44 @@
       console.log("getUserMedia not supported");
     }
   }
+  
+  function currentTimeSec() {
+    return new Date().getTime() / 1000;
+  }
 
-  ext.recognizeFace = function(callback) {
+  ext.recognizeFace = function(callback, returnVar) {
     ext.updateWebcam();
     
     // Pass the image to the detector to track emotions
     if (detector && detector.isRunning) {
       detector.process(ctx.getImageData(0, 0, width, height), 0);
     }
-    callback();
+    callback(returnVar);
   };
   
-  ext.getNumFaces = function() {
-    return numFaces;
+  ext.recognizeEmotion = function(callback) {
+    if (currentTimeSec() - lastUpdateTime > 1) { recognizeFace(callback, faceEmotion); }
+    else { callback(faceEmotion); }
+  };
+  
+  ext.recognizeAge = function(callback) {
+    if (currentTimeSec() - lastUpdateTime > 1) { recognizeFace(callback, faceAge); }
+    else { callback(faceAge); }
+  };
+  
+  ext.recognizeGender = function(callback) {
+    if (currentTimeSec() - lastUpdateTime > 1) { recognizeFace(callback, faceGender); }
+    else { callback(faceGender); }
+  };
+  
+  ext.recognizeEngagement = function(callback) {
+    if (currentTimeSec() - lastUpdateTime > 1) { recognizeFace(callback, faceEngagement); }
+    else { callback(faceEngagement); }
+  };
+  
+  ext.getNumFaces = function(callback) {
+    if (currentTimeSec() - lastUpdateTime > 1) { recognizeFace(callback, numFaces); }
+    else { callback(numFaces); }
   };
   
   ext.stopWebcam = function() {
@@ -172,10 +204,20 @@
   
   var descriptor = {
     blocks: [
-      ['w', 'detect face emotion', 'recognizeFace'],
-      ['r', 'number of faces', 'getNumFaces']
+      ['R', 'detect emotion (label)', 'emotionLabel'],
+      ['R', 'detect emotion (confidence)', 'emotionConfidence'],
+      ['R', 'detect %m.appearance', 'recognizeAppearance', 'age'],
+      ['R', 'detect face engagement', 'recognizeEngagement'],
+      ['R', 'number of faces', 'getNumFaces'],
+      ['B', 'has glasses', 'recognizeGlasses']
+      //['h', 'when %m.emotion > %n', 'whenEmotion', 'joy', '50'],
+      //[' ', 'turn %m.onOff face tracker', 'enableFaceTracker', 'on']
     ],
-    menus: {}
+    menus: {
+        appearance: ['age','gender'],
+    	emotion: ['joy','sadness','anger','disgust','fear','contempt','surprise'],
+    	onOff: ['on', 'off']
+    }
   };
   
   loadAffdexJS().then(() => {
