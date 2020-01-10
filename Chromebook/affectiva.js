@@ -43,11 +43,16 @@
     
     canvasDiv = document.createElement('div');
     // Set the canvas to the same dimensions as the video.
-    canvasDiv.width = width;
-    canvasDiv.height = height;
+    canvasDiv.width = width; // not necessary
+    canvasDiv.height = height; // not necessary
+    document.body.appendChild(canvasDiv);
+    // Not sure if this is necessary, but don't let these show up
+    $("#face_video_canvas").css("display", "none");
+    $("#face_video").css("display", "none");
     
     // start affdex
     var faceMode = affdex.FaceDetectorMode.LARGE_FACES;
+    console.log("Constructing detector");
     detector = new affdex.CameraDetector(canvasDiv, width, height, faceMode); //Construct a PhotoDetector and specify the image width / height and face detector mode.
     
     //Enable detection of Expressions, Emotions and Emojis classifiers. https://developer.affectiva.com/metrics/
@@ -60,33 +65,6 @@
     detector.addEventListener("onInitializeSuccess", function() {
       console.log("Affdex detector initialized");
       affdexStatus = 2;
-    });
-    //Add a callback to receive the results from processing an image.
-    //The faces object contains the list of the faces detected in an image.
-    //Faces object contains probabilities for all the different expressions, emotions and appearance metrics
-    detector.addEventListener("onImageResultsSuccess", function(faces, image, timestamp) {
-      console.log('#results', "Number of faces found: " + faces.length); // save in a variable?
-      numFaces = faces.length;
-      // how should we handle multiple faces?
-      if (faces.length > 0) {
-        console.log("Appearance: " + JSON.stringify(faces[0].appearance));
-        faceAge = faces[0].appearance.age;
-        faceGender = faces[0].appearance.gender;
-        faceGlasses = (faces[0].appearance.glasses === "Yes");
-        
-        faceEmotion = 'unknown';
-        faceEmotionConfidence = 0;
-        console.log("Emotions: " + JSON.stringify(faces[0].emotions, function(key, val) {
-          faceEmotions[key] = val;
-          // Find the greatest emotion
-          if (val > faceEmotionConfidence && key !== "valence" && key !== "engagement") {
-            faceEmotionConfidence = val;
-            faceEmotion = key;
-          }
-          return val.toFixed ? Number(val.toFixed(0)) : val;
-        }));
-        
-      }
     });
     //Add a callback to notify if failed receive the results from processing an image.
     detector.addEventListener("onImageResultsFailure", function(image, timestamp, error) {
@@ -116,6 +94,34 @@
         affdexStatus = 1;
         extStatusMsg = 'Detector has stopped.';
       });
+      
+      //Add a callback to receive the results from processing an image.
+    //The faces object contains the list of the faces detected in an image.
+    //Faces object contains probabilities for all the different expressions, emotions and appearance metrics
+    detector.addEventListener("onImageResultsSuccess", function(faces, image, timestamp) {
+      console.log('#results', "Number of faces found: " + faces.length); // save in a variable?
+      numFaces = faces.length;
+      // how should we handle multiple faces?
+      if (faces.length > 0) {
+        console.log("Appearance: " + JSON.stringify(faces[0].appearance));
+        faceAge = faces[0].appearance.age;
+        faceGender = faces[0].appearance.gender;
+        faceGlasses = (faces[0].appearance.glasses === "Yes");
+        
+        faceEmotion = 'unknown';
+        faceEmotionConfidence = 0;
+        console.log("Emotions: " + JSON.stringify(faces[0].emotions, function(key, val) {
+          faceEmotions[key] = val;
+          // Find the greatest emotion
+          if (val > faceEmotionConfidence && key !== "valence" && key !== "engagement") {
+            faceEmotionConfidence = val;
+            faceEmotion = key;
+          }
+          return val.toFixed ? Number(val.toFixed(0)) : val;
+        }));
+        
+      }
+    });
   }
  
   ext.getNumFaces = function() {
