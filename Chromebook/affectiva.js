@@ -83,7 +83,7 @@
           }
           return val.toFixed ? Number(val.toFixed(0)) : val;
         });
-        console.log("Emotions: " + emotionString);
+        //console.log("Emotions: " + emotionString);
 
       }
     });
