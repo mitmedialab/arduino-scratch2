@@ -5,18 +5,17 @@
   var ext = this;
   var extStatus = 1;
   var affdexStatus = 0;
-  var webcamStatus = 0;
   var extStatusMsg = '';
-  // camera variables
-  var ctx, canvas, videoElem;
   // affdex variables    
-  var detector;
+  var detector, canvasDiv;
   var numFaces = 0;
   var faceAge = 'unknown';
-  var faceEmotion = 'unknown';
   var faceGender = 'unknown';
-  var faceEngagement = 0;
-  var lastUpdateTime = 0;
+  var faceGlasses = false;
+  var faceEmotion = 'unknown';
+  var faceEmotionConfidence = 0;
+  var faceEmotions =
+    {'joy':0,'sadness':0,'anger':0,'disgust':0,'fear':0,'contempt':0,'surprise':0, 'valence':0, 'engagement':0};
   
   async function loadAffdexJS() {
     if (typeof affdex !== 'undefined') {
@@ -36,15 +35,22 @@
   }
 
   function startExtension() {
+    
+    canvasDiv = document.createElement('div');
+    // Get the exact size of the video element.
+    window.width = 320;
+    window.height = 240;
+    
     // start affdex
     var faceMode = affdex.FaceDetectorMode.LARGE_FACES;
-    detector = new affdex.PhotoDetector(faceMode); //Construct a PhotoDetector and specify the image width / height and face detector mode.
+    detector = new affdex.CameraDetector(canvasDiv, width, height, faceMode); //Construct a PhotoDetector and specify the image width / height and face detector mode.
+    
     //Enable detection of Expressions, Emotions and Emojis classifiers. https://developer.affectiva.com/metrics/
     detector.detectAllEmotions();
     detector.detectAppearance.age = true;
     detector.detectAppearance.gender = true;
-    detector.detectAppearance.ethnicity = true;
     detector.detectAppearance.glasses = true;
+    
     //Add a callback to notify when the detector is initialized and ready for runing.
     detector.addEventListener("onInitializeSuccess", function() {
       console.log("Affdex detector initialized");
@@ -61,116 +67,68 @@
         console.log("Appearance: " + JSON.stringify(faces[0].appearance));
         faceAge = faces[0].appearance.age;
         faceGender = faces[0].appearance.gender;
+        faceGlasses = (faces[0].appearance.glasses === "Yes");
+        
+        faceEmotion = 'unknown';
+        faceEmotionConfidence = 0;
         console.log("Emotions: " + JSON.stringify(faces[0].emotions, function(key, val) {
+          faceEmotions[key] = val;
+          // Find the greatest emotion
+          if (val > faceEmotionConfidence && key !== "valence" && key !== "engagement") {
+            faceEmotionConfidence = val;
+            faceEmotion = key;
+          }
           return val.toFixed ? Number(val.toFixed(0)) : val;
         }));
+        
       }
     });
     //Add a callback to notify if failed receive the results from processing an image.
     detector.addEventListener("onImageResultsFailure", function(image, timestamp, error) {
       console.log('Failed to process image err=' + error);
     });
+      //Add a callback to notify when camera access is denied
+      detector.addEventListener("onWebcamConnectFailure", function() {
+        webcamStatus = 0;
+        extStatusMsg = 'Please allow access to the webcam and refresh the page';
+      });
+
+      //Add a callback to notify when detector is stopped
+      detector.addEventListener("onStopSuccess", function() {
+        affdexStatus = 1;
+        extStatusMsg = 'Detector has stopped.';
+      });
     //Initialize the emotion detector
     console.log("Starting the detector .. please wait");
-    detector.start();
+    if (detector && !detector.isRunning) {  detector.start();  }
     affdexStatus = 1;
     extStatusMsg = 'Waiting for Affdex detector to load';
-    // start webcam
-    startImageWebcam();
   }
-  
-    function startImageWebcam() { // should be async?
-    console.log("Starting webcam");
-    if (navigator.getUserMedia) {
-      webcamStatus = 2;
-      navigator.getUserMedia(
-        // options
-        {
-          video: true
-        },
-        // success callback
-        function(localMediaStream) {
-          // Setup the video element that will contain the webcam stream      
-          videoElem = document.createElement('video');
-          try {
-            videoElem.srcObject = localMediaStream;
-          } catch (e) {
-            videoElem.src = window.URL.createURLObject(localMediaStream);
-          }
-          videoElem.play();
-          window.webcamStream = localMediaStream; // what is this?
-        },
-        // error callback
-        function(err) {
-          webcamStatus = 0;
-          extStatusMsg = 'Please load the website from a secure URL: https://scratchx.org';
-          console.log("Error starting webcam: " + err);
-        });
-    } else {
-      webcamStatus = 0;
-      extStatusMsg = 'Please allow access to the webcam and refresh the page';
-      console.log("getUserMedia not supported");
+ 
+  ext.getNumFaces = function() {
+    return numFaces;
+  };
+  ext.getGreatestEmotion = function() {
+    return faceEmotion;
+  };
+  ext.getEmotionConfidence = function() {
+    return faceEmotionConfidence;
+  };  
+  ext.recognizeAppearance = function(feature) {
+    if (feature === 'age') {
+      return faceAge;
+    } else if (feature === 'gender') {
+      return faceGender;
     }
-  }
-  
-  function currentTimeSec() {
-    return new Date().getTime() / 1000;
-  }
-
-  ext.recognizeFace = function(callback, returnVar) {
-    ext.updateWebcam();
-    
-    // Pass the image to the detector to track emotions
-    if (detector && detector.isRunning) {
-      detector.process(ctx.getImageData(0, 0, width, height), 0);
-    }
-    callback(returnVar);
   };
-  
-  ext.recognizeEmotion = function(callback) {
-    if (currentTimeSec() - lastUpdateTime > 1) { recognizeFace(callback, faceEmotion); }
-    else { callback(faceEmotion); }
+  ext.hasGlasses = function() {
+    return faceGlasses;
   };
-  
-  ext.recognizeAge = function(callback) {
-    if (currentTimeSec() - lastUpdateTime > 1) { recognizeFace(callback, faceAge); }
-    else { callback(faceAge); }
+  ext.whenEmotion = function(feature, val) {
+    return (faceEmotions[feature] > val);
   };
-  
-  ext.recognizeGender = function(callback) {
-    if (currentTimeSec() - lastUpdateTime > 1) { recognizeFace(callback, faceGender); }
-    else { callback(faceGender); }
-  };
-  
-  ext.recognizeEngagement = function(callback) {
-    if (currentTimeSec() - lastUpdateTime > 1) { recognizeFace(callback, faceEngagement); }
-    else { callback(faceEngagement); }
-  };
-  
-  ext.getNumFaces = function(callback) {
-    if (currentTimeSec() - lastUpdateTime > 1) { recognizeFace(callback, numFaces); }
-    else { callback(numFaces); }
-  };
-  
-  ext.stopWebcam = function() {
-    window.webcamStream.getVideoTracks().forEach(function(track) {
-      track.stop();
-    });
-  };
-  
-  ext.updateWebcam = function() {
-    // Setup the canvas object that will hold an image snapshot            
-    canvas = document.createElement('canvas');
-    // Get the exact size of the video element.
-    window.width = 320; // videoElem.videoWidth; going to try to scale the image down 
-    window.height = 240; // videoElem.videoHeight; 
-    // Set the canvas to the same dimensions as the video.
-    canvas.width = width;
-    canvas.height = height;
-    // Setup the context object for working with the canvas
-    ctx = canvas.getContext('2d');
-    // Draw a copy of the current frame from the video on the canvas
-    ctx.drawImage(videoElem, 0, 0, width, height);
+  ext.whenFace = function() {
+    return (numFaces > 0);
   };
 
   /*ext.callbackFunc = function (args callback) {
@@ -178,7 +136,6 @@
   };*/
   //ext.dataFunc = function () {return data;};
   ext._shutdown = function() {
-    ext.stopWebcam();
     detector.stop();
   };
   
@@ -204,18 +161,20 @@
   
   var descriptor = {
     blocks: [
-      ['R', 'detect emotion (label)', 'emotionLabel'],
-      ['R', 'detect emotion (confidence)', 'emotionConfidence'],
-      ['R', 'detect %m.appearance', 'recognizeAppearance', 'age'],
-      ['R', 'detect face engagement', 'recognizeEngagement'],
-      ['R', 'number of faces', 'getNumFaces'],
-      ['B', 'has glasses', 'recognizeGlasses']
-      //['h', 'when %m.emotion > %n', 'whenEmotion', 'joy', '50'],
+      ['r', 'number of faces', 'getNumFaces'],
+      ['r', 'recognize %m.appearance', 'recognizeAppearance', 'age'],
+      ['b', 'has glasses', 'hasGlasses'],
+      ['r', 'recognize emotion (label)', 'getGreatestEmotion'],
+      ['r', 'recognize emotion (confidence)', 'getEmotionConfidence'],
+      ['h', 'when %m.emotionCharacteristics > %n', 'whenEmotion', 'engagement', 50],
+      ['h', 'when %m.emotion > %n', 'whenEmotion', 'joy', 50],
+      ['h', 'when face found', 'whenFace']
       //[' ', 'turn %m.onOff face tracker', 'enableFaceTracker', 'on']
     ],
     menus: {
-        appearance: ['age','gender'],
+      appearance: ['age','gender'],
     	emotion: ['joy','sadness','anger','disgust','fear','contempt','surprise'],
+      emotionCharacteristics: ['engagement', 'valence'],
     	onOff: ['on', 'off']
     }
   };
