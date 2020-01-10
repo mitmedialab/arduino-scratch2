@@ -36,11 +36,15 @@
   }
 
   function startExtension() {
-    
-    canvasDiv = document.createElement('div');
     // Get the exact size of the video element.
     window.width = 320;
     window.height = 240;
+    
+    
+    canvasDiv = document.createElement('div');
+    // Set the canvas to the same dimensions as the video.
+    canvas.width = width;
+    canvas.height = height;
     
     // start affdex
     var faceMode = affdex.FaceDetectorMode.LARGE_FACES;
@@ -90,12 +94,21 @@
     });
     //Add a callback to notify when camera access is denied
       detector.addEventListener("onWebcamConnectSuccess", function() {
+        webcamStatus = 2;
         console.log("Connected to the webcam");
+      //Initialize the emotion detector
+      if (detector && !detector.isRunning) {
+        detector.start();
+        affdexStatus = 1;
+        extStatusMsg = 'Waiting for Affdex detector to load';
+        console.log("Starting the detector .. please wait");
+        }
       });
       //Add a callback to notify when camera access is denied
       detector.addEventListener("onWebcamConnectFailure", function() {
         webcamStatus = 0;
         extStatusMsg = 'Please allow access to the webcam and refresh the page';
+        console.log("Webcam connect failure");
       });
 
       //Add a callback to notify when detector is stopped
@@ -103,11 +116,6 @@
         affdexStatus = 1;
         extStatusMsg = 'Detector has stopped.';
       });
-    //Initialize the emotion detector
-    console.log("Starting the detector .. please wait");
-    if (detector && !detector.isRunning) {  detector.start();  }
-    affdexStatus = 1;
-    extStatusMsg = 'Waiting for Affdex detector to load';
   }
  
   ext.getNumFaces = function() {
