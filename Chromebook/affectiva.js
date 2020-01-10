@@ -43,8 +43,8 @@
     
     canvasDiv = document.createElement('div');
     // Set the canvas to the same dimensions as the video.
-    canvas.width = width;
-    canvas.height = height;
+    canvasDiv.width = width;
+    canvasDiv.height = height;
     
     // start affdex
     var faceMode = affdex.FaceDetectorMode.LARGE_FACES;
