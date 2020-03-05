@@ -125,7 +125,7 @@
     mConnection.postMessage(msg);
     
     window.setTimeout(function() {
-           stop_steppers(callback);
+           ext.stop_steppers(callback);
         }, 1000); // RANDI - approximate how long this should take with time?
   }
   
@@ -137,13 +137,13 @@
     mConnection.postMessage(msg);
     
     window.setTimeout(function() {
-           stop_steppers(callback);
+           ext.stop_steppers(callback);
         }, 1000); // RANDI - approximate how long this should take with time?
   }
 	
 ext.stop_steppers = function(callback){
     var msg = {}; 
-    msg.buffer = [207,stepper_steps];   
+    msg.buffer = [207,99];   
     mConnection.postMessage(msg);
     callback();
 }
@@ -156,7 +156,7 @@ ext.stop_steppers = function(callback){
     mConnection.postMessage(msg);
     
     window.setTimeout(function() {
-           stop_steppers(callback);
+           ext.stop_steppers(callback);
         }, 1000); // RANDI - approximate how long this should take with time?
   }
   
@@ -168,7 +168,7 @@ ext.stop_steppers = function(callback){
     mConnection.postMessage(msg);
     
     window.setTimeout(function() {
-           stop_steppers(callback);
+           ext.stop_steppers(callback);
         }, 1000); // RANDI - approximate how long this should take with time?
   }
   
