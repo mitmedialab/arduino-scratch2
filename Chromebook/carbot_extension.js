@@ -117,7 +117,7 @@
     mConnection.postMessage(msg);
   }
   
- ext.drive_forward = function(steps, callback) {
+ ext.drive_forward = function(secs, callback) {
     var msg = {}; 
     msg.buffer = [208,secs];   
     mConnection.postMessage(msg);
