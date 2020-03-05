@@ -125,8 +125,8 @@
     mConnection.postMessage(msg);
     
     window.setTimeout(function() {
-           callback();
-        }, steps*500); // RANDI - approximating how long this should take with time?
+           stop_steppers(callback);
+        }, 1000); // RANDI - approximate how long this should take with time?
   }
   
   ext.drive_backward = function(steps, callback) {
@@ -137,12 +137,15 @@
     mConnection.postMessage(msg);
     
     window.setTimeout(function() {
-           callback();
-        }, steps*500); // RANDI - approximate how long this should take with time?
+           stop_steppers(callback);
+        }, 1000); // RANDI - approximate how long this should take with time?
   }
 	
-ext.stop_steppers = function(button){
-	ext.drive_backward(0, button)
+ext.stop_steppers = function(callback){
+    var msg = {}; 
+    msg.buffer = [207,stepper_steps];   
+    mConnection.postMessage(msg);
+    callback();
 }
 	
   ext.drive_left = function(degrees, callback) {
@@ -153,8 +156,8 @@ ext.stop_steppers = function(button){
     mConnection.postMessage(msg);
     
     window.setTimeout(function() {
-           callback();
-        }, degrees/90*500); // RANDI - approximate how long this should take with time?
+           stop_steppers(callback);
+        }, 1000); // RANDI - approximate how long this should take with time?
   }
   
   ext.drive_right = function(degrees, callback) {
@@ -165,8 +168,8 @@ ext.stop_steppers = function(button){
     mConnection.postMessage(msg);
     
     window.setTimeout(function() {
-           callback();
-        }, degrees/90*500); // RANDI - approximate how long this should take with time?
+           stop_steppers(callback);
+        }, 1000); // RANDI - approximate how long this should take with time?
   }
   
   function appendBuffer( buffer1, buffer2 ) {
