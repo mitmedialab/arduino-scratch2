@@ -1,5 +1,6 @@
 /* Extension using Gizmo Robot Chrome extension to communicate with Gizmo robot */
 /* Code originally from Lofi Robot Extension */
+/* Goes with carbot_firmata2.ino */
 /* Edited by Pablo Alejo <palejo@mit.edu>, Randi Williams <randiw12@mit.edu> July 2019 to work with Arduino robot */
 
 (function(ext) {
