@@ -118,27 +118,23 @@
   }
   
  ext.drive_forward = function(steps, callback) {
-    var stepper_steps = Math.floor(STEPPER_LINEAR_ROTATION / 2 * steps);
-	  console.log('Going forward ' + stepper_steps + ' steps');
     var msg = {}; 
-    msg.buffer = [208,stepper_steps];   
+    msg.buffer = [208,secs];   
     mConnection.postMessage(msg);
     
     window.setTimeout(function() {
            ext.stop_steppers(callback);
-        }, 1000); // RANDI - approximate how long this should take with time?
+        }, secs*1000); // RANDI - approximate how long this should take with time?
   }
   
-  ext.drive_backward = function(steps, callback) {
-    var stepper_steps = Math.floor(STEPPER_LINEAR_ROTATION / 2 * steps);
-	  console.log('Going back ' + stepper_steps + ' steps');
+  ext.drive_backward = function(secs, callback) {
     var msg = {}; 
-    msg.buffer = [209,stepper_steps];   
+    msg.buffer = [209,secs];   
     mConnection.postMessage(msg);
     
     window.setTimeout(function() {
            ext.stop_steppers(callback);
-        }, 1000); // RANDI - approximate how long this should take with time?
+        }, secs*1000); // RANDI - approximate how long this should take with time?
   }
 	
 ext.stop_steppers = function(callback){
@@ -148,28 +144,24 @@ ext.stop_steppers = function(callback){
     callback();
 }
 	
-  ext.drive_left = function(degrees, callback) {
-    var stepper_steps = Math.floor(STEPPER_ANGULAR_ROTATION / 90 * degrees);
-	  console.log('Going left ' + stepper_steps + ' steps');
+  ext.drive_left = function(secs, callback) {
     var msg = {}; 
-    msg.buffer = [210,stepper_steps];   
+    msg.buffer = [210,secs];   
     mConnection.postMessage(msg);
     
     window.setTimeout(function() {
            ext.stop_steppers(callback);
-        }, 1000); // RANDI - approximate how long this should take with time?
+        }, secs*1000); // RANDI - approximate how long this should take with time?
   }
   
-  ext.drive_right = function(degrees, callback) {
-    var stepper_steps = Math.floor(STEPPER_ANGULAR_ROTATION / 90 * degrees);
-	  console.log('Going right ' + stepper_steps + ' steps');
+  ext.drive_right = function(secs, callback) {
     var msg = {}; 
-    msg.buffer = [211,stepper_steps];   
+    msg.buffer = [211,secs];   
     mConnection.postMessage(msg);
     
     window.setTimeout(function() {
            ext.stop_steppers(callback);
-        }, 1000); // RANDI - approximate how long this should take with time?
+        }, secs*1000); // RANDI - approximate how long this should take with time?
   }
   
   function appendBuffer( buffer1, buffer2 ) {
@@ -299,10 +291,10 @@ var recognized_speech = '';
         blocks: [
 	  [' ', 'set led to %m.colors', 'set_rgb', 'white'],
       	  [' ', 'turn led off', 'rgb_off', 'off'],
-      	  ['w', 'drive forward %n step(s)', 'drive_forward', 1],
-          ['w', 'drive backward %n step(s)', 'drive_backward', 1],
-          ['w', 'turn right %n degrees', 'drive_right', 90],
-          ['w', 'turn left %n degrees', 'drive_left', 90],
+      	  ['w', 'drive forward %n sec(s)', 'drive_forward', 1],
+          ['w', 'drive backward %n sec(s)', 'drive_backward', 1],
+          ['w', 'turn right %n sec(s)', 'drive_right', 1],
+          ['w', 'turn left %n sec(s)', 'drive_left', 1],
 	  [' ', 'stop motors', 'stop_steppers', 1],
           ['r', 'read distance', 'readUltrasonic'],
           ['w', 'speak %s', 'speak_text', 'Hello!'],
