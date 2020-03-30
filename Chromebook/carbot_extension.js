@@ -205,7 +205,7 @@ ext.stop_steppers = function(callback){
 
   }
 
-  ext.readUltrasonic = function(input) {
+  ext.read_ultrasonic = function(input) {
   
   	var distance = dist_read;
   	if (distance == 0) {
@@ -281,13 +281,13 @@ var recognized_speech = '';
         //if (typeof callback=="function") callback();
     };
 	
-    ext.send_message = function() {
+    ext.ping_cutebot = function() {
+	console.log('Pinging cutebot');
     	msg.buffer = [207,99,44]; //44 is ASCII comma   
     	mConnection.postMessage(msg);
-	   
+	console.log('Done pinging');
     	//msg.buffer = [207,99,','];
     	//mConnection.postMessage(msg);
-	console.log('Sent message with ord');
     };
 
 
@@ -298,6 +298,7 @@ var recognized_speech = '';
 	url: 'https://aieducation.mit.edu/poppet.html', // update to something?
 
         blocks: [
+	  [' ', 'test cutebot','ping_cutebot']
 	  [' ', 'set led to %m.colors', 'set_rgb', 'white'],
       	  [' ', 'turn led off', 'rgb_off', 'off'],
       	  ['w', 'drive forward %n sec(s)', 'drive_forward', 1],
@@ -305,12 +306,11 @@ var recognized_speech = '';
           ['w', 'turn right %n sec(s)', 'drive_right', 1],
           ['w', 'turn left %n sec(s)', 'drive_left', 1],
 	  [' ', 'stop motors', 'stop_steppers', 1],
-          ['r', 'read distance', 'readUltrasonic'],
+          ['r', 'read distance', 'read_ultrasonic'],
           ['w', 'speak %s', 'speak_text', 'Hello!'],
 	  //['w', 'listen for response', 'recognize_speech'],
           ['w', 'ask %s and wait', 'ask', 'What\'s your name?'],
-          ['r', 'answer', 'recognized_speech'],
-	  [' ', 'test cutebot', 'send_message']
+          ['r', 'answer', 'recognized_speech']
 			
 			],
         menus: {
