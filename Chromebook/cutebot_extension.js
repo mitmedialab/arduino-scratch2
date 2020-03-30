@@ -263,19 +263,19 @@ var recognized_speech = '';
 	url: 'https://aieducation.mit.edu/poppet.html', // update to something?
 
         blocks: [
-	  [' ', 'test cutebot','ping_cutebot']
-	  [' ', 'set led to %m.colors', 'set_rgb', 'white'],
-      	  [' ', 'turn led off', 'rgb_off', 'off'],
-      	  ['w', 'drive forward %n sec(s)', 'drive_forward', 1],
-          ['w', 'drive backward %n sec(s)', 'drive_backward', 1],
-          ['w', 'turn right %n sec(s)', 'drive_right', 1],
-          ['w', 'turn left %n sec(s)', 'drive_left', 1],
-	  [' ', 'stop motors', 'stop_steppers', 1],
-          ['r', 'read distance', 'read_ultrasonic'],
-          ['w', 'speak %s', 'speak_text', 'Hello!'],
+	  [' ', 'test cutebot','ping_cutebot'],
+	  //[' ', 'set led to %m.colors', 'set_rgb', 'white'],
+      	  //[' ', 'turn led off', 'rgb_off', 'off'],
+      	  //['w', 'drive forward %n sec(s)', 'drive_forward', 1],
+          //['w', 'drive backward %n sec(s)', 'drive_backward', 1],
+          //['w', 'turn right %n sec(s)', 'drive_right', 1],
+          //['w', 'turn left %n sec(s)', 'drive_left', 1],
+	  //[' ', 'stop motors', 'stop_steppers', 1],
+          ['r', 'read distance', 'read_ultrasonic']
+          //['w', 'speak %s', 'speak_text', 'Hello!'],
 	  //['w', 'listen for response', 'recognize_speech'],
-          ['w', 'ask %s and wait', 'ask', 'What\'s your name?'],
-          ['r', 'answer', 'recognized_speech']
+          //['w', 'ask %s and wait', 'ask', 'What\'s your name?'],
+          //['r', 'answer', 'recognized_speech']
 			
 			],
         menus: {
