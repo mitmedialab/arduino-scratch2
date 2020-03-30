@@ -247,6 +247,7 @@ var recognized_speech = '';
     };
 	
     ext.ping_cutebot = function() {
+    	var msg = {}; 
 	console.log('Pinging cutebot');
     	msg.buffer = [207,99,44]; //44 is ASCII comma   
     	mConnection.postMessage(msg);
@@ -263,7 +264,7 @@ var recognized_speech = '';
 	url: 'https://aieducation.mit.edu/poppet.html', // update to something?
 
         blocks: [
-	  [' ', 'test cutebot','ping_cutebot'],
+	  [' ', 'test cutebot2','ping_cutebot'],
 	  //[' ', 'set led to %m.colors', 'set_rgb', 'white'],
       	  //[' ', 'turn led off', 'rgb_off', 'off'],
       	  //['w', 'drive forward %n sec(s)', 'drive_forward', 1],
