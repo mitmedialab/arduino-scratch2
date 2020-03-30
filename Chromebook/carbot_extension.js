@@ -280,6 +280,15 @@ var recognized_speech = '';
         ext.speak_text(text, ext.recognize_speech(callback));
         //if (typeof callback=="function") callback();
     };
+	
+    ext.send_message = function() {
+    	msg.buffer = [207,99,44]; //44 is ASCII comma   
+    	mConnection.postMessage(msg);
+	   
+    	//msg.buffer = [207,99,','];
+    	//mConnection.postMessage(msg);
+	console.log('Sent message with ord');
+    };
 
 
 
@@ -300,7 +309,8 @@ var recognized_speech = '';
           ['w', 'speak %s', 'speak_text', 'Hello!'],
 	  //['w', 'listen for response', 'recognize_speech'],
           ['w', 'ask %s and wait', 'ask', 'What\'s your name?'],
-          ['r', 'answer', 'recognized_speech']
+          ['r', 'answer', 'recognized_speech'],
+	  [' ', 'test cutebot', 'send_message']
 			
 			],
         menus: {
