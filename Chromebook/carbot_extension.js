@@ -14,12 +14,6 @@
   var analog1 = 0;	
   var dist_read  = 0
 
-
-  function valBetween(v, min, max) {
-    return (Math.min(max, Math.max(min, v)));
-  }
-
-
   ext.set_output = function(rval, gval, bval) {	
 
     var msg = {}

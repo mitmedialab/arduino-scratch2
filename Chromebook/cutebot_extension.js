@@ -14,12 +14,6 @@
   var analog1 = 0;	
   var dist_read  = 0;
 
-
-  function valBetween(v, min, max) {
-    return (Math.min(max, Math.max(min, v)));
-  }
-
-
   ext.set_output = function(rval, gval, bval) {	
 
     var msg = {}
@@ -242,14 +236,20 @@ var recognized_speech = '';
         //if (typeof callback=="function") callback();
     };
 	
-    ext.ping_cutebot = function() {
+	ext.ping_cutebot = function() {
     	var msg = {}; 
-	console.log('Pinging cutebot');
+		console.log('Pinging cutebot');
     	msg.buffer = [207,99,44]; //44 is ASCII comma   
     	mConnection.postMessage(msg);
-	console.log('Done pinging');
-    	//msg.buffer = [207,99,','];
-    	//mConnection.postMessage(msg);
+		console.log('Done pinging');
+    };
+	
+    ext.ping_cutebot2 = function() {
+    	var msg = {}; 
+		console.log('Pinging cutebot');
+    	msg.buffer = [207,99,',']; //44 is ASCII comma   
+    	mConnection.postMessage(msg);
+		console.log('Done pinging');
     };
 
 
@@ -260,7 +260,8 @@ var recognized_speech = '';
 	url: 'https://aieducation.mit.edu/poppet.html', // update to something?
 
         blocks: [
-	  [' ', 'test cutebot2','ping_cutebot'],
+	  [' ', 'test cutebot','ping_cutebot'],
+	  [' ', 'test cutebot2','ping_cutebot2'],
 	  //[' ', 'set led to %m.colors', 'set_rgb', 'white'],
       	  //[' ', 'turn led off', 'rgb_off', 'off'],
       	  //['w', 'drive forward %n sec(s)', 'drive_forward', 1],
@@ -339,9 +340,9 @@ var recognized_speech = '';
 
 
     function onMsgApp(msg) {
-	    mStatus = 2;
+	  mStatus = 2;
       var buffer = msg.buffer;
-  
+  	  console.log(buffer);
   
       if ( buffer[0]==224){
       messageParser(buffer);
