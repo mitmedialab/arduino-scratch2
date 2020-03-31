@@ -3,20 +3,16 @@
 /* Randi Williams <randiw12@mit.edu> March 2020 to work with micro:bit cutebot */
 
 (function(ext) {
+
   var CHROME_EXTENSION_ID = "jpehlabbcdkiocalmhikacglppfenoeo"; // APP ID on Chrome Web Store
   var mConnection;
   var mStatus = 1;
-  var _selectors = {};
-
-  var digitalOutputData = new Uint8Array(16);
 
 
   var msg1 = {};
 
-  var analog1 = 0;
-	
-  var dist_read  = 0
-  var last_reading = 0;
+  var analog1 = 0;	
+  var dist_read  = 0;
 
 
   function valBetween(v, min, max) {

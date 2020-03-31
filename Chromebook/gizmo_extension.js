@@ -4,53 +4,17 @@
 
 (function(ext) {
 
-  var INPUT = 0x00,
-    OUTPUT = 0x01,
-    ANALOG = 0x02,
-    PWM = 0x03,
-    SERVO = 0x04,
-    SHIFT = 0x05,
-    I2C = 0x06,
-    ONEWIRE = 0x07,
-    STEPPER = 0x08,
-    ENCODER = 0x09,
-    IGNORE = 0x7F;
-
-  var PIN_MODE = 0xF4,
-    REPORT_DIGITAL = 0xD0,
-    REPORT_ANALOG = 0xC0,
-    DIGITAL_MESSAGE = 0x90,
-    START_SYSEX = 0xF0,
-    END_SYSEX = 0xF7,
-    QUERY_FIRMWARE = 0x79,
-    REPORT_VERSION = 0xF9,
-    ANALOG_MESSAGE = 0xE0,
-    ANALOG_MAPPING_QUERY = 0x69,
-    ANALOG_MAPPING_RESPonSE = 0x6A,
-    CAPABILITY_QUERY = 0x6B,
-    CAPABILITY_RESPONSE = 0x6C;
-    STRING_DATA = 0x71;
-
-  var LOW = 0, HIGH = 1;
   var STEPPER_LINEAR_ROTATION = 6; // number of quarter-turns to move for/backward by 1 circumference
   var STEPPER_ANGULAR_ROTATION = 5; // number of quarter-turns to rotate 90-degrees
-	
-  var poller = null;
 
   var CHROME_EXTENSION_ID = "jpehlabbcdkiocalmhikacglppfenoeo"; // APP ID on Chrome Web Store
   var mConnection;
   var mStatus = 1;
-  var _selectors = {};
-
-  var digitalOutputData = new Uint8Array(16);
-
 
   var msg1 = {};
 
-  var analog1 = 0;
-	
+  var analog1 = 0;	
   var dist_read  = 0
-  var last_reading = 0;
 
 
   function valBetween(v, min, max) {
@@ -338,7 +302,6 @@ var recognized_speech = '';
   };  
     
 	ext._shutdown = function() {
-	    if(poller) poller = clearInterval(poller);
 	    status = false;
 	}
 
@@ -346,11 +309,11 @@ var recognized_speech = '';
       chrome.runtime.sendMessage(CHROME_EXTENSION_ID, {message: "STATUS"}, function (response) {
         if (response === undefined) { //Chrome app not found
           console.log("Chrome app not found");
-	  CHROME_EXTENSION_ID = window.localStorage.getItem('gizmo_extension_id');
+          CHROME_EXTENSION_ID = window.localStorage.getItem('gizmo_extension_id');
           console.log("Chrome ID: " + CHROME_EXTENSION_ID);
-	  if (CHROME_EXTENSION_ID === undefined || CHROME_EXTENSION_ID === "" || CHROME_EXTENSION_ID === null) {
-	     CHROME_EXTENSION_ID = window.prompt("Enter the correct Chrome Extension ID", "pnjoidacmeigcdbikhgjolnadkdiegca");
-	  }
+          if (CHROME_EXTENSION_ID === undefined || CHROME_EXTENSION_ID === "" || CHROME_EXTENSION_ID === null) {
+             CHROME_EXTENSION_ID = window.prompt("Enter the correct Chrome Extension ID", "pnjoidacmeigcdbikhgjolnadkdiegca");
+          }
           mStatus = 0;
           setTimeout(getAppStatus, 1000);
         }
@@ -360,7 +323,8 @@ var recognized_speech = '';
         }
         else {// successfully connected
           if (mStatus !== 2) {
-            mConnection = chrome.runtime.connect(CHROME_EXTENSION_ID);	  window.localStorage.setItem('gizmo_extension_id', CHROME_EXTENSION_ID);
+            mConnection = chrome.runtime.connect(CHROME_EXTENSION_ID);
+            window.localStorage.setItem('gizmo_extension_id', CHROME_EXTENSION_ID);
             mConnection.onMessage.addListener(onMsgApp);
             mStatus = 1; // not sure why this is 1 but it works
             setTimeout(getAppStatus, 1000);
