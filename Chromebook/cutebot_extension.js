@@ -170,7 +170,6 @@
             
             if (status == 'not_found') return not_found; // else
             return found;
-
         }
 
         ext.button_pressed = function(side) {
@@ -181,8 +180,6 @@
         
         	return false;
         }
-
-    }
 
     /* Functions for TTS and STT. Code adapted from Sayamindu Dasgupta */
 
