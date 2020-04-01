@@ -20,6 +20,7 @@
         
 		var timeout = setTimeout( function() {
 			mStatus = 1;
+			getAppStatus();
 		}, 500);
 
         ext.set_output = function(rval, gval, bval) {
@@ -319,8 +320,7 @@
             message: "STATUS"
         }, function(response) {
             if (response === undefined) { //Chrome app not found
-                console.log("Chrome app not found");
-                CHROME_EXTENSION_ID = window.localStorage.getItem('gizmo_extension_id');
+                CHROME_EXTENSION_ID = window.localStorage.getItem('gizmo_extension_id'); // TODO rename this
                 console.log("Chrome ID: " + CHROME_EXTENSION_ID);
                 if (CHROME_EXTENSION_ID === undefined || CHROME_EXTENSION_ID === "" || CHROME_EXTENSION_ID === null) {
                     CHROME_EXTENSION_ID = window.prompt("Enter the correct Chrome Extension ID", "pnjoidacmeigcdbikhgjolnadkdiegca");
@@ -333,7 +333,7 @@
             } else { // successfully connected
                 if (mStatus !== 2) {
                     mConnection = chrome.runtime.connect(CHROME_EXTENSION_ID);
-                    window.localStorage.setItem('gizmo_extension_id', CHROME_EXTENSION_ID);
+                    window.localStorage.setItem('gizmo_extension_id', CHROME_EXTENSION_ID); //TODO Rename this
                     mConnection.onMessage.addListener(onMsgApp);
                     mStatus = 1; // not sure why this is 1 but it works
                     setTimeout(getAppStatus, 1000);
@@ -354,6 +354,7 @@
 			clearTimeout(timeout);
 			timeout = setTimeout( function() {
 				mStatus = 1;
+				getAppStatus();
 			}, 500);
 		}
     };
