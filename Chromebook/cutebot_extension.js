@@ -134,11 +134,9 @@
             if (msg.buffer.length == 10) {
                 if (msg.buffer[0] == 224) {
                     a_button_pressed = (Math.round(msg.buffer[1]) == 1);
-                    if (a_button_pressed) console.log("A Button press!");
                 }
                 if (msg.buffer[2] == 237) {
                     b_button_pressed = (Math.round(msg.buffer[3]) == 1);
-                    console.log(Math.round(msg.buffer[3]);
                 }
                 if (msg.buffer[4] == 238) {
                     left_line_found = (Math.round(msg.buffer[5]) == 1);
