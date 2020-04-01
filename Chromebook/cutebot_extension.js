@@ -134,9 +134,11 @@
             if (msg.buffer.length == 10) {
                 if (msg.buffer[0] == 224) {
                     a_button_pressed = (Math.round(msg.buffer[1]) == 1);
+                    if (a_button_pressed) console.log("A Button press!");
                 }
                 if (msg.buffer[2] == 237) {
                     b_button_pressed = (Math.round(msg.buffer[3]) == 1);
+                    console.log(Math.round(msg.buffer[3]);
                 }
                 if (msg.buffer[4] == 238) {
                     left_line_found = (Math.round(msg.buffer[5]) == 1);
@@ -164,20 +166,21 @@
 
         ext.line_sensor = function(side, status) {
             var found = false;
-            if (side === 'right') found = right_line_found;
-            if (side === 'left') found = left_line_found;
-            if (side === 'both') found = (right_line_found && left_line_found);
+            if (side == 'right') found = right_line_found;
+            if (side == 'left') found = left_line_found;
+            if (side == 'both') found = (right_line_found && left_line_found);
             
+            console.log("R: " + right_line_found + "L: " + left_line_found);
             if (status == 'not_found') return not_found; // else
             return found;
         }
 
         ext.button_pressed = function(side) {
-            if (side === 'A') return a_button_pressed;
-            if (side === 'B') return b_button_pressed;
-            if (side === 'A and B') return (a_button_pressed && b_button_pressed);
-            if (side === 'A or B') return (a_button_pressed || b_button_pressed);
-        
+            if (side == 'A') return a_button_pressed;
+            if (side == 'B') return b_button_pressed;
+            if (side == 'A and B') return (a_button_pressed && b_button_pressed);
+            if (side == 'A or B') return (a_button_pressed || b_button_pressed);
+        	console.log("A: " + a_button_pressed + "B: " + b_button_pressed);
         	return false;
         }
 
@@ -344,7 +347,7 @@
         var buffer = msg.buffer;
 
         messageParser(buffer);
-        console.log(buffer);
+        //console.log(buffer);
 
 
     };
