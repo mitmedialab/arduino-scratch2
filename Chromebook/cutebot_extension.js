@@ -17,6 +17,10 @@
         var a_pressed = false;
         var b_pressed = false;
         var recognized_speech = '';
+        
+		var timeout = setTimeout( function() {
+			mStatus = 1;
+		}, 500);
 
         ext.set_output = function(rval, gval, bval) {
 
@@ -345,9 +349,13 @@
         var buffer = msg.buffer;
 
         messageParser(buffer);
-        //console.log(buffer);
-
-
+        
+		if(timeout) {
+			clearTimeout(timeout);
+			timeout = setTimeout( function() {
+				mStatus = 1;
+			}, 500);
+		}
     };
 
     getAppStatus();
