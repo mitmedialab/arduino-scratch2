@@ -162,7 +162,7 @@
 
         }
 
-        ext.line_sensor = function(side, status) {
+        ext.line_status = function(side, status) {
             var found = false;
             if (side == 'right') found = right_line_found;
             if (side == 'left') found = left_line_found;
@@ -173,7 +173,7 @@
             return found;
         }
 
-        ext.button_pressed = function(side) {
+        ext.button_status = function(side) {
             if (side == 'A') return a_button_pressed;
             if (side == 'B') return b_button_pressed;
             if (side == 'A and B') return (a_button_pressed && b_button_pressed);
@@ -334,7 +334,7 @@
                     mStatus = 1; // not sure why this is 1 but it works
                     setTimeout(getAppStatus, 1000);
                 }
-                console.log("Connected");
+                console.log("Polling for robot");
             }
         });
     };
