@@ -29,12 +29,12 @@ new (function() {
       $.get(url + cmd, function(response, status) {
         console.log(response);
         console.log(status);
-      }
+      });
       cmd = "/control?var=key&val=44"; // end line with comma
       $.get(url + cmd, function(response, status) {
         console.log(response);
         console.log(status);
-      }
+      });
     };
     
     ext._shutdown = function() {};
