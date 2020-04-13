@@ -25,7 +25,12 @@ new (function() {
     };
     
     ext.set_headlights = function (color) {
-      var cmd = "/control?var=key&val=76";
+      var cmd = "/control?var=key&val=76"; // send 'L'
+      $.get(url + cmd, function(response, status) {
+        console.log(response);
+        console.log(status);
+      });
+      cmd = "/control?var=key&val=49"; // send '1'
       $.get(url + cmd, function(response, status) {
         console.log(response);
         console.log(status);
