@@ -33,7 +33,10 @@ new (function() {
     
     ext.set_headlights = function (color) {
       var cmd = "/control?var=rcmd&val=76&cmd=49"; // send 'L1'
-      
+      $.get(url + cmd, function(response, status) {
+        console.log(response);
+        console.log(status);
+      });
       /*
       cmd = "/control?var=key&val=76"; // send 'L'
       $.get(url + cmd, function(response, status) {
