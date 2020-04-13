@@ -248,9 +248,6 @@
     };
 
     var descriptor = {
-
-        url: 'https://aieducation.mit.edu/poppet.html', // update to something?
-
         blocks: [
             //[' ', 'set headlights to %m.colors', 'set_headlights', 'white'], // R, G, B decided to make both same color for simplicity
             //[' ', 'turn headlights off', 'rgb_off', 'off'], // O
