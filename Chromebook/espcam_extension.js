@@ -24,8 +24,18 @@ new (function() {
     ext.ask = function (text,callback) {
     };
     
+    /*
+    fetch("https://192.168.137.80/control?var=key&val=49")// 49 becomes '1'
+      .then(response => {
+        console.log("request finished");
+      })
+    */
+    
     ext.set_headlights = function (color) {
-      var cmd = "/control?var=key&val=76"; // send 'L'
+      var cmd = "/control?var=rcmd&val=76&cmd=49"; // send 'L1'
+      
+      /*
+      cmd = "/control?var=key&val=76"; // send 'L'
       $.get(url + cmd, function(response, status) {
         console.log(response);
         console.log(status);
@@ -39,7 +49,7 @@ new (function() {
       $.get(url + cmd, function(response, status) {
         console.log(response);
         console.log(status);
-      });
+      });*/
     };
     
     ext._shutdown = function() {};
@@ -54,7 +64,7 @@ new (function() {
     var descriptor = {
         blocks: [
             [' ', 'set headlights to %m.colors', 'set_headlights', 'white'], // L 1-8
-            [' ', 'turn headlights off', 'rgb_off', 'off'], // L 0
+            [' ', 'turn headlights off', 'set_headlights', 'off'], // L 0
             //set led icon L, lowercase letters rep icons S 1-12 (not 11)
             //set led number L, numbers rep icons
             //set led text L, uppercase letters rep icons
