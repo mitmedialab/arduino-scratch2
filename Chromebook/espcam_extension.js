@@ -71,7 +71,7 @@ new (function() {
       var cmd = "/control?var=rcmd&val=68&cmd=49"; // send 'D1'
       $.get(url + cmd, function(response, status) {
         console.log('drive_forward: ' + status);
-        console.log('\t' + cmd + ', ' + icon);
+        console.log('\t' + cmd);
       });
         
       setTimeout( stop_motors(), secs*1000);
