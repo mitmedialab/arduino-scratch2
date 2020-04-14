@@ -67,13 +67,16 @@ new (function() {
       });
     };
     
-    ext.drive_motors = function (secs) {
+    ext.drive_motors = function (secs, callback) {
       var cmd = "/control?var=rcmd&val=68&cmd=49"; // send 'D1'
       $.get(url + cmd, function(response, status) {
         console.log('drive_forward: ' + status);
       });
         
-      setTimeout( stop_motors(), secs*1000);
+      setTimeout( function () {
+        stop_motors();
+        callback();
+      }, secs*1000);
     };
     
     ext.stop_motors = function () {
