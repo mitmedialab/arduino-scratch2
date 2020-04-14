@@ -59,7 +59,7 @@ new (function() {
           cmd += '66';
       } else {
         var icon_cmd = _icons.indexOf(icon) + 49;
-        cmd += color_cmd.toString();
+        cmd += icon_cmd.toString();
       }
       $.get(url + cmd, function(response, status) {
         console.log('set_screen: ' + status);
@@ -71,7 +71,6 @@ new (function() {
       var cmd = "/control?var=rcmd&val=68&cmd=49"; // send 'D1'
       $.get(url + cmd, function(response, status) {
         console.log('drive_forward: ' + status);
-        console.log('\t' + cmd);
       });
         
       setTimeout( stop_motors(), secs*1000);
@@ -81,7 +80,6 @@ new (function() {
       var cmd = "/control?var=rcmd&val=68&cmd=48"; // send 'D0'
       $.get(url + cmd, function(response, status) {
         console.log('stop_motors: ' + status);
-        console.log('\t' + cmd + ', ' + icon);
       });
     };
     
@@ -111,7 +109,7 @@ new (function() {
             [' ', 'turn LED screen off', 'set_screen', 'off'], // S 0
             //set led number L, numbers rep icons
             //set led text L, uppercase letters rep icons
-            ['w', 'drive forward %n sec(s)', 'drive_motors', 1, 'f'], // D 1
+            ['w', 'drive forward %n sec(s)', 'drive_motors', 1], // D 1
             //['w', 'drive backward %n sec(s)', 'drive_motors', 1], // D 2
             //['w', 'turn left %n sec(s)', 'drive_motors', 1], // D 4
             //['w', 'turn right %n sec(s)', 'drive_right', 1], // D 3
