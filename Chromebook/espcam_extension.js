@@ -74,7 +74,7 @@ new (function() {
       });
         
       setTimeout( function () {
-        stop_motors();
+        ext.stop_motors();
         callback();
       }, secs*1000);
     };
