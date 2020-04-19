@@ -145,10 +145,6 @@ function startupBLED112(){
               }
             });
 
-
-
-
-
             break;
 
       }
@@ -201,7 +197,7 @@ function connectHID(deviceId){
 function connectSerial(deviceId){
   var msg = {};
   msg.action = 'connectSerial';
-  chrome.serial.connect(deviceId, {bitrate: 9600}, function(connectInfo) {
+  chrome.serial.connect(deviceId, {bitrate: 115200}, function(connectInfo) {
         if (!connectInfo) {
           msg.warn = connectInfo;
           msg.status = false;
@@ -210,8 +206,19 @@ function connectSerial(deviceId){
           if(!serialConnection){
             serialConnection = connectInfo.connectionId;
             chrome.serial.onReceive.addListener(onSerialReceived);
+            chrome.serial.onReceiveError.addListener(
+            	function(errorInfo) {
+            	  if (errorInfo.error == "device_lost") {
+            	  	console.log("onSerialReceived: Device lost");
+	  			    if (errorInfo.connectionId === this.connectionId) {
+				      chrome.serial.setPaused(connectionId, false, function() {
+				      	console.log("setPaused: Restarting connection");
+				      });
+				    }
+				}
+			});
           }
-          console.log("serial connected:",serialConnection);
+          console.log("serial connected:", serialConnection);
           msg.status = true;
           sendMessage(msg);
         }
@@ -415,6 +422,7 @@ function onConnected(port){
 var connection_id = 0;
 
 function onParseSerial(buffer){
+	console.log("onParseSerial: " + buffer);
     var msg = {};
     msg.buffer = [];
     for(var i=0;i<buffer.length;i++){
@@ -502,12 +510,8 @@ function onParseSerial(buffer){
     else {
       postMessage(msg);
     }
-
-
-
-
-
 }
+
 function onParse(buffer){
   if(buffer[0]>0){
     var msg = {};
