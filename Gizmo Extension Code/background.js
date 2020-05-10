@@ -297,7 +297,7 @@ function sendSerial(buffer){
     }
     //console.log(bytes);
     // ui.send.disabled = true;
-    chrome.serial.send(serialConnection, bytes.buffer, function() {
+    if (serialConnection)  chrome.serial.send(serialConnection, bytes.buffer, function() {
     //   ui.send.disabled = false;
     });
 }
@@ -399,10 +399,26 @@ function onMessage(request, sender, sendResponse) {
 }
 function onMessageExternal(request, sender, sendResponse) {
     var resp = {};
-    if(hidConnection===null&&serialConnection===null&&btConnection===null){
+    console.log("Number of apps open: " + chrome.app.window.getAll().length);
+    if(request.launch) {
+      if (chrome.app.window.getAll().length == 0) { //This parameter will be passed in sendMessage method below
+        chrome.app.window.create("index.html");
+        resp.status = true;
+        sendResponse(resp);
+      } else if (serialConnection == null) {
+        chrome.app.window.getAll()[0].show();
+        resp.status = true;
+        sendResponse(resp);
+      } else {
+        resp.status = true;
+        sendResponse(resp);
+      }
+    } else if (request.close) {
+      chrome.app.window.getAll()[0].close();
+    } else if(hidConnection===null&&serialConnection===null&&btConnection===null){ // RANDI might have to change this
       resp.status = false;
       sendResponse(resp);
-    }else{
+    } else{
       resp.status = true;
       sendResponse(resp);
     }
