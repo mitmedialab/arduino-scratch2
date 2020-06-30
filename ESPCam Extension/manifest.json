@@ -1,0 +1,32 @@
+{
+   "app": {
+      "background": {
+         "persistent": false,
+         "scripts": [ "background.js" ]
+      }
+   },
+   "bluetooth": {
+      "low_energy": true,
+      "socket": true,
+      "uuids": [ "0001", "1101", "6E400001-B5A3-F393-E0A9-E50E24DCCA9E", "6E400002-B5A3-F393-E0A9-E50E24DCCA9E", "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"]
+   },
+   "description": "Connect Scratch to ESP32Cam robots using HTTP server, bluetooth, or USB",
+   "externally_connectable": {
+      "matches": [ "*://localhost/*", "*://scratchx.org/*", "*://mitmedialab.github.io/*" ]
+   },
+   "icons": {
+      "128": "assets/poppet_128.png",
+      "16": "assets/poppet_16.png"
+   },
+   "manifest_version": 2,
+   "minimum_chrome_version": "38",
+   "name": "ESP32Cam Robot Extension",
+   "permissions": [ "serial", "hid", {
+      "usbDevices": [ {
+         "productId": 65535,
+         "vendorId": 1046
+      } ]
+   } ],
+   "short_name": "ESP32Cam Robot Extension",
+   "version": "1.0.0"
+}

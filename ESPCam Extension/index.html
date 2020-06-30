@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gizmo Robot Extension</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="main.js"></script>
+</head>
+<body>
+
+  <img id="logo" src="assets/poppet.png" width="270px"/>
+  
+    <div id="serial-device-panel">
+      <span style="width:220px;display:block;margin-bottom:10px">Serial Port (USB / Bluetooth 2.0)</span>
+      <!--<select id="serial-device-selector" style="width:70%;"></select>-->
+      <select id="device-selector" style="width:70%;"></select>
+      <button id="connectButton" style="float:right;width:90px;">Connect</button>
+      <!--<button id="connectSerial" style="float:right;width:90px;">Connect</button>-->
+    </div>
+    <!--<div id="BLE-device-panel">
+      <span style="width:220px;display:block;margin-bottom:10px">Bluetooth 4.0</span>
+      <select id="ble-device-selector" style="width:70%;"></select>
+      <button id="connectBLE" style="float:right;width:90px;">Connect</button>
+    </div>-->
+    <div id="scanning-panel" style="margin:20px auto 0 auto;width:100%">
+      <button id="refresh" style="float:left">Refresh Ports</button>
+      <!--<button id="scan_ble">Scan Bluetooth 4.0</button>-->
+	<button id="open_scratch3">Open Scratch 3.0</button>      
+	<button id="open_scratch">Open ScratchX</button>
+
+    </div>
+</body>
+</html>
