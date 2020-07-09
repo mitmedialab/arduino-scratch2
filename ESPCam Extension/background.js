@@ -15,6 +15,7 @@ var hidEnabled = false;
 var hidConnection;
 var serialConnection;
 var btConnection;
+var wsConnection;
 var isFirst = true;
 var BLEconnection = false;
 
@@ -111,9 +112,9 @@ function initSerial() {
 
     chrome.serial.getDevices(function(devices) {
         console.log("Serial devices:" + devices.length);
-        for (i = 0; i < devices.length; i++) {
+        /*for (i = 0; i < devices.length; i++) {
             console.log(devices[i].path);
-        }
+        }*/
 
         if (chrome.runtime.lastError) {
             console.log("Unable to enumerate devices: " +
@@ -223,6 +224,93 @@ function connectSerial(deviceId) {
     });
 }
 
+async function caller(_url) {
+	if (_url.substring(0,7) != "http://") {
+		_url = "http://" + _url;
+	}
+	return fetch(_url).then(response => {
+		return response;
+	})
+	.catch(function(err) {
+	  console.log('Error with fetch: ', err);
+	});
+}
+
+async function connectWebsocket(ip_address) {
+	var msg = {};
+    msg.action = 'connectWS';
+	
+	let url = ip_address + "/status";
+	console.log("Connect websocket: " + url);
+	let rstatus = await caller(url);
+	if (rstatus != undefined) {
+		console.log("websocket connected", ip_address);
+		msg.status = true;
+		wsConnection = ip_address;
+		sendMessage(msg);
+		getRobotImage();
+	} else {
+		console.log("could not connect to websocket", ip_address);
+		msg.status = false;
+		wsConnection = null;
+		sendMessage(msg);
+	}
+}
+
+async function getRobotStatus() {
+	let url = wsConnection + "/status";
+	console.log("get robot status: " + url);
+	let rstatus = await caller(url).json();
+	
+	let msg = {};
+    msg.buffer = [];
+    msg.buffer[0] = 224; // RANDI may want to rewrite ESP code to make this simpler
+    msg.buffer[1] = Math.round(rstatus.a_button);
+    msg.buffer[2] = 237;
+    msg.buffer[3] = Math.round(rstatus.b_button);
+	msg.buffer[4] = 238;
+	msg.buffer[5] = Math.round(rstatus.left_line);
+	msg.buffer[6] = 239;
+	msg.buffer[7] = Math.round(rstatus.right_line);
+	msg.buffer[8] = 240;
+	console.log(msg);
+    postMessage(msg);
+}
+
+// When this is a real websocket, this might not be necessary? Not sure
+async function getRobotImage() {
+	let url = wsConnection + ":81/stream"; // "/status";
+	console.log("get robot image: " + url);
+	let rstatus = await caller(url);
+	console.log(rstatus);
+	rstatus.blob().then((blob) => {
+    	var base64Flag = 'data:image/jpeg;base64,';
+    	var img = URL.createObjectURL(blob);
+    	console.log(blob);
+    	console.log(img);
+  	});
+  	
+  	rstatus.arrayBuffer().then((buffer) => {
+    	var base64Flag = 'data:image/jpeg;base64,';
+    	var imageStr = arrayBufferToBase64(buffer);
+    	console.log(buffer);
+    	console.log(imageStr);
+  	});
+  	
+  	rstatus.text().then((txt) => {
+    	console.log(txt);
+  	});
+}
+	
+function arrayBufferToBase64(buffer) {
+  var binary = '';
+  var bytes = [].slice.call(new Uint8Array(buffer));
+
+  bytes.forEach((b) => binary += String.fromCharCode(b));
+
+  return window.btoa(binary);
+};
+	
 function onBTReceived(info) {
     onParseSerial(new Uint8Array(info.data));
 }
@@ -273,10 +361,30 @@ function disconnectSerial(deviceId) {
     });
 }
 
+function disconnectWebsocket(ip_address) {
+	wsConnection = undefined;
+    var msg = {};
+    msg.action = 'connectWS';
+    msg.status = false;
+    serialConnection = null;
+    sendMessage(msg);
+}
+
 function sendMessage(msg) {
     chrome.runtime.sendMessage(msg, function(response) {
         console.log("response:", response);
     });
+}
+
+async function sendWS(buffer) {
+	console.log("sendWS");
+	console.log(buffer);
+	let cmd = "/control?var=rcmd&val=" + buffer[0] + "&cmd=" + buffer[1];
+	let url = wsConnection + cmd;
+	console.log("send robot command: " + url);
+	
+	let response = await caller(url);
+	console.log(response);
 }
 
 function sendBT(buffer) {
@@ -303,10 +411,7 @@ function sendHID(buffer) {
 
     console.log(bytes);
     // ui.send.disabled = true;
-    chrome.hid.send(hidConnection, 0, bytes.buffer, function() {
-        //   ui.send.disabled = false;
-        //console.log("hid");
-    });
+    chrome.hid.send(hidConnection, 0, bytes.buffer, function() {});
 }
 
 function sendSerial(buffer) {
@@ -315,10 +420,7 @@ function sendSerial(buffer) {
         bytes[i] = buffer[i];
     }
     //console.log(bytes);
-    // ui.send.disabled = true;
-    if (serialConnection)  chrome.serial.send(serialConnection, bytes.buffer, function() {
-    //   ui.send.disabled = false;
-    });
+    if (serialConnection)  chrome.serial.send(serialConnection, bytes.buffer, function() {});
 }
 
 function ble_send(buffer) {
@@ -357,13 +459,16 @@ function onMessage(request, sender, sendResponse) {
     } else if (request.action == "startupBLED112") {
         startupBLED112();
     } else if (request.action == "initBT") {
-        initBT();
+        // RANDI this seems to be broken? initBT();
     } else if (request.action == "connectBT") {
         connectBT(request.address);
     } else if (request.action == "connectBLE") {
         connectBLE(request.address);
     } else if (request.action == "connectHID") {
         connectHID(request.deviceId * 1);
+    } else if (request.action == "connectWebsocket") {
+    	console.log("onMessage: received connect websocket action");
+        connectWebsocket(request.deviceId);
     } else if (request.action == "disconnectBT") {
         disconnectBT();
     } else if (request.action == "disconnectBLE") {
@@ -374,6 +479,8 @@ function onMessage(request, sender, sendResponse) {
         connectSerial(request.deviceId);
     } else if (request.action == "disconnectSerial") {
         disconnectSerial(request.deviceId);
+    } else if (request.action == "disconnectWebsocket") {
+    	disconnectWebsocket(request.deviceId);
     } else if (request.action == "connectBLED112") {
         //console.log("AAA");
         //ble_send([0,15,6,3,207,30,18,85,194,136,0,60,0,76,0,100,0,0,0]);
@@ -398,13 +505,12 @@ function onMessage(request, sender, sendResponse) {
 
 function onMessageExternal(request, sender, sendResponse) {
     var resp = {};
-    console.log("Number of apps open: " + chrome.app.window.getAll().length);
     if(request.launch) {
       if (chrome.app.window.getAll().length == 0) { //This parameter will be passed in sendMessage method below
         chrome.app.window.create("index.html");
         resp.status = true;
         sendResponse(resp);
-      } else if (serialConnection == null) {
+      } else if (serialConnection == null && wsConnection == null) {
         chrome.app.window.getAll()[0].show();
         resp.status = true;
         sendResponse(resp);
@@ -413,8 +519,10 @@ function onMessageExternal(request, sender, sendResponse) {
         sendResponse(resp);
       }
     } else if (request.close) {
+      resp.status = true;
+      sendResponse(resp);
       chrome.app.window.getAll()[0].close();
-    } else if(hidConnection===null&&serialConnection===null&&btConnection===null){ // RANDI might have to change this
+    } else if(hidConnection===null&&serialConnection===null&&btConnection===null&&wsConnection===null){
       resp.status = false;
       sendResponse(resp);
     } else{
@@ -422,8 +530,8 @@ function onMessageExternal(request, sender, sendResponse) {
       sendResponse(resp);
     }
 }
-var currentPort = null;
 
+var currentPort = null; // RANDI why is this here?
 function onConnected(port) {
     console.log("onConnected:", port);
     if (currentPort !== null) {
@@ -470,6 +578,11 @@ function onPortMessage(msg) {
     }
     if (btConnection) {
         sendBT(msg.buffer);
+    }
+    if (wsConnection) {
+		console.log("got a message from Scratch, send to WS");
+		getRobotStatus();
+		//sendWS(msg.buffer);
     }
 }
 

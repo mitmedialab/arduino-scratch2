@@ -1,6 +1,7 @@
 var bleArray = [];
 var BLEstate = false;
 var deviceAddresses = [];
+var robotName;
 
 
 function isDuplicateDevice(newAddress) {
@@ -13,22 +14,31 @@ function isDuplicateDevice(newAddress) {
 function onRefreshHardware() {
     if (document.getElementById('device-selector') !== null) {
         document.getElementById('device-selector').options.length = 0;
-	deviceAddresses = [];
+		deviceAddresses = [];
     }
     var msg = {};
-    msg.action = "initHID";
+    msg.action = "initSerial";
     chrome.runtime.sendMessage(msg, function(response) {
-        console.log("initHID:", response);
-        msg.action = "initSerial";
+        console.log("initSerial:", response);
+        msg.action = "initBT";
         chrome.runtime.sendMessage(msg, function(response) {
-            console.log("initSerial:", response);
-            msg.action = "initBT";
-            chrome.runtime.sendMessage(msg, function(response) {
-                console.log("initBT:", response);
-            });
+            console.log("initBT:", response);
         });
     });
+}
 
+// TODO figure out why this doesn't work
+function onRetrieveRobotName() {
+	var prevRobotName = 
+	chrome.storage.local.get(['last-robot-name'], function(result) {
+          prevRobotName = result.key;
+          console.log(result);
+    });
+    console.log(prevRobotName);
+	if (prevRobotName != null && prevRobotName != undefined && prevRobotName != "") {
+		console.log("Loading last working robot name: " + prevRobotName);
+		document.getElementById('robot-name').value = prevRobotName;
+	}
 }
 
 function onConnectHID() {
@@ -49,10 +59,37 @@ function onConnect() {
     }
 }
 
+async function caller(_url) {
+	return fetch(_url).then(response => {
+		return response.json();
+	})
+	.catch(function(err) {
+	  console.log('Error with fetch: ', err);
+	});
+}
+
+async function onConnectWS() {
+    var msg = {};
+    msg.action = document.getElementById('connectWebsocketButton').innerHTML == "Connect" ? "connectWebsocket" : "disconnectWebsocket";
+    document.getElementById('connectWebsocketButton').innerHTML = 'Connecting...';
+    // RANDI come finish
+    robotName = document.getElementById('robot-name').value.toUpperCase();
+    if (robotName != "" && robotName != null && robotName != undefined) {
+    	// make firebase request for ip_address of robot
+		var ip_url = "https://robot-cam.firebaseio.com/ip_addresses/" + robotName + ".json";
+		msg.deviceId = await caller(ip_url);
+		chrome.runtime.sendMessage(msg, function(response) {
+		    console.log("OnConnectWS:", response);
+		});
+	} else {
+	    document.getElementById('connectWebsocketButton').innerHTML = 'Connect';
+	}
+}
+
 function onConnectSerial() {
     var msg = {};
-    msg.action = document.getElementById('connectButton').innerHTML == "Connect" ? "connectSerial" : "disconnectSerial";
-    document.getElementById('connectButton').innerHTML = 'Connecting...';
+    msg.action = document.getElementById('connectSerialButton').innerHTML == "Connect" ? "connectSerial" : "disconnectSerial";
+    document.getElementById('connectSerialButton').innerHTML = 'Connecting...';
     msg.deviceId = document.getElementById('device-selector').options[document.getElementById('device-selector').selectedIndex].id;
     chrome.runtime.sendMessage(msg, function(response) {
         console.log("serial:", response);
@@ -60,12 +97,9 @@ function onConnectSerial() {
     });
 }
 
-function onOpenScratch() {
-    window.open("https://machinelearningforkids.co.uk/scratchx/?url=https://mitmedialab.github.io/arduino-scratch2/Chromebook/cutebot_extension.js#scratch");
-}
-
 function onOpenScratch3() {
-    window.open("https://mitmedialab.github.io/prg-extension-boilerplate/btrobot/");
+//  TODO  window.open("https://mitmedialab.github.io/prg-extension-boilerplate/robotdemo/");
+    window.open("localhost:8601");
 }
 
 function onConnectBT() {
@@ -98,6 +132,7 @@ function onConnectBLE() {
 
 function onMessage(request, sender, sendResponse) {
     var option, i;
+	            
     if (request.action == "initHID") {
         if (request.deviceId !== '') {
             console.log(request.devices);
@@ -118,33 +153,29 @@ function onMessage(request, sender, sendResponse) {
         console.log(request.devices);
         if (request.devices.length > 0) {
             for (i = 0; i < request.devices.length; i++) {
-		var device = request.devices[i];
-		if (!isDuplicateDevice(device.address)) {
-                option = document.createElement('option');
-                if (device.name === 'BT04-A' || device.name === 'HC-05') {
-                    option.text = "Gizmo Bluetooth Robot ( " + device.name + " )";
-                } else {
-                    option.text = "" + device.name + " ( " + device.address + " )";
-                }
-                option.id = device.address;
-                if (device.name.startsWith('BBC micro:bit')) {
-                    option.class = "ble";
-                    console.log("ble device: " + device.name);
-                } else {
-                    option.class = "bt";
-                    console.log("bt device: " + device.name);
-                }
-                document.getElementById('device-selector').options.add(option);
-		deviceAddresses.push(device.address);
-		}
+				var device = request.devices[i];
+				if (!isDuplicateDevice(device.address)) {
+			        option = document.createElement('option');
+			        if (device.name === 'BT04-A' || device.name === 'HC-05') {
+			            option.text = "Gizmo Bluetooth Robot ( " + device.name + " )";
+			        } else {
+			            option.text = "" + device.name + " ( " + device.address + " )";
+			        }
+			        option.id = device.address;
+			        if (device.name.startsWith('BBC micro:bit')) {
+			            option.class = "ble";
+			            console.log("ble device: " + device.name);
+			        } else {
+			            option.class = "bt";
+			            console.log("bt device: " + device.name);
+			        }
+			        document.getElementById('device-selector').options.add(option);
+					deviceAddresses.push(device.address);
+				}
             }
         }
-    } else if (request.action == "initSerial") {
+    } else if (request.action == "initSerial") {    
         if (request.devices.length > 0) {
-            console.log(request.devices);
-
-
-
             for (i = 0; i < request.devices.length; i++) {
                 option = document.createElement('option');
 
@@ -159,7 +190,16 @@ function onMessage(request, sender, sendResponse) {
         }
     } else if (request.action.startsWith("connect")) {
         console.log("Got a connect response");
-        document.getElementById('connectButton').innerHTML = request.status ? 'Disconnect' : 'Connect';
+        if (request.action == "connectWS") {
+	        document.getElementById('connectWebsocketButton').innerHTML = request.status ? 'Disconnect' : 'Connect';
+	        // Save this robot for future use
+	        if (request.status) {
+	        	console.log("Saving this robot name because it worked: " + robotName);
+	        	chrome.storage.local.set({'last-robot-name':robotName}, function() {	});
+	        }
+        } else {
+	        document.getElementById('connectSerialButton').innerHTML = request.status ? 'Disconnect' : 'Connect';
+	    }
     } else if (request.action == "startupBLED112") {
         console.log(request.action, request);
     } else if (request.action == "initBLE") {
@@ -182,10 +222,11 @@ function onMessage(request, sender, sendResponse) {
     sendResponse(resp);
 }
 window.onload = function() {
-    document.getElementById('connectButton').addEventListener('click', onConnect);
-    document.getElementById('open_scratch').addEventListener('click', onOpenScratch);
+    document.getElementById('connectWebsocketButton').addEventListener('click', onConnectWS);
+    document.getElementById('connectSerialButton').addEventListener('click', onConnect);
     document.getElementById('open_scratch3').addEventListener('click', onOpenScratch3);
     document.getElementById('refresh').addEventListener('click', onRefreshHardware);
     chrome.runtime.onMessage.addListener(onMessage);
     onRefreshHardware();
+    onRetrieveRobotName();
 };

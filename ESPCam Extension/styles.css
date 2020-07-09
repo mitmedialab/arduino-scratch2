@@ -27,17 +27,11 @@ button:hover {
   opacity:0.8;
 
 }
-
-#hid-device-panel, #serial-device-panel, #BLE-device-panel {
-margin-bottom: 10px;
-margin-top: 10px;
-}
-
-#scanning-panel {
+.panel {
   margin-top: 20px;
 }
 
-#scanning-panel button {
+.panel button {
   margin-right: 10px;
   height: 28px;
 }
