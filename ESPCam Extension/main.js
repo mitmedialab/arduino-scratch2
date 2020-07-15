@@ -98,8 +98,9 @@ function onConnectSerial() {
 }
 
 function onOpenScratch3() {
-//  TODO  window.open("https://mitmedialab.github.io/prg-extension-boilerplate/robotdemo/");
-    window.open("localhost:8601");
+//  RANDI  window.open("https://mitmedialab.github.io/prg-extension-boilerplate/robotdemo/");
+	// RANDI testing window.open("localhost:8601");
+	window.open("https://mitmedialab.github.io/prg-extension-boilerplate/btrobot");
 }
 
 function onConnectBT() {

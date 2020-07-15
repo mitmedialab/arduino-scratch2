@@ -16,6 +16,7 @@ var hidConnection;
 var serialConnection;
 var btConnection;
 var wsConnection;
+var wsQueue = null;
 var isFirst = true;
 var BLEconnection = false;
 
@@ -224,31 +225,20 @@ function connectSerial(deviceId) {
     });
 }
 
-async function caller(_url) {
-	if (_url.substring(0,7) != "http://") {
-		_url = "http://" + _url;
-	}
-	return fetch(_url).then(response => {
-		return response;
-	})
-	.catch(function(err) {
-	  console.log('Error with fetch: ', err);
-	});
-}
-
 async function connectWebsocket(ip_address) {
 	var msg = {};
     msg.action = 'connectWS';
 	
 	let url = ip_address + "/status";
 	console.log("Connect websocket: " + url);
-	let rstatus = await caller(url);
+	let rstatus = await caller(url, "image");
 	if (rstatus != undefined) {
 		console.log("websocket connected", ip_address);
 		msg.status = true;
 		wsConnection = ip_address;
 		sendMessage(msg);
-		getRobotImage();
+		wsQueue = [];
+		wsOrganizer();
 	} else {
 		console.log("could not connect to websocket", ip_address);
 		msg.status = false;
@@ -257,11 +247,72 @@ async function connectWebsocket(ip_address) {
 	}
 }
 
-async function getRobotStatus() {
-	let url = wsConnection + "/status";
-	console.log("get robot status: " + url);
-	let rstatus = await caller(url).json();
+function queueWSCall(url, type) {
+	var command = {};
+	command.url = url;
+	command.type = type;
+	wsQueue.unshift(command);
+	console.log("Adding new item to WS queue");
+	console.log(wsQueue);
+}
+
+async function wsOrganizer() {
+	if (wsQueue.length > 0) {
+		console.log("Have a command in the queue");
+		let nextCommand = wsQueue.pop();
+		console.log(nextCommand);
+		await caller(nextCommand.url, nextCommand.type)
+	}
+	console.log("Getting robot status");
+	await getRobotStatus();
+	console.log("Getting robot image");
+	await getRobotImage();
 	
+	 if (wsQueue != null) wsOrganizer();
+}
+
+function timeout(ms, promise) {
+  return new Promise(function(resolve, reject) {
+    setTimeout(function() {
+      reject(new Error("timeout"))
+    }, ms)
+    promise.then(resolve, reject)
+  })
+}
+
+async function caller(_url, type) {
+	if (_url.substring(0,7) != "http://") {
+		_url = "http://" + _url;
+	}
+	return timeout(1000, fetch(_url)).then(response => {
+		switch(type) {
+		  case "status":
+			response.json().then(rstatus => {
+				sendRobotStatus(rstatus);
+			});
+			return "ok";
+			break;
+		  case "image":
+			response.text().then(rimage => {
+				sendRobotImage(rimage);
+			});
+			return "ok";
+			break;
+		  default:
+			return response.blob();
+		}
+	})
+	.catch(function(err) {
+	  console.log('Error with fetch: ' + err);
+	  if (err.message == "timeout") {
+		  console.log("Timed out waiting for robot");
+	  } else { // fetch error?
+	  // RANDI disconnectWebsocket(wsConnection); // error disconnect websocket
+	  }
+	});
+}
+
+function sendRobotStatus(rstatus) {
 	let msg = {};
     msg.buffer = [];
     msg.buffer[0] = 224; // RANDI may want to rewrite ESP code to make this simpler
@@ -277,40 +328,28 @@ async function getRobotStatus() {
     postMessage(msg);
 }
 
+async function getRobotStatus() {
+	let url = wsConnection + "/status";
+	console.log("get robot status: " + url);
+	let rstatus = await caller(url, "status");
+	return rstatus;
+}
+
+function sendRobotImage(rimage) {
+	let msg = {};
+	msg.payload = rimage;
+	console.log(msg);
+	postMessage(msg);	
+}
+
 // When this is a real websocket, this might not be necessary? Not sure
 async function getRobotImage() {
-	let url = wsConnection + ":81/stream"; // "/status";
+	let url = wsConnection + "/capture64";
 	console.log("get robot image: " + url);
-	let rstatus = await caller(url);
-	console.log(rstatus);
-	rstatus.blob().then((blob) => {
-    	var base64Flag = 'data:image/jpeg;base64,';
-    	var img = URL.createObjectURL(blob);
-    	console.log(blob);
-    	console.log(img);
-  	});
-  	
-  	rstatus.arrayBuffer().then((buffer) => {
-    	var base64Flag = 'data:image/jpeg;base64,';
-    	var imageStr = arrayBufferToBase64(buffer);
-    	console.log(buffer);
-    	console.log(imageStr);
-  	});
-  	
-  	rstatus.text().then((txt) => {
-    	console.log(txt);
-  	});
+	let rimage = await caller(url, "image");
+	return rimage;
 }
-	
-function arrayBufferToBase64(buffer) {
-  var binary = '';
-  var bytes = [].slice.call(new Uint8Array(buffer));
-
-  bytes.forEach((b) => binary += String.fromCharCode(b));
-
-  return window.btoa(binary);
-};
-	
+		
 function onBTReceived(info) {
     onParseSerial(new Uint8Array(info.data));
 }
@@ -368,6 +407,7 @@ function disconnectWebsocket(ip_address) {
     msg.status = false;
     serialConnection = null;
     sendMessage(msg);
+	wsQueue = null;
 }
 
 function sendMessage(msg) {
@@ -377,14 +417,11 @@ function sendMessage(msg) {
 }
 
 async function sendWS(buffer) {
-	console.log("sendWS");
-	console.log(buffer);
 	let cmd = "/control?var=rcmd&val=" + buffer[0] + "&cmd=" + buffer[1];
 	let url = wsConnection + cmd;
 	console.log("send robot command: " + url);
 	
-	let response = await caller(url);
-	console.log(response);
+	queueWSCall(url, "");
 }
 
 function sendBT(buffer) {
@@ -581,8 +618,7 @@ function onPortMessage(msg) {
     }
     if (wsConnection) {
 		console.log("got a message from Scratch, send to WS");
-		getRobotStatus();
-		//sendWS(msg.buffer);
+		sendWS(msg.buffer);
     }
 }
 

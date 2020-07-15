@@ -25,6 +25,7 @@
 
 #include "fb_gfx.h"
 #include "fd_forward.h"
+#include <base64.h>
 
 int catVal;
 int cmdVal;
@@ -143,6 +144,25 @@ static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size
   }
   j->len += len;
   return len;
+}
+
+static esp_err_t capture64_handler(httpd_req_t *req) {
+  String image_response;
+  camera_fb_t * fb = NULL;
+
+  fb = esp_camera_fb_get();
+  if (!fb) {
+    Serial.println("Camera capture failed");
+    httpd_resp_send_500(req);
+    return ESP_FAIL;
+  }
+  esp_camera_fb_return(fb);
+
+  image_response = base64::encode(fb->buf, fb->len);
+
+  httpd_resp_set_type(req, "plain/text");
+  httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+  return httpd_resp_send(req, image_response.c_str(), image_response.length());
 }
 
 static esp_err_t capture_handler(httpd_req_t *req) {
@@ -433,6 +453,13 @@ void startCameraServer() {
     .user_ctx  = NULL
   };
 
+  httpd_uri_t capture64_uri = {
+    .uri       = "/capture64",
+    .method    = HTTP_GET,
+    .handler   = capture64_handler,
+    .user_ctx  = NULL
+  };
+
   httpd_uri_t stream_uri = {
     .uri       = "/stream",
     .method    = HTTP_GET,
@@ -449,6 +476,7 @@ void startCameraServer() {
     httpd_register_uri_handler(camera_httpd, &cmd_uri);
     httpd_register_uri_handler(camera_httpd, &status_uri);
     httpd_register_uri_handler(camera_httpd, &capture_uri);
+    httpd_register_uri_handler(camera_httpd, &capture64_uri);
   }
 
   config.server_port += 1;
