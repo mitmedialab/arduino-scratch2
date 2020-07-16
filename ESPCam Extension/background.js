@@ -266,7 +266,7 @@ async function wsOrganizer() {
 	console.log("Getting robot status");
 	await getRobotStatus();
 	console.log("Getting robot image");
-	//await getRobotImage();
+	await getRobotImage();
 	
 	 if (wsQueue != null) wsOrganizer();
 }
@@ -345,7 +345,7 @@ function sendRobotImage(rimage) {
 
 // When this is a real websocket, this might not be necessary? Not sure
 async function getRobotImage() {
-	let url = wsConnection + "/capture64";
+	let url = wsConnection + ":81/capture64";
 	console.log("get robot image: " + url);
 	let rimage = await caller(url, "image");
 	return rimage;
