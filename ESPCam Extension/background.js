@@ -266,7 +266,7 @@ async function wsOrganizer() {
 	console.log("Getting robot status");
 	await getRobotStatus();
 	console.log("Getting robot image");
-	await getRobotImage();
+	//await getRobotImage();
 	
 	 if (wsQueue != null) wsOrganizer();
 }
@@ -284,7 +284,7 @@ async function caller(_url, type) {
 	if (_url.substring(0,7) != "http://") {
 		_url = "http://" + _url;
 	}
-	return timeout(1000, fetch(_url)).then(response => {
+	return timeout(2000, fetch(_url)).then(response => {
 		switch(type) {
 		  case "status":
 			response.json().then(rstatus => {
@@ -324,6 +324,7 @@ function sendRobotStatus(rstatus) {
 	msg.buffer[6] = 239;
 	msg.buffer[7] = Math.round(rstatus.right_line);
 	msg.buffer[8] = 240;
+	msg.buffer[9] = Math.round(rstatus.ultrasonic);
 	console.log(msg);
     postMessage(msg);
 }
