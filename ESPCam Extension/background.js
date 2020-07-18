@@ -249,26 +249,43 @@ async function connectWebsocket(ip_address) {
 
 function queueWSCall(url, type) {
 	var command = {};
-	command.url = url;
-	command.type = type;
-	wsQueue.unshift(command);
-	console.log("Adding new item to WS queue");
-	console.log(wsQueue);
+	if (wsQueue.length < 20) {
+		console.log("Adding new item to WS queue");
+		command.url = url;
+		command.type = type;
+		wsQueue.unshift(command);
+		console.log(wsQueue);
+	} else {
+		console.log("Queue too long!");
+	}
 }
 
 async function wsOrganizer() {
+	let result = "ok";
 	if (wsQueue.length > 0) {
 		console.log("Have a command in the queue");
 		let nextCommand = wsQueue.pop();
 		console.log(nextCommand);
-		await caller(nextCommand.url, nextCommand.type)
+		result = await caller(nextCommand.url, nextCommand.type)
 	}
-	console.log("Getting robot status");
-	await getRobotStatus();
-	console.log("Getting robot image");
-	await getRobotImage();
 	
-	 if (wsQueue != null) wsOrganizer();
+	if (result == "ok") {
+		/*console.log("Getting robot status");
+		let url = wsConnection + "/status";
+		result = await caller(url, "status");*/
+	
+		if (result == "ok") {
+			console.log("Getting robot image");
+			url = wsConnection + ":81/capture64";
+			result = await caller(url, "image");
+			
+		
+			if (result == "ok" && wsQueue != null) {
+				// recursive step
+				if (wsQueue != null) setTimeout(wsOrganizer, 500);
+			}
+		}
+	}
 }
 
 function timeout(ms, promise) {
@@ -284,32 +301,41 @@ async function caller(_url, type) {
 	if (_url.substring(0,7) != "http://") {
 		_url = "http://" + _url;
 	}
-	return timeout(2000, fetch(_url)).then(response => {
-		switch(type) {
-		  case "status":
-			response.json().then(rstatus => {
-				sendRobotStatus(rstatus);
-			});
-			return "ok";
-			break;
-		  case "image":
-			response.text().then(rimage => {
-				sendRobotImage(rimage);
-			});
-			return "ok";
-			break;
-		  default:
-			return response.blob();
-		}
-	})
-	.catch(function(err) {
-	  console.log('Error with fetch: ' + err);
-	  if (err.message == "timeout") {
-		  console.log("Timed out waiting for robot");
-	  } else { // fetch error?
-	  // RANDI disconnectWebsocket(wsConnection); // error disconnect websocket
-	  }
-	});
+	return timeout(2000, fetch(_url).catch(
+		function(err) {
+	  		var today = new Date();
+			var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+			console.log("Fetch failure " + time);
+			if (err.message == "Failed to fetch") disconnectWebsocket();
+			return "failed";
+		})).then(response => {
+			switch(type) {
+	  		   case "status":
+					response.json().then(rstatus => {
+					sendRobotStatus(rstatus);
+					});
+					return "ok";
+					break;
+		  	   case "image":
+				response.text().then(rimage => {
+					sendRobotImage(rimage);
+				});
+				return "ok";
+				break;
+		  	   default:
+				return "ok";
+			}
+		})
+		.catch(function(err) {
+		  console.log("Fetch timeout");
+		  if (err.message == "timeout") {
+			  var today = new Date();
+			  var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+			  console.log("Timed out waiting for robot " + time);
+			  disconnectWebsocket();
+		  }
+		  return "failed";
+		});
 }
 
 function sendRobotStatus(rstatus) {
@@ -329,26 +355,11 @@ function sendRobotStatus(rstatus) {
     postMessage(msg);
 }
 
-async function getRobotStatus() {
-	let url = wsConnection + "/status";
-	console.log("get robot status: " + url);
-	let rstatus = await caller(url, "status");
-	return rstatus;
-}
-
 function sendRobotImage(rimage) {
 	let msg = {};
 	msg.payload = rimage;
 	console.log(msg);
 	postMessage(msg);	
-}
-
-// When this is a real websocket, this might not be necessary? Not sure
-async function getRobotImage() {
-	let url = wsConnection + ":81/capture64";
-	console.log("get robot image: " + url);
-	let rimage = await caller(url, "image");
-	return rimage;
 }
 		
 function onBTReceived(info) {
@@ -401,8 +412,8 @@ function disconnectSerial(deviceId) {
     });
 }
 
-function disconnectWebsocket(ip_address) {
-	wsConnection = undefined;
+function disconnectWebsocket() {
+	wsConnection = null;
     var msg = {};
     msg.action = 'connectWS';
     msg.status = false;
@@ -604,7 +615,7 @@ function onParse(buffer) {
 }
 
 function postMessage(msg) {
-    currentPort.postMessage(msg);
+	if (currentPort != null) currentPort.postMessage(msg);
 }
 
 function onPortMessage(msg) {
