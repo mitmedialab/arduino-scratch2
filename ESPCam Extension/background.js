@@ -231,8 +231,9 @@ async function connectWebsocket(ip_address) {
 	
 	let url = ip_address + "/status";
 	console.log("Connect websocket: " + url);
-	let rstatus = await caller(url, "image");
-	if (rstatus != undefined) {
+	let rstatus = await caller(url, "");
+	console.log("Result trying to connect: " + rstatus);
+	if (rstatus != undefined && rstatus != "failed") {
 		console.log("websocket connected", ip_address);
 		msg.status = true;
 		wsConnection = ip_address;
@@ -248,12 +249,12 @@ async function connectWebsocket(ip_address) {
 }
 
 function queueWSCall(url, type) {
-	var command = {};
 	if (wsQueue.length < 20) {
-		console.log("Adding new item to WS queue");
+		var command = {};
 		command.url = url;
 		command.type = type;
 		wsQueue.unshift(command);
+		console.log("Adding new item to WS queue");
 		console.log(wsQueue);
 	} else {
 		console.log("Queue too long!");
@@ -261,31 +262,18 @@ function queueWSCall(url, type) {
 }
 
 async function wsOrganizer() {
-	let result = "ok";
 	if (wsQueue.length > 0) {
 		console.log("Have a command in the queue");
 		let nextCommand = wsQueue.pop();
 		console.log(nextCommand);
-		result = await caller(nextCommand.url, nextCommand.type)
+		await caller(nextCommand.url, nextCommand.type)
 	}
+	console.log("Getting robot status");
+	await getRobotStatus();
+	console.log("Getting robot image");
+	await getRobotImage();
 	
-	if (result == "ok") {
-		/*console.log("Getting robot status");
-		let url = wsConnection + "/status";
-		result = await caller(url, "status");*/
-	
-		if (result == "ok") {
-			console.log("Getting robot image");
-			url = wsConnection + ":81/capture64";
-			result = await caller(url, "image");
-			
-		
-			if (result == "ok" && wsQueue != null) {
-				// recursive step
-				if (wsQueue != null) setTimeout(wsOrganizer, 500);
-			}
-		}
-	}
+	 if (wsQueue != null) wsOrganizer();
 }
 
 function timeout(ms, promise) {
@@ -301,41 +289,39 @@ async function caller(_url, type) {
 	if (_url.substring(0,7) != "http://") {
 		_url = "http://" + _url;
 	}
-	return timeout(2000, fetch(_url).catch(
-		function(err) {
-	  		var today = new Date();
-			var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-			console.log("Fetch failure " + time);
-			if (err.message == "Failed to fetch") disconnectWebsocket();
-			return "failed";
+	return timeout(5000, fetch(_url).catch(	
+		function(err) {	
+	  		var today = new Date();	
+			var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();	
+			console.log("Fetch failure " + time);	
+			if (err.message == "Failed to fetch") disconnectWebsocket();	
+			return "failed";	
 		})).then(response => {
-			switch(type) {
-	  		   case "status":
-					response.json().then(rstatus => {
-					sendRobotStatus(rstatus);
-					});
-					return "ok";
-					break;
-		  	   case "image":
-				response.text().then(rimage => {
-					sendRobotImage(rimage);
-				});
-				return "ok";
-				break;
-		  	   default:
-				return "ok";
-			}
-		})
-		.catch(function(err) {
-		  console.log("Fetch timeout");
-		  if (err.message == "timeout") {
-			  var today = new Date();
-			  var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-			  console.log("Timed out waiting for robot " + time);
-			  disconnectWebsocket();
-		  }
-		  return "failed";
-		});
+		switch(type) {
+		  case "status":
+			response.json().then(rstatus => {
+				sendRobotStatus(rstatus);
+			});
+			return "ok";
+			break;
+		  case "image":
+			response.text().then(rimage => {
+				sendRobotImage(rimage);
+			});
+			return "ok";
+			break;
+		  default:
+			return response.blob();
+		}
+	})
+	.catch(function(err) {
+	  console.log('Error with fetch: ' + err);
+	  if (err.message == "timeout") {
+		  console.log("Timed out waiting for robot");
+		  disconnectWebsocket();	
+	  }	
+	  return "failed";
+	});
 }
 
 function sendRobotStatus(rstatus) {
@@ -355,11 +341,26 @@ function sendRobotStatus(rstatus) {
     postMessage(msg);
 }
 
+async function getRobotStatus() {
+	let url = wsConnection + "/status";
+	console.log("get robot status: " + url);
+	let rstatus = await caller(url, "status");
+	return rstatus;
+}
+
 function sendRobotImage(rimage) {
 	let msg = {};
 	msg.payload = rimage;
 	console.log(msg);
 	postMessage(msg);	
+}
+
+// When this is a real websocket, this might not be necessary? Not sure
+async function getRobotImage() {
+	let url = wsConnection + ":81/capture64";
+	console.log("get robot image: " + url);
+	let rimage = await caller(url, "image");
+	return rimage;
 }
 		
 function onBTReceived(info) {
@@ -413,13 +414,14 @@ function disconnectSerial(deviceId) {
 }
 
 function disconnectWebsocket() {
-	wsConnection = null;
+	wsConnection = null
+	wsQueue = null;
+	
     var msg = {};
     msg.action = 'connectWS';
     msg.status = false;
     serialConnection = null;
     sendMessage(msg);
-	wsQueue = null;
 }
 
 function sendMessage(msg) {
@@ -529,7 +531,7 @@ function onMessage(request, sender, sendResponse) {
     } else if (request.action == "disconnectSerial") {
         disconnectSerial(request.deviceId);
     } else if (request.action == "disconnectWebsocket") {
-    	disconnectWebsocket(request.deviceId);
+    	disconnectWebsocket();
     } else if (request.action == "connectBLED112") {
         //console.log("AAA");
         //ble_send([0,15,6,3,207,30,18,85,194,136,0,60,0,76,0,100,0,0,0]);
@@ -615,7 +617,7 @@ function onParse(buffer) {
 }
 
 function postMessage(msg) {
-	if (currentPort != null) currentPort.postMessage(msg);
+    currentPort.postMessage(msg);
 }
 
 function onPortMessage(msg) {
