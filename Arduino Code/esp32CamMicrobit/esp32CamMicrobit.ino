@@ -34,7 +34,7 @@ Ticker ticker;
 
 #include "camera_pins.h"
 
-String ROBOT_ID = "SAM"; // don't forget to edit line 162
+String ROBOT_ID = "SAM";
 
 #include "FirebaseESP32.h"
 String FIREBASE_HOST = "robot-cam.firebaseio.com"; //Change to your Firebase RTDB project ID e.g. Your_Project_ID.firebaseio.com
@@ -180,8 +180,8 @@ void setup() {
   
 
   // if you get to this point, you're connected!
-  Serial.println(WiFi.localIP().toString());
-  Serial.println(WiFi.getHostname());
+  Serial.println(WiFi.localIP().toString()); 
+  Serial.write(10); // newline
   startCameraServer();
 
   // setup Firebase
@@ -205,18 +205,6 @@ void setup() {
     ticker.detach();
     digitalWrite(ESP_LED, HIGH);
   #endif
-
-  // Blink robot lights so we know we're ready
-  /*for (int i=0; i<2; i++) {
-    Serial.write(cat);// send byte to Arduino for motor control
-    Serial.write(cmd);
-    Serial.write(10); // newline
-    delay(100);
-    Serial.write(cat);// send byte to Arduino for motor control
-    Serial.write(cmd);
-    Serial.write(10); // newline
-    delay(100);
-  }*/
 
 }
 void loop() {
