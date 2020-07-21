@@ -18,12 +18,11 @@ var btConnection;
 var isFirst = true;
 var BLEconnection = false;
 
-var UART_UUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E";
-var UART_UUID_TX = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E";
-var txCharac;
-var UART_UUID_RX = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E";
-var rxCharac;
+var wsConnection;
+var wsQueue = null;
+var captureImage = true; // RANDI image can be buggy, have option to ignore image if it's messing up
 
+var currentPort = null;
 
 function serialConnectionsRunning(connections) {
     for (var i = 0; i < connections.length; i++) {
@@ -223,6 +222,145 @@ function connectSerial(deviceId) {
     });
 }
 
+async function connectWebsocket(ip_address) {
+	var msg = {};
+    msg.action = 'connectWS';
+	
+	let url = ip_address + "/status";
+	console.log("Connect websocket: " + url);
+	let rstatus = await caller(url, "");
+	if (rstatus != undefined) {
+		console.log("websocket connected", ip_address);
+		msg.status = true;
+		wsConnection = ip_address;
+		sendMessage(msg);
+		wsQueue = [];
+		captureImage = true;
+		wsOrganizer();
+	} else {
+		console.log("could not connect to websocket", ip_address);
+		msg.status = false;
+		wsConnection = null;
+		sendMessage(msg);
+	}
+}
+
+function queueWSCall(url, type) {
+	var command = {};
+	if (wsQueue.length < 20) {
+		console.log("Adding new item to WS queue");
+		command.url = url;
+		command.type = type;
+		wsQueue.unshift(command);
+		console.log(wsQueue);
+	} else {
+		console.log("Queue too long!");
+	}
+}
+
+async function wsOrganizer() {
+	if (wsQueue.length > 0) {
+		console.log("Have a command in the queue");
+		let nextCommand = wsQueue.pop();
+		console.log(nextCommand);
+		await caller(nextCommand.url, nextCommand.type)
+	}
+	
+	console.log("Getting robot status");
+	let url = wsConnection + "/status";
+	await caller(url, "status");
+	
+	if (captureImage) {
+		console.log("Getting robot image");
+		url = wsConnection + ":81/capture64";
+		await caller(url, "image");
+	}
+				
+	if (wsQueue != null) {
+		// recursive step
+		if (wsQueue != null) wsOrganizer();
+	}
+}
+
+function timeout(ms, promise) {
+  return new Promise(function(resolve, reject) {
+    setTimeout(function() {
+      reject(new Error("timeout"))
+    }, ms)
+    promise.then(resolve, reject)
+  })
+}
+
+async function caller(_url, type) {
+	if (_url.substring(0,7) != "http://") {
+		_url = "http://" + _url;
+	}
+	return timeout(2000, fetch(_url).catch(
+		function(err) {
+	  		var today = new Date();
+			var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+			console.log("Fetch failure " + time);
+			if (err.message == "Failed to fetch") disconnectWebsocket();
+			return "failed";
+		})).then(response => {
+			switch(type) {
+	  		   case "status":
+					response.json().then(rstatus => {
+					sendRobotStatus(rstatus);
+					});
+					return "ok";
+					break;
+		  	   case "image":
+				response.text().then(rimage => {
+					sendRobotImage(rimage);
+				});
+				return "ok";
+				break;
+		  	   default:
+				return "ok";
+			}
+		})
+		.catch(function(err) {
+		  console.log("Fetch timeout");
+		  if (err.message == "timeout") {
+			  var today = new Date();
+			  var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+			  console.log("Timed out waiting for robot " + time);
+			  if (type == "image") {
+			  	captureImage = false;
+			  } else {
+				  disconnectWebsocket();
+			  }
+		  }
+		  return "failed";
+		});
+}
+
+function sendRobotStatus(rstatus) {
+	let msg = {};
+    msg.buffer = [];
+    msg.buffer[0] = 224; // RANDI may want to rewrite ESP code to make this simpler
+    msg.buffer[1] = Math.round(rstatus.a_button);
+    msg.buffer[2] = 237;
+    msg.buffer[3] = Math.round(rstatus.b_button);
+	msg.buffer[4] = 238;
+	msg.buffer[5] = Math.round(rstatus.left_line);
+	msg.buffer[6] = 239;
+	msg.buffer[7] = Math.round(rstatus.right_line);
+	msg.buffer[8] = 240;
+	msg.buffer[9] = Math.round(rstatus.ultrasonic);
+	console.log(msg);
+    postMessage(msg);
+}
+
+function sendRobotImage(rimage) {
+	let msg = {};
+	msg.payload = rimage;
+	console.log(msg);
+	postMessage(msg);	
+}
+		
+
 function onBTReceived(info) {
     onParseSerial(new Uint8Array(info.data));
 }
@@ -273,10 +411,29 @@ function disconnectSerial(deviceId) {
     });
 }
 
+function disconnectWebsocket() {
+	wsConnection = null;
+    var msg = {};
+    msg.action = 'connectWS';
+    msg.status = false;
+    serialConnection = null;
+    sendMessage(msg);
+	wsQueue = null;
+}
+
+
 function sendMessage(msg) {
     chrome.runtime.sendMessage(msg, function(response) {
         console.log("response:", response);
     });
+}
+
+async function sendWS(buffer) {
+	let cmd = "/control?var=rcmd&val=" + buffer[0] + "&cmd=" + buffer[1];
+	let url = wsConnection + cmd;
+	console.log("send robot command: " + url);
+	
+	queueWSCall(url, "");
 }
 
 function sendBT(buffer) {
@@ -364,20 +521,25 @@ function onMessage(request, sender, sendResponse) {
         connectBLE(request.address);
     } else if (request.action == "connectHID") {
         connectHID(request.deviceId * 1);
+    } else if (request.action == "connectWebsocket") {
+    	console.log("onMessage: received connect websocket action");
+        connectWebsocket(request.deviceId);
+    } else if (request.action == "connectSerial") {
+        connectSerial(request.deviceId);
+    } else if (request.action == "connectBLED112") {
+        //console.log("AAA");
+        //ble_send([0,15,6,3,207,30,18,85,194,136,0,60,0,76,0,100,0,0,0]);
+        connect_ble(request.address);
     } else if (request.action == "disconnectBT") {
         disconnectBT();
     } else if (request.action == "disconnectBLE") {
         disconnectBLE(request.address);
     } else if (request.action == "disconnectHID") {
         disconnectHID(request.deviceId * 1);
-    } else if (request.action == "connectSerial") {
-        connectSerial(request.deviceId);
+    } else if (request.action == "disconnectWebsocket") {
+    	disconnectWebsocket(request.deviceId);
     } else if (request.action == "disconnectSerial") {
         disconnectSerial(request.deviceId);
-    } else if (request.action == "connectBLED112") {
-        //console.log("AAA");
-        //ble_send([0,15,6,3,207,30,18,85,194,136,0,60,0,76,0,100,0,0,0]);
-        connect_ble(request.address);
     } else if (request.action == "disconnectBLED112") {
         console.log("disconnect_ble");
         ble_send([0, 1, 3, 0, connection_id]);
@@ -404,7 +566,7 @@ function onMessageExternal(request, sender, sendResponse) {
         chrome.app.window.create("index.html");
         resp.status = true;
         sendResponse(resp);
-      } else if (serialConnection == null) {
+      } else if (serialConnection == null && wsConnection == null) {
         chrome.app.window.getAll()[0].show();
         resp.status = true;
         sendResponse(resp);
@@ -413,8 +575,10 @@ function onMessageExternal(request, sender, sendResponse) {
         sendResponse(resp);
       }
     } else if (request.close) {
+      resp.status = true;
+      sendResponse(resp);
       chrome.app.window.getAll()[0].close();
-    } else if(hidConnection===null&&serialConnection===null&&btConnection===null){ // RANDI might have to change this
+    } else if(hidConnection===null&&serialConnection===null&&btConnection===null&&wsConnection===null) {
       resp.status = false;
       sendResponse(resp);
     } else{
@@ -422,7 +586,6 @@ function onMessageExternal(request, sender, sendResponse) {
       sendResponse(resp);
     }
 }
-var currentPort = null;
 
 function onConnected(port) {
     console.log("onConnected:", port);
@@ -458,7 +621,7 @@ function onParse(buffer) {
 }
 
 function postMessage(msg) {
-    currentPort.postMessage(msg);
+    if (currentPort != null) currentPort.postMessage(msg);
 }
 
 function onPortMessage(msg) {
@@ -471,6 +634,10 @@ function onPortMessage(msg) {
     if (btConnection) {
         sendBT(msg.buffer);
     }
+    if (wsConnection) {
+		console.log("got a message from Scratch, send to WS");
+		sendWS(msg.buffer);
+	}
 }
 
 function onDeviceAdded(device) {

@@ -7,26 +7,40 @@
 </head>
 <body>
 
-  <img id="logo" src="assets/poppet.png" width="270px"/>
+  <img id="logo" src="assets/tinybit.png" width="270px"/>
+  <div class="tab">
+  	<button class="tablinks active" name="wifi">Wi-Fi</button>
+  	<button class="tablinks" name="bluetooth">Bluetooth</button>
+  </div>
+
+  <div id="wifi" class="tabcontent" style="display:block">
+  	<div id="serial-device-panel" class="panel">
+      <span style="width:220px;display:block;margin-bottom:10px">Wi-fi Connection</span>
+      <input type="text" id="robot-name" placeholder="ENTER ROBOT NAME" style="width:70%;"></input>
+      <button class="button" id="connectWebsocketButton" style="float:right;width:120px;">Connect</button>
+	
+	</div>
+	
+    <div id="scanning-panel" style="margin:20px auto 0 auto;width:100%">
+	    <button class="button" id="open_scratch3">Open Scratch 3.0</button>
+    </div>
+  </div>
   
+  <div id="bluetooth" class="tabcontent">
     <div id="serial-device-panel">
       <span style="width:220px;display:block;margin-bottom:10px">Serial Port (USB / Bluetooth 2.0)</span>
       <!--<select id="serial-device-selector" style="width:70%;"></select>-->
       <select id="device-selector" style="width:70%;"></select>
-      <button id="connectButton" style="float:right;width:90px;">Connect</button>
-      <!--<button id="connectSerial" style="float:right;width:90px;">Connect</button>-->
+      <button class="button" id="connectSerialButton" style="float:right;width:120px;">Connect</button>
     </div>
-    <!--<div id="BLE-device-panel">
-      <span style="width:220px;display:block;margin-bottom:10px">Bluetooth 4.0</span>
-      <select id="ble-device-selector" style="width:70%;"></select>
-      <button id="connectBLE" style="float:right;width:90px;">Connect</button>
-    </div>-->
     <div id="scanning-panel" style="margin:20px auto 0 auto;width:100%">
-      <button id="refresh" style="float:left">Refresh Ports</button>
+      <button class="button" id="refresh" style="float:left">Refresh Ports</button>
       <!--<button id="scan_ble">Scan Bluetooth 4.0</button>-->
-	<button id="open_scratch3">Open Scratch 3.0</button>      
-	<button id="open_scratch">Open ScratchX</button>
+	<button class="button" id="open_scratch">Open ScratchX</button>
+    <button class="button" id="open_scratch31">Open Scratch 3.0</button>
 
     </div>
+  </div>
+  
 </body>
 </html>

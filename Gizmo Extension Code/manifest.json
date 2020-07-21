@@ -16,10 +16,10 @@
    },
    "icons": {
       "128": "assets/poppet_128.png",
-      "16": "assets/poppet_16.png"
+      "16": "assets/ai_16.png"
    },
    "manifest_version": 2,
-   "minimum_chrome_version": "38",
+   "minimum_chrome_version": "58",
    "name": "Gizmo Robot Extension",
    "permissions": [ "serial", "hid", {
       "usbDevices": [ {
@@ -28,5 +28,5 @@
       } ]
    } ],
    "short_name": "Gizmo Robot Extension",
-   "version": "1.5.0"
+   "version": "2.0.0"
 }
