@@ -1,5 +1,17 @@
 [
 	{
+		"id": "empty",
+		"name": "Empty",
+		"words": [],
+		"xAxis": ["", ""],
+		"yAxis": ["", ""],
+		"findClosest": {
+			"word": "",
+			"n": 0
+		}
+	},
+	
+	{
 		"id": "man_woman",
 		"name": "Gender analogies",
 		"words": [
@@ -134,14 +146,6 @@
 	},
 
 	{
-		"id": "intelligence",
-		"name": "Intelligence",
-		"words": [["smart"], ["dumb"], ["idiot"], ["genius"], ["intelligent"], ["stupid"], ["clever"]],
-		"xAxis": ["fast", "slow"],
-		"yAxis": ["bright", "dim"]
-	},
-
-	{
 		"id": "nostalgia",
 		"name": "Nostalgia",
 		"words": [],
@@ -150,18 +154,6 @@
 		"findClosest": {
 			"word": "nostalgia",
 			"n": 15
-		}
-	},
-
-	{
-		"id": "empty",
-		"name": "Empty",
-		"words": [],
-		"xAxis": ["", ""],
-		"yAxis": ["", ""],
-		"findClosest": {
-			"word": "",
-			"n": 0
 		}
 	}
 
