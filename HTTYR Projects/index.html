@@ -12,12 +12,12 @@
 		  	document.getElementById("bluetooth").style.display = "none";
 		  	document.getElementById("error").style.display = "none";
 		  }
-		}).catch (err) {
+		}).catch( function(err) {
 			console.log(err);
 		  	document.getElementById("error").style.display = "block";
 		  	document.getElementById("bluetooth").style.display = "none";
 		  	document.getElementById("no-bluetooth").style.display = "none";
-		};
+		});
 
 		if ('onavailabilitychanged' in navigator.bluetooth) {
 		  navigator.bluetooth.addEventListener('availabilitychanged', function(event) {
