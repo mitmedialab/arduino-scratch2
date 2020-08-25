@@ -6,11 +6,18 @@
 		  if (isBluetoothAvailable) {
 		  	document.getElementById("bluetooth").style.display = "block";
 		  	document.getElementById("no-bluetooth").style.display = "none";
+			document.getElementById("error").style.display = "none";
 		  } else {
 		  	document.getElementById("no-bluetooth").style.display = "block";
 		  	document.getElementById("bluetooth").style.display = "none";
+		  	document.getElementById("error").style.display = "none";
 		  }
-		});
+		}).catch (err) {
+			console.log(err);
+		  	document.getElementById("error").style.display = "block";
+		  	document.getElementById("bluetooth").style.display = "none";
+		  	document.getElementById("no-bluetooth").style.display = "none";
+		};
 
 		if ('onavailabilitychanged' in navigator.bluetooth) {
 		  navigator.bluetooth.addEventListener('availabilitychanged', function(event) {
@@ -34,5 +41,9 @@
 		<div id="bluetooth">
 			Bluetooth is available on your computer. Please continue to follow the robot setup instructions in the Tech Setup Guide.
 		</div>
-	<body>
+		
+		<div id="error">
+			Could not detect Bluetooth on your computer. Please make sure you are using the latest version of Chrome to view this website.
+		</div>
+	</body>
 </html>
